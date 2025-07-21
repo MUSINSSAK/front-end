@@ -38,8 +38,8 @@ jobs:
         run: npx biome check
 
       # npx biome format --check 로 포맷 에러 검사(자동 수정은 하지 않음)
-      - name: Run Biome format check
-        run: npx biome format --check
+      - name: Run Biome CI (lint & format check)
+        run: npx biome ci
 
   build_and_test:
     name: 🏗️ Build & Test
