@@ -1,0 +1,42 @@
+# ── Node modules
+node_modules/
+
+# ── Build outputs
+dist/
+build/
+
+# ── Vite cache
+node_modules/.vite/
+
+# ── Environment variables
+.env
+.env.*.local
+
+# ── TypeScript
+*.tsbuildinfo
+
+# ── Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── Test coverage
+coverage/
+*.lcov
+
+# ── IDE & Editor folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ── OS generated files
+.DS_Store
+Thumbs.db
+
+# ── Miscellaneous
+.cache/
+*.gz
