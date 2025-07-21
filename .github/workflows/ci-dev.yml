@@ -35,7 +35,7 @@ jobs:
 
       # npx biome check --quiet 로 코드 스타일·문법 오류만 검사(실제 수정 없음)
       - name: Run Biome lint (check only)
-        run: npx biome check --quiet
+        run: npx biome check
 
       # npx biome format --check 로 포맷 에러 검사(자동 수정은 하지 않음)
       - name: Run Biome format check
