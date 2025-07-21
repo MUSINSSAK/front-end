@@ -26,7 +26,6 @@ coverage/
 *.lcov
 
 # ── IDE & Editor folders
-.vscode/
 .idea/
 *.suo
 *.ntvs*
