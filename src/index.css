@@ -1,4 +1,10 @@
 /* biome-ignore-all lint: legacy code biome(suppressions/legacy) */
+
+@font-face {
+	font-family: "Pretendard";
+	src: url("/fonts/pretendard-medium") format("woff2");
+}
+
 html,
 body,
 div,
