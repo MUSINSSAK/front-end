@@ -44,7 +44,6 @@ jobs:
     name: 🏗️ Build & Test
     runs-on: ubuntu-latest
     needs: lint_and_format
-    if: github.event_name == 'push'
     strategy:
       matrix:
         node-version: [18.x]
