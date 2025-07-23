@@ -1,0 +1,19 @@
+.column {
+  flex: 1;
+  min-width: 12rem;
+}
+.list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.link {
+  color: var(--color-gray-700);
+  text-decoration: none;
+  font-size: 0.875rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.link:hover {
+  color: var(--color-white);
+}
