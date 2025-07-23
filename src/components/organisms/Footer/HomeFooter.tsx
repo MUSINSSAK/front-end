@@ -8,7 +8,8 @@ export default function HomeFooter() {
       <div className={styles.footerInner}>
         <FooterColumn title="MUSINSSAK">
           <p className={styles.description}>
-            트렌디하고 스타일리시한 패션을 제안하는 온라인 패션 플랫폼입니다.
+            트렌디하고 스타일리시한 패션을 제안하는 <br />
+            온라인 패션 플랫폼입니다.
           </p>
         </FooterColumn>
 
