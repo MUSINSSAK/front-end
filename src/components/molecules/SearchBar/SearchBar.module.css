@@ -1,0 +1,26 @@
+.wrapper {
+  flex: 1;
+  margin: 0 2rem;
+  position: relative;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+}
+
+.input {
+  width: 90%;
+  padding-left: 2.5rem;
+  border-radius: 9999px;
+  background-color: #f9fafb;
+}
+
+.icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  color: #9ca3af;
+  width: 0.875rem;
+  height: 0.875rem;
+}
