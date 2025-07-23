@@ -1,7 +1,6 @@
 import type React from "react";
 import { useState } from "react";
 import { HomeTemplate } from "../../components/templates";
-import type { Product } from "../../types";
 
 const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -9,7 +8,7 @@ const Home: React.FC = () => {
   const userName = "김민수"; // 예시 데이터
   const cartCount = 3; // 예시 데이터
   const [selectedCategory, setSelectedCategory] = useState("");
-  const wishlist: Product[] = []; // 예시 데이터
+  const wishlist = []; // 예시 데이터
 
   return (
     <div>
