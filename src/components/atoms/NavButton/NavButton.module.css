@@ -1,0 +1,17 @@
+.button {
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.default {
+  color: var(--color-gray-900);
+}
+.default:hover {
+  color: var(--color-black);
+}
+.active {
+  color: var(--color-black);
+}

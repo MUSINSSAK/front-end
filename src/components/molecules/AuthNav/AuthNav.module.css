@@ -1,0 +1,15 @@
+.authContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.authLink {
+  font-size: 0.875rem; /* text-sm */
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.authLink:hover {
+  color: var(--color-black);
+}
