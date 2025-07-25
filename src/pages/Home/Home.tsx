@@ -1,9 +1,13 @@
 import type React from "react";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 import { Toast } from "../../components/atoms";
-import { HeroSection, ProductSection } from "../../components/organisms";
+import {
+  ChatWidget,
+  HeroSection,
+  ProductSection,
+} from "../../components/organisms";
 import { HomeTemplate } from "../../components/templates";
-import type { Product } from "../../types";
+import type { Message, Product } from "../../types";
 
 const newProducts: Product[] = [
   {
@@ -180,6 +184,11 @@ const Home: React.FC = () => {
     7,
   ]);
   const [showToast, setShowToast] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, text: "안녕하세요! 무엇을 도와드릴까요?", isUser: false },
+  ]);
+  const [newMessage, setNewMessage] = useState("");
 
   const toggleWishlist = (productId: number) => {
     if (wishlist.includes(productId)) {
@@ -189,6 +198,24 @@ const Home: React.FC = () => {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2500);
     }
+  };
+
+  const handleSendMessage = (e: FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    const nextId = messages.length
+      ? Math.max(...messages.map((m) => m.id)) + 1
+      : 1;
+    setMessages([
+      ...messages,
+      { id: nextId, text: newMessage, isUser: true },
+      {
+        id: nextId + 1,
+        text: "죄송합니다. 지금은 상담이 불가능합니다. 상담원 연결은 평일 09:00~18:00에 가능합니다.",
+        isUser: false,
+      },
+    ]);
+    setNewMessage("");
   };
 
   return (
@@ -223,6 +250,15 @@ const Home: React.FC = () => {
           wishlist={wishlist}
           onToggleWishlist={toggleWishlist}
           disableFiltering={true}
+        />
+
+        <ChatWidget
+          isOpen={isChatOpen}
+          messages={messages}
+          newMessage={newMessage}
+          onToggle={() => setIsChatOpen(!isChatOpen)}
+          onChange={setNewMessage}
+          onSend={handleSendMessage}
         />
       </HomeTemplate>
     </div>

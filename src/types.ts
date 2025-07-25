@@ -8,3 +8,9 @@ export type Product = {
   category: string;
   image: string;
 };
+
+export type Message = {
+  id: number;
+  text: string;
+  isUser: boolean;
+};
