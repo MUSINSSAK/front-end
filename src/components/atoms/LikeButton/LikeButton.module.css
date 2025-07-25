@@ -1,0 +1,24 @@
+.button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white);
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.filled {
+  color: var(--color-red-400);
+  fill: currentColor;
+}
+
+.outline {
+  color: var(--color-gray-700);
+  fill: currentColor;
+}
