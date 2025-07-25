@@ -3,6 +3,7 @@ export { default as ContactInfoItem } from "./ContactInfoItem/ContactInfoItem";
 export { default as DiscountBadge } from "./DiscountBadge/DiscountBadge";
 export { default as FooterTitle } from "./FooterTitle/FooterTitle";
 export { default as Input } from "./Input/Input";
+export { default as LikeButton } from "./LikeButton/LikeButton";
 export { default as Logo } from "./Logo/Logo";
 export { default as NavButton } from "./NavButton/NavButton";
 export { default as PriceTag } from "./PriceTag/PriceTag";
