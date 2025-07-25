@@ -1,6 +1,7 @@
 import type React from "react";
 import { type FormEvent, useState } from "react";
 import { Toast } from "../../components/atoms";
+import { Banner } from "../../components/molecules";
 import {
   ChatWidget,
   HeroSection,
@@ -221,6 +222,8 @@ const Home: React.FC = () => {
   return (
     <div>
       {showToast && <Toast message="찜 목록에 추가되었습니다" />}
+
+      <Banner text="신규 회원 가입 시 20% 할인 쿠폰 증정 | 무료배송 5만원 이상" />
 
       <HomeTemplate
         searchQuery={searchQuery}
