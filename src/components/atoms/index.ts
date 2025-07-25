@@ -8,3 +8,4 @@ export { default as Logo } from "./Logo/Logo";
 export { default as NavButton } from "./NavButton/NavButton";
 export { default as PriceTag } from "./PriceTag/PriceTag";
 export { default as SectionHeader } from "./SectionHeader/SectionHeader";
+export { default as Toast } from "./Toast/Toast";
