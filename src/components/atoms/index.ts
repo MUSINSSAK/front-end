@@ -1,5 +1,6 @@
 export { default as Badge } from "./Badge/Badge";
 export { default as ContactInfoItem } from "./ContactInfoItem/ContactInfoItem";
+export { default as DiscountBadge } from "./DiscountBadge/DiscountBadge";
 export { default as FooterTitle } from "./FooterTitle/FooterTitle";
 export { default as Input } from "./Input/Input";
 export { default as Logo } from "./Logo/Logo";
