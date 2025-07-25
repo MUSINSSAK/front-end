@@ -213,7 +213,7 @@ const Home: React.FC = () => {
           selectedCategory={selectedCategory}
           wishlist={wishlist}
           onToggleWishlist={toggleWishlist}
-          disableFiltering={true} // 필터링 비활성화
+          disableFiltering={true} 
         />
 
         <ProductSection
@@ -222,7 +222,7 @@ const Home: React.FC = () => {
           selectedCategory={selectedCategory}
           wishlist={wishlist}
           onToggleWishlist={toggleWishlist}
-          disableFiltering={true} // 필터링 비활성화
+          disableFiltering={true} 
         />
       </HomeTemplate>
     </div>
