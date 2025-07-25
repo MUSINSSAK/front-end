@@ -5,4 +5,5 @@ export { default as FooterTitle } from "./FooterTitle/FooterTitle";
 export { default as Input } from "./Input/Input";
 export { default as Logo } from "./Logo/Logo";
 export { default as NavButton } from "./NavButton/NavButton";
+export { default as PriceTag } from "./PriceTag/PriceTag";
 export { default as SectionHeader } from "./SectionHeader/SectionHeader";
