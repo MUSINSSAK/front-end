@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState } from "react";
+import { HeroSection } from "../../components/organisms";
 import { HomeTemplate } from "../../components/templates";
 
 const Home: React.FC = () => {
@@ -22,7 +23,7 @@ const Home: React.FC = () => {
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       >
-        <div></div>
+        <HeroSection />
       </HomeTemplate>
     </div>
   );
