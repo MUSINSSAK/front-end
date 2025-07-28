@@ -6,6 +6,7 @@ import styles from "./ProductSection.module.css";
 
 type Props = {
   title: string;
+  numberOfProducts?: boolean;
   products: Product[];
   selectedCategory: string;
   disableFiltering?: boolean;
@@ -14,6 +15,7 @@ type Props = {
 
 export default function ProductSection({
   title,
+  numberOfProducts,
   products,
   selectedCategory,
   disableFiltering = false,
@@ -47,6 +49,9 @@ export default function ProductSection({
     <section className={styles.section}>
       <div className={styles.inner}>
         <SectionHeader title={title} />
+        {numberOfProducts ? (
+          <p className={styles.count}>총 {listToRender.length}개 상품</p>
+        ) : null}
         <div className={styles.grid}>
           {listToRender.map((p) => (
             <ProductCard
