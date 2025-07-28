@@ -36,7 +36,7 @@ export default function App() {
   return (
     <AuthProvider>
       <CategoryProvider>
-        <MainTemplate searchQuery="" setSearchQuery={() => {}}>
+        <MainTemplate>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="category/:cat" element={<Category />} />
