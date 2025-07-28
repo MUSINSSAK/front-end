@@ -2,6 +2,7 @@ import type React from "react";
 import { useState } from "react";
 import { Toast } from "../../components/atoms";
 import { HeroSection, ProductSection } from "../../components/organisms";
+import { useCategory } from "../../contexts/CategoryContext";
 import type { Product } from "../../types";
 
 const newProducts: Product[] = [
@@ -166,7 +167,7 @@ const bestProducts: Product[] = [
 ];
 
 const Home: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const { selected } = useCategory();
   const [wishlist, setWishlist] = useState<number[]>([
     1, // 예시로 몇 개의 제품 ID를 추가
     2,
@@ -195,7 +196,7 @@ const Home: React.FC = () => {
       <ProductSection
         title="NEW ARRIVALS"
         products={newProducts}
-        selectedCategory={selectedCategory}
+        selectedCategory={selected}
         wishlist={wishlist}
         onToggleWishlist={toggleWishlist}
         disableFiltering={true}
@@ -204,7 +205,7 @@ const Home: React.FC = () => {
       <ProductSection
         title="BEST PRODUCTS"
         products={bestProducts}
-        selectedCategory={selectedCategory}
+        selectedCategory={selected}
         wishlist={wishlist}
         onToggleWishlist={toggleWishlist}
         disableFiltering={true}
