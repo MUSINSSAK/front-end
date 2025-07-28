@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  max-width: 1120px;
+  width: 100%;
   height: 24rem;
   background:
     url("https://readdy.ai/api/search-image?query=modern%20fashion%20lifestyle%20background%20with%20elegant%20models%20wearing%20contemporary%20clothing%20in%20minimalist%20studio%20setting%20with%20soft%20lighting%20and%20clean%20aesthetic%20perfect%20for%20luxury%20fashion%20brand&width=1440&height=600&seq=hero1&orientation=landscape")

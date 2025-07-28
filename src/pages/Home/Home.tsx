@@ -4,6 +4,7 @@ import { Toast } from "../../components/atoms";
 import { HeroSection, ProductSection } from "../../components/organisms";
 import { useCategory } from "../../contexts/CategoryContext";
 import type { Product } from "../../types";
+import styles from "./Home.module.css";
 
 const newProducts: Product[] = [
   {
@@ -171,7 +172,7 @@ const Home: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
 
   return (
-    <div>
+    <div className={styles.container}>
       {showToast && <Toast message="찜 목록에 추가되었습니다" />}
 
       <HeroSection />
