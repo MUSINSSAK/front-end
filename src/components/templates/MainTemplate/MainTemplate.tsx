@@ -27,7 +27,9 @@ export default function MainTemplate({
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       />
+
       <main>{children}</main>
+
       <HomeFooter />
     </>
   );

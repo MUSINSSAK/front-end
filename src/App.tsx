@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { ChatWidget } from "./components/organisms";
+import { MainTemplate } from "./components/templates";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Category } from "./pages";
 import Home from "./pages/Home/Home";
@@ -33,19 +34,26 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/category" element={<Category />} />
-      </Routes>
+      <MainTemplate
+        searchQuery=""
+        setSearchQuery={() => {}}
+        selectedCategory="all"
+        setSelectedCategory={() => {}}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="category/:cat" element={<Category />} />
+        </Routes>
 
-      <ChatWidget
-        isOpen={isChatOpen}
-        messages={messages}
-        newMessage={newMessage}
-        onToggle={() => setIsChatOpen(!isChatOpen)}
-        onChange={setNewMessage}
-        onSend={handleSendMessage}
-      />
+        <ChatWidget
+          isOpen={isChatOpen}
+          messages={messages}
+          newMessage={newMessage}
+          onToggle={() => setIsChatOpen(!isChatOpen)}
+          onChange={setNewMessage}
+          onSend={handleSendMessage}
+        />
+      </MainTemplate>
     </AuthProvider>
   );
 }

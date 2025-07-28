@@ -2,7 +2,6 @@ import type React from "react";
 import { useState } from "react";
 import { Toast } from "../../components/atoms";
 import { HeroSection, ProductSection } from "../../components/organisms";
-import { HomeTemplate } from "../../components/templates";
 import type { Product } from "../../types";
 
 const newProducts: Product[] = [
@@ -167,7 +166,6 @@ const bestProducts: Product[] = [
 ];
 
 const Home: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [wishlist, setWishlist] = useState<number[]>([
     1, // 예시로 몇 개의 제품 ID를 추가
@@ -192,32 +190,25 @@ const Home: React.FC = () => {
     <div>
       {showToast && <Toast message="찜 목록에 추가되었습니다" />}
 
-      <HomeTemplate
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+      <HeroSection />
+
+      <ProductSection
+        title="NEW ARRIVALS"
+        products={newProducts}
         selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-      >
-        <HeroSection />
+        wishlist={wishlist}
+        onToggleWishlist={toggleWishlist}
+        disableFiltering={true}
+      />
 
-        <ProductSection
-          title="NEW ARRIVALS"
-          products={newProducts}
-          selectedCategory={selectedCategory}
-          wishlist={wishlist}
-          onToggleWishlist={toggleWishlist}
-          disableFiltering={true}
-        />
-
-        <ProductSection
-          title="BEST PRODUCTS"
-          products={bestProducts}
-          selectedCategory={selectedCategory}
-          wishlist={wishlist}
-          onToggleWishlist={toggleWishlist}
-          disableFiltering={true}
-        />
-      </HomeTemplate>
+      <ProductSection
+        title="BEST PRODUCTS"
+        products={bestProducts}
+        selectedCategory={selectedCategory}
+        wishlist={wishlist}
+        onToggleWishlist={toggleWishlist}
+        disableFiltering={true}
+      />
     </div>
   );
 };
