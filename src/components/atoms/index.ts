@@ -1,4 +1,6 @@
 export { default as Badge } from "./Badge/Badge";
+export { default as Button } from "./Button/Button";
+export { default as Checkbox } from "./Checkbox/Checkbox";
 export { default as ContactInfoItem } from "./ContactInfoItem/ContactInfoItem";
 export { default as DiscountBadge } from "./DiscountBadge/DiscountBadge";
 export { default as FooterTitle } from "./FooterTitle/FooterTitle";
@@ -8,4 +10,5 @@ export { default as Logo } from "./Logo/Logo";
 export { default as NavButton } from "./NavButton/NavButton";
 export { default as PriceTag } from "./PriceTag/PriceTag";
 export { default as SectionHeader } from "./SectionHeader/SectionHeader";
+export { default as Select } from "./Select/Select";
 export { default as Toast } from "./Toast/Toast";

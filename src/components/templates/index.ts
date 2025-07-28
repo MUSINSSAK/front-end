@@ -1,1 +1,2 @@
-export { default as HomeTemplate } from "./HomeTemplate/HomeTemplate";
+export { default as MainTemplate } from "./MainTemplate/MainTemplate";
+export { default as ShopTemplate } from "./ShopTemplate/ShopTemplate";

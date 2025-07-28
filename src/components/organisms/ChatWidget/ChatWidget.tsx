@@ -50,6 +50,7 @@ export default function ChatWidget({
           </div>
           <form onSubmit={onSend} className={styles.form}>
             <Input
+              type="text"
               value={newMessage}
               onChange={(e) => onChange(e.target.value)}
               placeholder="메시지를 입력하세요"

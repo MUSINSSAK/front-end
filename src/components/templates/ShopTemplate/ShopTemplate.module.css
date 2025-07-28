@@ -1,0 +1,14 @@
+.wrapper {
+  min-height: 100vh;
+  background-color: var(--color-white);
+}
+.contentWrapper {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  gap: 2rem;
+}
+.main {
+  flex: 1;
+}

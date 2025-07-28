@@ -8,7 +8,6 @@ type UserMenuProps = {
 
 export default function UserMenu({ userName }: UserMenuProps) {
   const [open, setOpen] = useState(false);
-  console.log(open);
 
   return (
     <div className={styles.container}>

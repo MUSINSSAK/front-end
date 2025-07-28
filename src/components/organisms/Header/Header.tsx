@@ -1,4 +1,6 @@
 import { Heart, ShoppingCart } from "lucide-react";
+import { CATEGORIES } from "../../../constants/categories";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Logo } from "../../atoms";
 import {
   AuthNav,
@@ -12,10 +14,6 @@ import styles from "./Header.module.css";
 interface HeaderProps {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
-  isLoggedIn: boolean;
-  userName: string;
-  wishlistCount: number;
-  cartCount: number;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
 }
@@ -23,27 +21,10 @@ interface HeaderProps {
 export default function Header({
   searchQuery,
   setSearchQuery,
-  isLoggedIn,
-  userName,
-  wishlistCount,
-  cartCount,
   selectedCategory,
   setSelectedCategory,
 }: HeaderProps) {
-  const categories = [
-    "뷰티",
-    "신발",
-    "상의",
-    "아우터",
-    "바지",
-    "원피스/스커트",
-    "가방",
-    "패션소품",
-    "속옷/홈웨어",
-    "스포츠/레저",
-    "디지털/라이프",
-    "키즈",
-  ];
+  const { isLoggedIn, user, wishlistCount, cartCount } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -59,7 +40,7 @@ export default function Header({
 
         {isLoggedIn ? (
           <div className={styles.rightMenu}>
-            <UserMenu userName={userName} />
+            <UserMenu userName={user?.name ?? ""} />
             <IconButton
               icon={Heart}
               size={20}
@@ -83,7 +64,7 @@ export default function Header({
       </div>
 
       <NavMenu
-        categories={categories}
+        categories={CATEGORIES}
         selected={selectedCategory}
         onSelect={setSelectedCategory}
       />

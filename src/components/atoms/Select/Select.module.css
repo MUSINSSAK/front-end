@@ -1,0 +1,11 @@
+.base {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+}
+.base:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-black);
+}
