@@ -168,24 +168,7 @@ const bestProducts: Product[] = [
 
 const Home: React.FC = () => {
   const { selected } = useCategory();
-  const [wishlist, setWishlist] = useState<number[]>([
-    1, // 예시로 몇 개의 제품 ID를 추가
-    2,
-    9,
-    14,
-    7,
-  ]);
   const [showToast, setShowToast] = useState(false);
-
-  const toggleWishlist = (productId: number) => {
-    if (wishlist.includes(productId)) {
-      setWishlist(wishlist.filter((id) => id !== productId));
-    } else {
-      setWishlist([...wishlist, productId]);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2500);
-    }
-  };
 
   return (
     <div>
@@ -197,18 +180,16 @@ const Home: React.FC = () => {
         title="NEW ARRIVALS"
         products={newProducts}
         selectedCategory={selected}
-        wishlist={wishlist}
-        onToggleWishlist={toggleWishlist}
         disableFiltering={true}
+        setShowToast={setShowToast}
       />
 
       <ProductSection
         title="BEST PRODUCTS"
         products={bestProducts}
         selectedCategory={selected}
-        wishlist={wishlist}
-        onToggleWishlist={toggleWishlist}
         disableFiltering={true}
+        setShowToast={setShowToast}
       />
     </div>
   );
