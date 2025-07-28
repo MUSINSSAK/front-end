@@ -1,1 +1,1 @@
-export { default as HomeTemplate } from "./HomeTemplate/HomeTemplate";
+export { default as MainTemplate } from "./MainTemplate/MainTemplate";
