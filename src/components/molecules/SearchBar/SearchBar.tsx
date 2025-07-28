@@ -12,6 +12,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
     <div className={styles.wrapper}>
       <Search className={styles.icon} />
       <Input
+        type="text"
         value={value}
         onChange={onChange}
         placeholder="검색어를 입력하세요"
