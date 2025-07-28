@@ -1,4 +1,5 @@
 import type React from "react";
+import { Banner } from "../../molecules";
 import { Header, HomeFooter } from "../../organisms";
 
 type Props = {
@@ -26,6 +27,8 @@ export default function MainTemplate({
 }: Props) {
   return (
     <>
+      <Banner text="신규 회원 가입 시 20% 할인 쿠폰 증정 | 무료배송 5만원 이상" />
+
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
