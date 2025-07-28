@@ -14,3 +14,10 @@ export type Message = {
   text: string;
   isUser: boolean;
 };
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+}
