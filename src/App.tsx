@@ -1,6 +1,8 @@
 import { type FormEvent, useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { ChatWidget } from "./components/organisms";
+import { AuthProvider } from "./contexts/AuthContext";
+import { Category } from "./pages";
 import Home from "./pages/Home/Home";
 import type { Message } from "./types";
 
@@ -30,9 +32,10 @@ export default function App() {
   };
 
   return (
-    <BrowserRouter>
+    <AuthProvider>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/category" element={<Category />} />
       </Routes>
 
       <ChatWidget
@@ -43,6 +46,6 @@ export default function App() {
         onChange={setNewMessage}
         onSend={handleSendMessage}
       />
-    </BrowserRouter>
+    </AuthProvider>
   );
 }

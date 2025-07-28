@@ -168,9 +168,6 @@ const bestProducts: Product[] = [
 
 const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const isLoggedIn = true; // 예시 데이터
-  const userName = "김민수"; // 예시 데이터
-  const cartCount = 3; // 예시 데이터
   const [selectedCategory, setSelectedCategory] = useState("");
   const [wishlist, setWishlist] = useState<number[]>([
     1, // 예시로 몇 개의 제품 ID를 추가
@@ -198,10 +195,6 @@ const Home: React.FC = () => {
       <HomeTemplate
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        isLoggedIn={isLoggedIn}
-        userName={userName}
-        wishlistCount={wishlist.length}
-        cartCount={cartCount}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
       >

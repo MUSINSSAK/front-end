@@ -1,4 +1,5 @@
 import { Heart, ShoppingCart } from "lucide-react";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Logo } from "../../atoms";
 import {
   AuthNav,
@@ -12,10 +13,6 @@ import styles from "./Header.module.css";
 interface HeaderProps {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
-  isLoggedIn: boolean;
-  userName: string;
-  wishlistCount: number;
-  cartCount: number;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
 }
@@ -23,26 +20,25 @@ interface HeaderProps {
 export default function Header({
   searchQuery,
   setSearchQuery,
-  isLoggedIn,
-  userName,
-  wishlistCount,
-  cartCount,
   selectedCategory,
   setSelectedCategory,
 }: HeaderProps) {
+  const { isLoggedIn, user, wishlistCount, cartCount } = useAuth();
+
   const categories = [
-    "뷰티",
-    "신발",
-    "상의",
-    "아우터",
-    "바지",
-    "원피스/스커트",
-    "가방",
-    "패션소품",
-    "속옷/홈웨어",
-    "스포츠/레저",
-    "디지털/라이프",
-    "키즈",
+    { id: "all", name: "전체" },
+    { id: "beauty", name: "뷰티" },
+    { id: "shoes", name: "신발" },
+    { id: "tops", name: "상의" },
+    { id: "outerwear", name: "아우터" },
+    { id: "pants", name: "바지" },
+    { id: "dresses", name: "원피스/스커트" },
+    { id: "bags", name: "가방" },
+    { id: "accessories", name: "패션소품" },
+    { id: "loungewear", name: "속옷/홈웨어" },
+    { id: "sports", name: "스포츠/레저" },
+    { id: "digital", name: "디지털/라이프" },
+    { id: "kids", name: "키즈" },
   ];
 
   return (
@@ -59,7 +55,7 @@ export default function Header({
 
         {isLoggedIn ? (
           <div className={styles.rightMenu}>
-            <UserMenu userName={userName} />
+            <UserMenu userName={user?.name ?? ""} />
             <IconButton
               icon={Heart}
               size={20}
