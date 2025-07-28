@@ -1,6 +1,7 @@
 export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
+export { default as FilterSection } from "./FilterSection/FilterSection";
 export { default as FooterColumn } from "./FooterColumn/FooterColumn";
 export { default as IconButton } from "./IconButton/IconButton";
 export { default as NavMenu } from "./NavMenu/NavMenu";
