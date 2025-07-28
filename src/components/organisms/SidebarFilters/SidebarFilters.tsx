@@ -33,7 +33,7 @@ export default function SidebarFilters({
             onClick={() => {
               onBrandToggle("");
               onCategoryToggle("");
-              onPriceChange([0, 500000]);
+              onPriceChange([0, 1000000]);
             }}
           >
             초기화
