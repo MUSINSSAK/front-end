@@ -1,3 +1,4 @@
+import { BriefcaseBusiness, ShoppingCart } from "lucide-react";
 import { Button, Tag } from "../../atoms";
 import styles from "./OrderTable.module.css";
 
@@ -19,12 +20,13 @@ export default function OrderTable({ orders }: OrderTableProps) {
     return (
       <div className={styles.empty}>
         <div className={styles.emptyIcon}>
-          <i className="fas fa-shopping-bag"></i>
+          <BriefcaseBusiness size={31} />
         </div>
         <h3>주문 내역이 없습니다</h3>
         <p>아직 주문하신 상품이 없습니다.</p>
-        <Button type="button" variant="active">
-          쇼핑하러 가기
+        <Button className={styles.button} type="button" variant="active">
+          <ShoppingCart size={15} />
+          <span>쇼핑하러 가기</span>
         </Button>
       </div>
     );
