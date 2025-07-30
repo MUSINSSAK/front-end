@@ -2,7 +2,7 @@
 import { Input } from "../../atoms";
 import styles from "./PriceFilter.module.css";
 
-export type PriceFilterProps = {
+type PriceFilterProps = {
   range: [number, number];
   onChange: (range: [number, number]) => void;
 };

@@ -1,7 +1,7 @@
 import { FilterSection, PriceFilter } from "../../molecules";
 import styles from "./SidebarFilters.module.css";
 
-export type SidebarFiltersProps = {
+type SidebarFiltersProps = {
   brands: string[];
   categories: string[];
   selectedBrands: string[];

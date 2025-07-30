@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import styles from "./Avatar.module.css";
 
-export type AvatarProps = {
+type AvatarProps = {
   src?: string;
   color?: string;
   className?: string;

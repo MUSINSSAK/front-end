@@ -1,7 +1,7 @@
 import type React from "react";
 import styles from "./Checkbox.module.css";
 
-export type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: React.ReactNode;
 };
 
