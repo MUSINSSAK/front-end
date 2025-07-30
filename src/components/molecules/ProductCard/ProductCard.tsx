@@ -1,5 +1,5 @@
 import type { Product } from "../../../types";
-import { DiscountBadge, LikeButton, PriceTag } from "../../atoms";
+import { LikeButton, PriceTag, Tag } from "../../atoms";
 import styles from "./ProductCard.module.css";
 
 type Props = {
@@ -21,7 +21,13 @@ export default function ProductCard({
     >
       <div className={styles.imageWrapper}>
         <img src={product.image} alt={product.name} className={styles.image} />
-        {product.discount && <DiscountBadge discount={product.discount} />}
+        {product.discount && (
+          <Tag
+            discount={product.discount}
+            variant="discount"
+            classname={styles.discountBadge}
+          />
+        )}
         <LikeButton
           inWishlist={inWishlist}
           onToggleWishlist={(e: React.MouseEvent<HTMLButtonElement>) => {

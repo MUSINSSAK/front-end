@@ -26,6 +26,11 @@
   border-radius: 0.25rem;
   cursor: pointer;
 }
+.discountBadge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+}
 .info {
   padding: 0.5rem 0;
   display: flex;
