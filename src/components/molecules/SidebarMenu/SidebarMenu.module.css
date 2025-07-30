@@ -1,0 +1,41 @@
+.wrapper {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.section + .section {
+  margin-top: 1rem;
+}
+.heading {
+  background: #f9fafb;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  border-bottom: 1px solid #e5e7eb;
+}
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+.item:hover {
+  background: #f3f4f6;
+}
+.active {
+  background: #000;
+  color: #fff;
+}
+.icon {
+  margin-right: 0.75rem;
+  width: 1rem;
+  text-align: center;
+}
