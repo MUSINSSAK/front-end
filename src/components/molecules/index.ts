@@ -5,6 +5,7 @@ export { default as FilterSection } from "./FilterSection/FilterSection";
 export { default as FooterColumn } from "./FooterColumn/FooterColumn";
 export { default as IconButton } from "./IconButton/IconButton";
 export { default as NavMenu } from "./NavMenu/NavMenu";
+export { default as OrderTable } from "./OrderTable/OrderTable";
 export { default as PriceFilter } from "./PriceFilter/PriceFilter";
 export { default as ProductCard } from "./ProductCard/ProductCard";
 export { default as SearchBar } from "./SearchBar/SearchBar";

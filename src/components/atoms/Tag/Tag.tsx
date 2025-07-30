@@ -1,6 +1,12 @@
 import styles from "./Tag.module.css";
 
-type BadgeVariant = "default" | "discount";
+type BadgeVariant =
+  | "default"
+  | "discount" /* 할인 */
+  | "success" /* 결제완료 */
+  | "processing" /* 배송중 */
+  | "canceled" /* 취소됨 */
+  | "done" /* 배송완료 */;
 
 type BadgeProps = {
   discount?: number;
