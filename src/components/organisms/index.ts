@@ -1,3 +1,4 @@
+export { default as AddressSection } from "./AddressSection/AddressSection";
 export { default as ChatWidget } from "./ChatWidget/ChatWidget";
 export { default as HomeFooter } from "./Footer/HomeFooter";
 export { default as Header } from "./Header/Header";
