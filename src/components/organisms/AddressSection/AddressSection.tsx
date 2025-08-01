@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button, Input, Tag } from "../../atoms";
-import AddressForm from "../../molecules/AddressForm/AddressForm";
 import styles from "./AddressSection.module.css";
 
 const Addresses: Address[] = [
@@ -26,6 +25,17 @@ const Addresses: Address[] = [
   },
 ];
 
+const emptyAddress: Address = {
+  id: "",
+  type: "",
+  isDefault: false,
+  recipient: "",
+  phone: "",
+  address: "",
+  detailAddress: "",
+  zipCode: "",
+};
+
 type Address = {
   id: string;
   type: string;
@@ -39,11 +49,12 @@ type Address = {
 
 export default function AddressSection() {
   const [isEditing, setIsEditing] = useState(false);
-  const [form, setForm] = useState<Address | null>(null);
+  const [form, setForm] = useState<Address>(emptyAddress);
   const [addNew, setAddNew] = useState<boolean>(false);
 
   const onEdit = (address: Address) => {
     setForm(address);
+    setAddNew(false);
     setIsEditing(true);
   };
 
@@ -56,13 +67,18 @@ export default function AddressSection() {
       setForm((prev) => prev && { ...prev, [field]: e.target.value });
 
   const onSave = () => {
-    if (form) {
-      // TODO: form 데이터를 실제 Addresses 배열 또는 API에 반영
+    if (isEditing) {
+      // TODO: form 데이터를 기존 Addresses 배열에 반영
+    } else if (addNew) {
+      // TODO: form을 새 Addresses 배열에 추가
     }
     setIsEditing(false);
+    setAddNew(false);
   };
 
-  const handleAdd = () => {
+  const onAdd = () => {
+    setForm(emptyAddress);
+    setIsEditing(false);
     setAddNew(true);
   };
 
@@ -70,7 +86,7 @@ export default function AddressSection() {
     <section className={styles.wrapper}>
       <div className={styles.header}>
         <h3>배송지 관리</h3>
-        <Button onClick={handleAdd} className={styles.addButton}>
+        <Button onClick={onAdd} className={styles.addButton}>
           배송지 추가
         </Button>
       </div>
@@ -121,11 +137,13 @@ export default function AddressSection() {
                     onChange={handleChange("address")}
                   />
                   <Input
+                    id="address-input"
                     type="text"
                     value={form.detailAddress}
                     onChange={handleChange("detailAddress")}
                   />
                   <Input
+                    id="address-input"
                     type="text"
                     value={form.zipCode}
                     onChange={handleChange("zipCode")}
@@ -162,7 +180,69 @@ export default function AddressSection() {
             )}
           </div>
         ))}
-        {addNew && <AddressForm setAddNew={setAddNew} />}
+        {addNew && (
+          <div className={styles.wrapper}>
+            <div className={styles.header}>
+              <div className={styles.labelInputGroup}>
+                <Input
+                  id="type-input"
+                  type="text"
+                  value={form.type}
+                  onChange={handleChange("type")}
+                  placeholder="배송지 이름"
+                  className={styles.field}
+                />
+              </div>
+            </div>
+            <div className={styles.grid2}>
+              <div className={styles.field}>
+                <label htmlFor="recipient-input">수취인</label>
+                <Input
+                  id="recipient-input"
+                  type="text"
+                  value={form.recipient}
+                  onChange={handleChange("recipient")}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="phone-input">연락처</label>
+                <Input
+                  id="phone-input"
+                  type="tel"
+                  value={form.phone}
+                  onChange={handleChange("phone")}
+                />
+              </div>
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="address-input">주소</label>
+              <Input
+                id="address-input"
+                type="text"
+                value={form.address}
+                onChange={handleChange("address")}
+              />
+              <Input
+                id="address-input"
+                type="text"
+                value={form.detailAddress}
+                onChange={handleChange("detailAddress")}
+              />
+              <Input
+                id="address-input"
+                type="text"
+                value={form.zipCode}
+                onChange={handleChange("zipCode")}
+              />
+            </div>
+            <div className={styles.actions}>
+              <Button onClick={onAdd} variant="active">
+                저장
+              </Button>
+              <Button onClick={() => setAddNew(false)}>취소</Button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
