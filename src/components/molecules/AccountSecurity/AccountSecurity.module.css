@@ -1,0 +1,72 @@
+.wrapper {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+.rowInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.rowInfoTitle {
+  font-weight: 500;
+}
+.rowInfoSubtitle {
+  font-size: 0.875rem;
+  color: var(--color-gray-800);
+}
+.toggleButton {
+  width: 3.6rem;
+  height: 2.25rem;
+}
+.form {
+  background-color: var(--color-gray-100);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+.formLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-900);
+  margin-bottom: 0.5rem;
+}
+.formInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-gray-500);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+.formActions {
+  display: flex;
+  gap: 0.75rem;
+}
+.actionButton {
+  padding: 0.5rem 1rem;
+}
