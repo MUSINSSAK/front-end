@@ -15,9 +15,9 @@ export type Message = {
   isUser: boolean;
 };
 
-export interface User {
+export type User = {
   id: number;
   name: string;
   email: string;
   avatarUrl?: string;
-}
+};
