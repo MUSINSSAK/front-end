@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Input, Tag } from "../../atoms";
+import { Button, Checkbox, Input, Tag } from "../../atoms";
 import styles from "./AddressSection.module.css";
 
 const Addresses: Address[] = [
@@ -106,6 +106,17 @@ export default function AddressSection() {
                       placeholder="배송지 이름"
                       className={styles.field}
                     />
+                    <Checkbox
+                      id="default-checkbox"
+                      checked={form.isDefault}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          isDefault: e.target.checked,
+                        }))
+                      }
+                      label="기본 배송지로 설정"
+                    />
                   </div>
                 </div>
                 <div className={styles.grid2}>
@@ -191,6 +202,17 @@ export default function AddressSection() {
                   onChange={handleChange("type")}
                   placeholder="배송지 이름"
                   className={styles.field}
+                />
+                <Checkbox
+                  id="default-checkbox"
+                  checked={form.isDefault}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      isDefault: e.target.checked,
+                    }))
+                  }
+                  label="기본 배송지로 설정"
                 />
               </div>
             </div>
