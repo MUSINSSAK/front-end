@@ -1,3 +1,4 @@
+export { default as AddressSection } from "./AddressSection/AddressSection";
 export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
