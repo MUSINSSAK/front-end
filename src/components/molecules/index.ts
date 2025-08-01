@@ -1,5 +1,4 @@
 export { default as AddressForm } from "./AddressForm/AddressForm";
-export { default as AddressManager } from "./AddressManager/AddressManager";
 export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
