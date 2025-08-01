@@ -13,9 +13,9 @@
 }
 
 .header h3 {
-  font-size: 1.125rem; /* text-xl */
-  font-weight: 600; /* font-semibold */
-  color: var(--color-footer); /* gray-900 */
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-black);
 }
 
 .editBtn {
