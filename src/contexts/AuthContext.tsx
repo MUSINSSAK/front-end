@@ -1,7 +1,7 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
 import type { User } from "../types";
 
-interface AuthState {
+type AuthState = {
   isLoggedIn: boolean;
   user?: User;
   wishlistCount: number;
@@ -9,7 +9,7 @@ interface AuthState {
   login: (user: User) => void;
   logout: () => void;
   // 필요하면 카운트 업데이트 함수도 추가
-}
+};
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
 

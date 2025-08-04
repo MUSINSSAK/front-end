@@ -11,12 +11,12 @@ import {
 } from "../../molecules";
 import styles from "./Header.module.css";
 
-interface HeaderProps {
+type HeaderProps = {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
-}
+};
 
 export default function Header({
   searchQuery,
