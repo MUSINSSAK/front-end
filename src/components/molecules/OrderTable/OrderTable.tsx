@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, ShoppingCart } from "lucide-react";
+import { ShoppingBag, ShoppingCart } from "lucide-react";
 import type { Order } from "../../../types";
 import { Button, Tag } from "../../atoms";
 import styles from "./OrderTable.module.css";
@@ -12,7 +12,7 @@ export default function OrderTable({ orders }: OrderTableProps) {
     return (
       <div className={styles.empty}>
         <div className={styles.emptyIcon}>
-          <BriefcaseBusiness size={31} />
+          <ShoppingBag size={31} />
         </div>
         <h3>주문 내역이 없습니다</h3>
         <p>아직 주문하신 상품이 없습니다.</p>
@@ -39,14 +39,16 @@ export default function OrderTable({ orders }: OrderTableProps) {
           <tr key={o.orderNumber} className={styles.row}>
             <td>{o.date}</td>
             <td>{o.orderNumber}</td>
-            <td>
-              <div className={styles.product}>
-                <img src={o.product.image} alt={o.product.name} />
-                <div>
-                  <p className={styles.productName}>{o.product.name}</p>
-                  <p className={styles.productDetails}>{o.product.details}</p>
+            <td className={styles.products}>
+              {o.products.map((p) => (
+                <div key={p.name} className={styles.product}>
+                  <img src={p.image} alt={p.name} />
+                  <div>
+                    <p className={styles.productName}>{p.name}</p>
+                    <p className={styles.productDetails}>{p.details}</p>
+                  </div>
                 </div>
-              </div>
+              ))}
             </td>
             <td>{o.amount}</td>
             <td>
