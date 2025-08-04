@@ -1,15 +1,7 @@
 import { BriefcaseBusiness, ShoppingCart } from "lucide-react";
+import type { Order } from "../../../types";
 import { Button, Tag } from "../../atoms";
 import styles from "./OrderTable.module.css";
-
-type Order = {
-  date: string;
-  orderNumber: string;
-  product: { name: string; image: string; details: string };
-  amount: string;
-  status: string;
-  statusType: "success" | "processing" | "canceled" | "done";
-};
 
 type OrderTableProps = {
   orders: Order[];

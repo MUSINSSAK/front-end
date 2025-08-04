@@ -21,3 +21,12 @@ export type User = {
   email: string;
   avatarUrl?: string;
 };
+
+export type Order = {
+  date: string;
+  orderNumber: string;
+  product: { name: string; image: string; details: string }[];
+  amount: string;
+  status: string;
+  statusType: "success" | "processing" | "canceled" | "done";
+};
