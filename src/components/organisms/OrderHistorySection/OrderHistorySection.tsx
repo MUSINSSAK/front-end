@@ -1,7 +1,8 @@
+import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import type { Order } from "../../../types";
 import { Select } from "../../atoms";
-import { OrderTable } from "../../molecules";
+import { EmptyState, OrderTable } from "../../molecules";
 import styles from "./OrderHistorySection.module.css";
 
 type OrderHistorySectionProps = {
@@ -37,7 +38,15 @@ export default function OrderHistorySection({
             ))}
           </Select>
         </div>
-        <OrderTable orders={orders} />
+        {orders.length === 0 ? (
+          <EmptyState
+            icon={ShoppingBag}
+            title="주문 내역이 없습니다"
+            description="아직 주문하신 상품이 없습니다."
+          />
+        ) : (
+          <OrderTable orders={orders} />
+        )}
       </div>
     </div>
   );

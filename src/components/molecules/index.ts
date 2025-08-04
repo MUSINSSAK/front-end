@@ -4,6 +4,7 @@ export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
 export { default as CouponItem } from "./CouponItem/CouponItem";
+export { default as EmptyState } from "./EmptyState/EmptyState";
 export { default as FilterSection } from "./FilterSection/FilterSection";
 export { default as FooterColumn } from "./FooterColumn/FooterColumn";
 export { default as IconButton } from "./IconButton/IconButton";

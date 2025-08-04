@@ -1,6 +1,5 @@
-import { ShoppingBag, ShoppingCart } from "lucide-react";
 import type { Order } from "../../../types";
-import { Button, Tag } from "../../atoms";
+import { Tag } from "../../atoms";
 import styles from "./OrderTable.module.css";
 
 type OrderTableProps = {
@@ -8,21 +7,6 @@ type OrderTableProps = {
 };
 
 export default function OrderTable({ orders }: OrderTableProps) {
-  if (orders.length === 0) {
-    return (
-      <div className={styles.empty}>
-        <div className={styles.emptyIcon}>
-          <ShoppingBag size={31} />
-        </div>
-        <h3>주문 내역이 없습니다</h3>
-        <p>아직 주문하신 상품이 없습니다.</p>
-        <Button className={styles.button} type="button" variant="active">
-          <ShoppingCart size={15} />
-          <span>쇼핑하러 가기</span>
-        </Button>
-      </div>
-    );
-  }
   return (
     <table className={styles.table}>
       <thead>
@@ -50,7 +34,7 @@ export default function OrderTable({ orders }: OrderTableProps) {
                 </div>
               ))}
             </td>
-            <td>{o.amount}</td>
+            <td>{o.amount}원</td>
             <td>
               <Tag variant={o.statusType}>{o.status}</Tag>
             </td>
