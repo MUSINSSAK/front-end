@@ -4,8 +4,8 @@ import { ChatWidget } from "./components/organisms";
 import { MainTemplate } from "./components/templates";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CategoryProvider } from "./contexts/CategoryContext";
-import { Category } from "./pages";
-import Home from "./pages/Home/Home";
+import { ToastProvider } from "./contexts/ToastContext";
+import { Category, Home } from "./pages";
 import type { Message } from "./types";
 
 export default function App() {
@@ -34,23 +34,25 @@ export default function App() {
   };
 
   return (
-    <AuthProvider>
-      <CategoryProvider>
-        <MainTemplate>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="category/:cat" element={<Category />} />
-          </Routes>
-          <ChatWidget
-            isOpen={isChatOpen}
-            messages={messages}
-            newMessage={newMessage}
-            onToggle={() => setIsChatOpen(!isChatOpen)}
-            onChange={setNewMessage}
-            onSend={handleSendMessage}
-          />
-        </MainTemplate>
-      </CategoryProvider>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <CategoryProvider>
+          <MainTemplate>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="category/:cat" element={<Category />} />
+            </Routes>
+            <ChatWidget
+              isOpen={isChatOpen}
+              messages={messages}
+              newMessage={newMessage}
+              onToggle={() => setIsChatOpen(!isChatOpen)}
+              onChange={setNewMessage}
+              onSend={handleSendMessage}
+            />
+          </MainTemplate>
+        </CategoryProvider>
+      </AuthProvider>
+    </ToastProvider>
   );
 }

@@ -1,18 +1,32 @@
+import { useState } from "react";
+import { useToast } from "../../../contexts/ToastContext";
 import type { Product } from "../../../types";
 import { LikeButton, PriceTag, Tag } from "../../atoms";
 import styles from "./ProductCard.module.css";
 
 type Props = {
   product: Product;
-  inWishlist: boolean;
-  onToggleWishlist: (id: number) => void;
 };
 
-export default function ProductCard({
-  product,
-  inWishlist,
-  onToggleWishlist,
-}: Props) {
+export default function ProductCard({ product }: Props) {
+  const { showToast } = useToast();
+  const [wishlist, setWishlist] = useState<number[]>([
+    1, // 예시로 몇 개의 제품 ID를 추가
+    2,
+    9,
+    14,
+    7,
+  ]);
+
+  const toggleWishlist = (productId: number) => {
+    if (wishlist.includes(productId)) {
+      setWishlist(wishlist.filter((id) => id !== productId));
+    } else {
+      setWishlist([...wishlist, productId]);
+      showToast("상품이 찜 목록에 추가되었습니다.");
+    }
+  };
+
   return (
     <a
       href={`/products/${product.id}`}
@@ -29,11 +43,11 @@ export default function ProductCard({
           />
         )}
         <LikeButton
-          inWishlist={inWishlist}
+          inWishlist={wishlist.includes(product.id)}
           onToggleWishlist={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.preventDefault();
             e.stopPropagation();
-            onToggleWishlist(product.id);
+            toggleWishlist(product.id);
           }}
         />
       </div>

@@ -18,3 +18,4 @@ export { default as ReviewItem } from "./ReviewItem/ReviewItem";
 export { default as SearchBar } from "./SearchBar/SearchBar";
 export { default as SidebarMenu } from "./SidebarMenu/SidebarMenu";
 export { default as UserMenu } from "./UserMenu/UserMenu";
+export { default as WishList } from "./WishList/WishList";
