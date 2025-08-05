@@ -6,3 +6,4 @@ export { default as OrderHistorySection } from "./OrderHistorySection/OrderHisto
 export { default as ProductSection } from "./ProductSection/ProductSection";
 export { default as ProfileEditSection } from "./ProfileEditSection/ProfileEditSection";
 export { default as SidebarFilters } from "./SidebarFilters/SidebarFilters";
+export { default as WishListSection } from "./WishListSection/WishListSection";
