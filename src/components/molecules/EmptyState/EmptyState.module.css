@@ -1,6 +1,9 @@
 .emptyState {
   text-align: center;
-  padding: 4rem 0;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 4rem;
 }
 
 .iconWrapper {
