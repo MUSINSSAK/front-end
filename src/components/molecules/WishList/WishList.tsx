@@ -3,11 +3,11 @@ import type { Product } from "../../../types";
 import ProductCard from "../ProductCard/ProductCard";
 import styles from "./WishList.module.css";
 
-type WishListSectionProps = {
+type WishListProps = {
   items: Product[];
 };
 
-export default function WishList({ items }: WishListSectionProps) {
+export default function WishList({ items }: WishListProps) {
   const onDeleteAll = () => {
     // Implement delete all logic here
     console.log("Delete all items");
