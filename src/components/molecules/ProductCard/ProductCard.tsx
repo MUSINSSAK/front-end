@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "../../../contexts/ToastContext";
 import type { Product } from "../../../types";
@@ -6,9 +7,10 @@ import styles from "./ProductCard.module.css";
 
 type Props = {
   product: Product;
+  deleteAble?: boolean;
 };
 
-export default function ProductCard({ product }: Props) {
+export default function ProductCard({ product, deleteAble }: Props) {
   const { showToast } = useToast();
   const [wishlist, setWishlist] = useState<number[]>([
     1, // 예시로 몇 개의 제품 ID를 추가
@@ -27,6 +29,13 @@ export default function ProductCard({ product }: Props) {
     }
   };
 
+  const onDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setWishlist(wishlist.filter((id) => id !== product.id));
+    showToast("찜 목록에서 상품이 삭제되었습니다.");
+  };
+
   return (
     <a
       href={`/products/${product.id}`}
@@ -41,6 +50,15 @@ export default function ProductCard({ product }: Props) {
             variant="discount"
             classname={styles.discountBadge}
           />
+        )}
+        {deleteAble && (
+          <button
+            type="button"
+            onClick={onDelete}
+            className={styles.deleteButton}
+          >
+            <X className={styles.deleteIcon} />
+          </button>
         )}
         <LikeButton
           inWishlist={wishlist.includes(product.id)}

@@ -1,6 +1,6 @@
-import { Trash, X } from "lucide-react";
+import { Trash } from "lucide-react";
 import type { Product } from "../../../types";
-import { PriceTag, Tag } from "../../atoms";
+import ProductCard from "../ProductCard/ProductCard";
 import styles from "./WishList.module.css";
 
 type WishListSectionProps = {
@@ -8,11 +8,6 @@ type WishListSectionProps = {
 };
 
 export default function WishList({ items }: WishListSectionProps) {
-  const onDelete = (id: number) => {
-    // Implement delete logic here
-    console.log(`Delete item with id: ${id}`);
-  };
-
   const onDeleteAll = () => {
     // Implement delete all logic here
     console.log("Delete all items");
@@ -33,35 +28,7 @@ export default function WishList({ items }: WishListSectionProps) {
       </div>
       <div className={styles.items}>
         {items.map((item) => (
-          <a
-            key={item.id}
-            href={`/products/${item.id}`}
-            className={styles.card}
-            aria-label={`${item.name} 상세페이지 이동`}
-          >
-            <div className={styles.imageWrapper}>
-              <img src={item.image} alt={item.name} className={styles.image} />
-              {item.discount && (
-                <Tag
-                  discount={item.discount}
-                  variant="discount"
-                  classname={styles.discountBadge}
-                />
-              )}
-              <button
-                type="button"
-                className={styles.deleteButton}
-                onClick={() => onDelete(item.id)}
-              >
-                <X />
-              </button>
-            </div>
-            <div className={styles.info}>
-              <p className={styles.brand}>{item.brand}</p>
-              <h3 className={styles.name}>{item.name}</h3>
-              <PriceTag price={item.price} originalPrice={item.originalPrice} />
-            </div>
-          </a>
+          <ProductCard key={item.id} product={item} deleteAble={true} />
         ))}
       </div>
     </div>
