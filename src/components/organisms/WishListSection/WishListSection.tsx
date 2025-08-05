@@ -1,6 +1,7 @@
-import { Heart } from "lucide-react";
+import { Heart, Trash } from "lucide-react";
 import type { Product } from "../../../types";
-import { EmptyState, WishList } from "../../molecules";
+import { EmptyState, ProductCard } from "../../molecules";
+import styles from "./WishListSection.module.css";
 
 const dummyWishlistItems: Product[] = [
   {
@@ -50,10 +51,30 @@ const dummyWishlistItems: Product[] = [
 ];
 
 export default function WishListSection() {
+  const onDeleteAll = () => {
+    // Implement delete all logic here
+    console.log("Delete all items");
+  };
+
   return (
-    <div>
+    <div className={styles.wrapper}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>찜한 상품</h3>
+        <button
+          type="button"
+          onClick={onDeleteAll}
+          className={styles.buttonText}
+        >
+          <Trash size={12} color="var(--color-text)" />
+          <span>전체 삭제</span>
+        </button>
+      </div>
       {dummyWishlistItems.length > 0 ? (
-        <WishList items={dummyWishlistItems} />
+        <div className={styles.items}>
+          {dummyWishlistItems.map((item) => (
+            <ProductCard key={item.id} product={item} deleteAble={true} />
+          ))}
+        </div>
       ) : (
         <EmptyState
           icon={Heart}
