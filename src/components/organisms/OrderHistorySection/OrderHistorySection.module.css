@@ -1,21 +1,21 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* space-y-6 */
+  gap: 1.5rem;
 }
 .card {
-  background-color: #fff;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.5rem;
-  padding: 2rem; /* p-8 */
+  padding: 2rem;
 }
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem; /* mb-6 */
+  margin-bottom: 1.5rem;
 }
 .cardTitle {
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 600; /* font-semibold */
+  font-size: 1.25rem;
+  font-weight: 600;
 }
