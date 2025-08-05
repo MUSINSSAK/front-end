@@ -1,7 +1,5 @@
 import type React from "react";
-import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Toast } from "../../components/atoms";
 import { ProductSection } from "../../components/organisms";
 import { ShopTemplate } from "../../components/templates";
 import { CATEGORIES } from "../../constants/categories";
