@@ -1,0 +1,33 @@
+.wrapper {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-black);
+}
+.buttonText {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+}
+.buttonText span {
+  margin-left: 0.25rem;
+}
+.items {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
