@@ -1,0 +1,41 @@
+.reviewableItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.itemInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.itemImageWrapper {
+  width: 4rem;
+  height: 4rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.itemImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.itemName {
+  font-weight: 500;
+}
+.itemDate {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+.writeButton {
+  width: 5.4rem;
+  height: 2.25rem;
+}
+.writeButton:hover {
+  background-color: #1f2937;
+}

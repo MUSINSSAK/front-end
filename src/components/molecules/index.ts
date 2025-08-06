@@ -14,6 +14,7 @@ export { default as PriceFilter } from "./PriceFilter/PriceFilter";
 export { default as ProductCard } from "./ProductCard/ProductCard";
 export { default as ProfileSection } from "./ProfileSection/ProfileSection";
 export { default as QuestionAccordion } from "./QuestionAccordion/QuestionAccordion";
+export { default as ReviewableItem } from "./ReviewableItem/ReviewableItem";
 export { default as ReviewItem } from "./ReviewItem/ReviewItem";
 export { default as SearchBar } from "./SearchBar/SearchBar";
 export { default as SidebarMenu } from "./SidebarMenu/SidebarMenu";
