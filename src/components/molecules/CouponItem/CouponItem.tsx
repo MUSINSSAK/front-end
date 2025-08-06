@@ -1,18 +1,7 @@
 import { CircleAlert, CircleCheck } from "lucide-react";
+import type { Coupon } from "../../../types";
 import { Tag } from "../../atoms";
 import styles from "./CouponItem.module.css";
-
-type Coupon = {
-  discount: string;
-  title: string;
-  type: "percent" | "fixed";
-  value: number;
-  minOrder: number;
-  maxDiscount?: number;
-  categories: string[];
-  expiryDate: string;
-  daysLeft: number;
-};
 
 type CouponItemProps = {
   coupon: Coupon;

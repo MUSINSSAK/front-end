@@ -38,3 +38,15 @@ export type Review = {
   content: string;
   images?: string[];
 };
+
+export type Coupon = {
+  discount: string;
+  title: string;
+  type: "percent" | "amount";
+  value: number;
+  daysLeft: number;
+  categories: string[];
+  minOrder: number;
+  maxDiscount?: number;
+  expiryDate: string;
+};
