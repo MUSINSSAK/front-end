@@ -72,17 +72,14 @@ const dummyOrders: Order[] = [
   },
 ];
 
-type OrderHistorySectionProps = {
-  selectedPeriod: string;
-  onPeriodChange: (period: string) => void;
-};
-
-export default function OrderHistorySection({
-  selectedPeriod,
-  onPeriodChange,
-}: OrderHistorySectionProps) {
+export default function OrderHistorySection() {
   const periods = ["전체 기간", "1개월", "3개월", "6개월"];
-  const [selected, setSelected] = useState(selectedPeriod);
+  const [selected, setSelected] = useState("전체 기간");
+
+  const onPeriodChange = (period: string) => {
+    setSelected(period);
+    // 여기에 기간 변경에 따른 추가 로직을 작성할 수 있습니다.
+  };
 
   return (
     <div className={styles.wrapper}>
