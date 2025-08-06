@@ -1,15 +1,8 @@
 import { Star } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import type { Review } from "../../../types";
 import { Button } from "../../atoms";
 import styles from "./ReviewItem.module.css";
-
-type Review = {
-  id: string;
-  product: { name: string; image: string; date: string };
-  rating: number;
-  content: string;
-  images?: string[];
-};
 
 type ReviewItemProps = {
   review: Review;
@@ -30,7 +23,7 @@ export default function ReviewItem({
       <div className={styles.header}>
         <img
           src={review.product.image}
-          alt=""
+          alt={review.product.name}
           className={styles.productImage}
         />
         <div>
@@ -56,13 +49,17 @@ export default function ReviewItem({
           <Star
             key={`${review.id}-star-${i}`}
             size={16}
-            color="#FACC15"
-            fill={i < review.rating ? "#FACC15" : "#fff"}
+            color="var(--color-yellow-400)"
+            fill={
+              i < review.rating
+                ? "var(--color-yellow-400)"
+                : "var(--color-white)"
+            }
           />
         ))}
       </div>
       <p className={styles.content}>{review.content}</p>
-      {review.images && review.images.length > 0 && (
+      {review.images && (
         <div className={styles.images}>
           {review.images.map((src) => (
             <img

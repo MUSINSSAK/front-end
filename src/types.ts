@@ -30,3 +30,11 @@ export type Order = {
   status: string;
   statusType: "success" | "processing" | "canceled" | "done";
 };
+
+export type Review = {
+  id: string;
+  product: { name: string; image: string; date: string };
+  rating: number;
+  content: string;
+  images?: string[];
+};

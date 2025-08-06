@@ -48,12 +48,12 @@
 }
 .images {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
   gap: 0.5rem;
 }
 .reviewImage {
   width: 100%;
-  height: 4rem;
+  height: 100%;
   object-fit: cover;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
 }
