@@ -1,5 +1,6 @@
 export { default as ChatWidget } from "./ChatWidget/ChatWidget";
 export { default as CouponsSection } from "./CouponsSection/CouponsSection";
+export { default as FAQSection } from "./FAQSection/FAQSection";
 export { default as HomeFooter } from "./Footer/HomeFooter";
 export { default as Header } from "./Header/Header";
 export { default as HeroSection } from "./HeroSection/HeroSection";
