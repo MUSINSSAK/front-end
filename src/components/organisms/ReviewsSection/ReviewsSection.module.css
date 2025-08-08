@@ -4,8 +4,8 @@
   gap: 1.5rem;
 }
 .card {
-  background-color: #fff;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.5rem;
   padding: 2rem;
 }
@@ -30,7 +30,7 @@
   gap: 1.5rem;
 }
 .reviewCard {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.5rem;
   padding: 1.5rem;
   display: flex;

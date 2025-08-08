@@ -11,7 +11,7 @@
 .itemImageWrapper {
   width: 4rem;
   height: 4rem;
-  background-color: #f3f4f6;
+  background-color: var(--color-gray-200);
   border-radius: 0.5rem;
   overflow: hidden;
 }
@@ -30,12 +30,12 @@
 }
 .itemDate {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-gray-800);
 }
 .writeButton {
   width: 5.4rem;
   height: 2.25rem;
 }
 .writeButton:hover {
-  background-color: #1f2937;
+  background-color: var(--color-navy);
 }

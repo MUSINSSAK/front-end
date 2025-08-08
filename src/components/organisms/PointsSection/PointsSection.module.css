@@ -79,12 +79,12 @@
   font-size: 0.875rem;
 }
 .table th {
-  background-color: #f9fafb;
+  background-color: var(--color-gray-100);
   font-weight: 500;
-  color: #4b5563;
+  color: var(--color-gray-900);
 }
 .table tr:hover {
-  background-color: #f9fafb;
+  background-color: var(--color-gray-100);
 }
 .positive {
   color: var(--color-green-400);
