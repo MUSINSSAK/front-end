@@ -19,7 +19,7 @@ export type MyPageTemplateProps = {
   children: React.ReactNode;
 };
 
-export default function MyPageTemplate({
+export default function MypageTemplate({
   activeKey,
   onSelect,
   children,
