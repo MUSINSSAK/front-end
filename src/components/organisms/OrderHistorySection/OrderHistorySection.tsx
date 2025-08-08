@@ -1,8 +1,8 @@
 import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import type { Order } from "../../../types";
-import { Select } from "../../atoms";
-import { EmptyState, OrderTable } from "../../molecules";
+import { Select, Tag } from "../../atoms";
+import { EmptyState, Table } from "../../molecules";
 import styles from "./OrderHistorySection.module.css";
 
 const dummyOrders: Order[] = [
@@ -75,6 +75,13 @@ const dummyOrders: Order[] = [
 export default function OrderHistorySection() {
   const periods = ["전체 기간", "1개월", "3개월", "6개월"];
   const [selected, setSelected] = useState("전체 기간");
+  const columns = [
+    { key: "date", label: "주문일자" },
+    { key: "orderNumber", label: "주문번호" },
+    { key: "products", label: "상품정보" },
+    { key: "amount", label: "주문금액" },
+    { key: "status", label: "주문상태" },
+  ];
 
   const onPeriodChange = (period: string) => {
     setSelected(period);
@@ -107,7 +114,31 @@ export default function OrderHistorySection() {
             description="아직 주문하신 상품이 없습니다."
           />
         ) : (
-          <OrderTable orders={dummyOrders} />
+          <Table
+            className={styles.table}
+            columns={columns}
+            data={dummyOrders}
+            rowClassName={() => styles.row}
+            renderRow={(o) => [
+              o.date,
+              o.orderNumber,
+              <div className={styles.products} key="products">
+                {o.products.map((p) => (
+                  <div key={p.name} className={styles.product}>
+                    <img src={p.image} alt={p.name} />
+                    <div>
+                      <p className={styles.productName}>{p.name}</p>
+                      <p className={styles.productDetails}>{p.details}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>,
+              `${o.amount}원`,
+              <Tag variant={o.statusType} key="status">
+                {o.status}
+              </Tag>,
+            ]}
+          />
         )}
       </div>
     </div>
