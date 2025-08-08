@@ -22,6 +22,7 @@
   background: none;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 .buttonText span {
   margin-left: 0.25rem;
