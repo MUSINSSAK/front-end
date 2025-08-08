@@ -4,6 +4,7 @@ export { default as HomeFooter } from "./Footer/HomeFooter";
 export { default as Header } from "./Header/Header";
 export { default as HeroSection } from "./HeroSection/HeroSection";
 export { default as OrderHistorySection } from "./OrderHistorySection/OrderHistorySection";
+export { default as PointsSection } from "./PointsSection/PointsSection";
 export { default as ProductSection } from "./ProductSection/ProductSection";
 export { default as ProfileEditSection } from "./ProfileEditSection/ProfileEditSection";
 export { default as RecentViewSection } from "./RecentViewSection/RecentViewSection";
