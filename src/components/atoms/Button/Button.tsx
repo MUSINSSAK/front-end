@@ -1,7 +1,7 @@
 import type React from "react";
 import styles from "./Button.module.css";
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "active" | "warning" | "disabled";
   className?: string;
 };

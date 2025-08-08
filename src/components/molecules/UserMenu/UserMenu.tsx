@@ -1,5 +1,6 @@
-import { ChevronDown, ChevronUp, User } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import { Avatar } from "../../atoms";
 import styles from "./UserMenu.module.css";
 
 type UserMenuProps = {
@@ -16,9 +17,7 @@ export default function UserMenu({ userName }: UserMenuProps) {
         onClick={() => setOpen(!open)}
         className={styles.button}
       >
-        <div className={styles.icon}>
-          <User color="#fff" />
-        </div>
+        <Avatar className={styles.icon} color="#fff" />
         <span>{userName}님</span>
         {open ? <ChevronUp /> : <ChevronDown />}
       </button>

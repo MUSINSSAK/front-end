@@ -1,7 +1,5 @@
 import type React from "react";
-import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Toast } from "../../components/atoms";
 import { ProductSection } from "../../components/organisms";
 import { ShopTemplate } from "../../components/templates";
 import { CATEGORIES } from "../../constants/categories";
@@ -122,20 +120,16 @@ const newProducts: Product[] = [
 
 const Category: React.FC = () => {
   const { cat } = useParams<{ cat: string }>();
-  const [showToast, setShowToast] = useState(false);
   const category = CATEGORIES.find((c) => c.id === cat) ?? CATEGORIES[0];
 
   return (
     <div>
-      {showToast && <Toast message="찜 목록에 추가되었습니다" />}
-
       <ShopTemplate>
         <ProductSection
           title={category.name}
           numberOfProducts={true}
           products={newProducts}
           selectedCategory={category.id}
-          setShowToast={setShowToast}
         />
       </ShopTemplate>
     </div>

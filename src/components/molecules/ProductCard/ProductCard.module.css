@@ -26,6 +26,27 @@
   border-radius: 0.25rem;
   cursor: pointer;
 }
+.discountBadge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+}
+.deleteButton {
+  width: 2rem;
+  height: 2rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.deleteIcon {
+  color: var(--color-gray-800);
+}
 .info {
   padding: 0.5rem 0;
   display: flex;

@@ -1,6 +1,4 @@
 import type React from "react";
-import { useState } from "react";
-import { Toast } from "../../components/atoms";
 import { HeroSection, ProductSection } from "../../components/organisms";
 import { useCategory } from "../../contexts/CategoryContext";
 import type { Product } from "../../types";
@@ -169,12 +167,9 @@ const bestProducts: Product[] = [
 
 const Home: React.FC = () => {
   const { selected } = useCategory();
-  const [showToast, setShowToast] = useState(false);
 
   return (
     <div className={styles.container}>
-      {showToast && <Toast message="찜 목록에 추가되었습니다" />}
-
       <HeroSection />
 
       <ProductSection
@@ -182,7 +177,6 @@ const Home: React.FC = () => {
         products={newProducts}
         selectedCategory={selected}
         disableFiltering={true}
-        setShowToast={setShowToast}
       />
 
       <ProductSection
@@ -190,7 +184,6 @@ const Home: React.FC = () => {
         products={bestProducts}
         selectedCategory={selected}
         disableFiltering={true}
-        setShowToast={setShowToast}
       />
     </div>
   );

@@ -60,7 +60,7 @@ export default function ShopTemplate({ children }: ShopTemplateProps) {
           onCategoryToggle={handleCategoryToggle}
           onPriceChange={setPriceRange}
         />
-        <main className={styles.main}>{children}</main>
+        <div className={styles.main}>{children}</div>
       </div>
     </div>
   );

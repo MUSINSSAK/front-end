@@ -1,0 +1,94 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.balance {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.balanceLabel {
+  font-size: 0.875rem;
+  color: var(--color-gray-800);
+}
+.balanceValue {
+  font-size: 3rem;
+  font-weight: 700;
+}
+.balanceUnit {
+  font-size: 1.125rem;
+}
+.expiryInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+.expiringPoints,
+.expiryDays {
+  color: var(--color-red-400);
+  font-weight: medium;
+}
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.dropdownWrapper {
+  position: relative;
+}
+.tableWrapper {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+.table th {
+  background-color: var(--color-gray-100);
+  font-weight: 500;
+  color: var(--color-gray-900);
+}
+.table tr:hover {
+  background-color: var(--color-gray-100);
+}
+.positive {
+  color: var(--color-green-400);
+}
+.negative {
+  color: var(--color-red-500);
+}

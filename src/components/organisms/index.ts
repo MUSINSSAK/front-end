@@ -1,6 +1,15 @@
 export { default as ChatWidget } from "./ChatWidget/ChatWidget";
+export { default as CouponsSection } from "./CouponsSection/CouponsSection";
+export { default as FAQSection } from "./FAQSection/FAQSection";
 export { default as HomeFooter } from "./Footer/HomeFooter";
 export { default as Header } from "./Header/Header";
 export { default as HeroSection } from "./HeroSection/HeroSection";
+export { default as InquirySection } from "./InquirySection/InquirySection";
+export { default as OrderHistorySection } from "./OrderHistorySection/OrderHistorySection";
+export { default as PointsSection } from "./PointsSection/PointsSection";
 export { default as ProductSection } from "./ProductSection/ProductSection";
+export { default as ProfileEditSection } from "./ProfileEditSection/ProfileEditSection";
+export { default as RecentViewSection } from "./RecentViewSection/RecentViewSection";
+export { default as ReviewsSection } from "./ReviewsSection/ReviewsSection";
 export { default as SidebarFilters } from "./SidebarFilters/SidebarFilters";
+export { default as WishListSection } from "./WishListSection/WishListSection";

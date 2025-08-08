@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 import React from "react";
 import styles from "./Breadcrumb.module.css";
 
-export type BreadcrumbProps = {
+type BreadcrumbProps = {
   path: string[];
 };
 

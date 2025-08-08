@@ -1,7 +1,7 @@
 import { Checkbox } from "../../atoms";
 import styles from "./FilterSection.module.css";
 
-export type FilterSectionProps = {
+type FilterSectionProps = {
   title: string;
   options: string[];
   selected: string[];
