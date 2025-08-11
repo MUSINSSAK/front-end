@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Avatar } from "../../atoms";
 import styles from "./UserMenu.module.css";
 
@@ -16,6 +17,8 @@ export default function UserMenu({ userName }: UserMenuProps) {
         type="button"
         onClick={() => setOpen(!open)}
         className={styles.button}
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
         <Avatar className={styles.icon} color="#fff" />
         <span>{userName}님</span>
@@ -23,23 +26,23 @@ export default function UserMenu({ userName }: UserMenuProps) {
       </button>
 
       {open && (
-        <div className={styles.dropdown}>
-          <a href="/mypage" className={styles.item}>
+        <div className={styles.dropdown} role="menu">
+          <Link to="/mypage" className={styles.item} onClick={close}>
             마이페이지
-          </a>
-          <a href="/order-history" className={styles.item}>
+          </Link>
+          <Link to="/mypage/order" className={styles.item} onClick={close}>
             주문내역
-          </a>
-          <a href="/wishlist" className={styles.item}>
+          </Link>
+          <Link to="/mypage/wishlist" className={styles.item} onClick={close}>
             찜한상품
-          </a>
-          <a href="/coupons" className={styles.item}>
+          </Link>
+          <Link to="/mypage/coupons" className={styles.item} onClick={close}>
             쿠폰함
-          </a>
+          </Link>
           <div className={styles.divider} />
-          <a href="/logout" className={styles.item}>
+          <Link to="/logout" className={styles.item} onClick={close}>
             로그아웃
-          </a>
+          </Link>{" "}
         </div>
       )}
     </div>
