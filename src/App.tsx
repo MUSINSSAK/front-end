@@ -6,7 +6,7 @@ import { MainTemplate } from "./components/templates";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CategoryProvider } from "./contexts/CategoryContext";
 import { ToastProvider } from "./contexts/ToastContext";
-import { Category, Home, Mypage } from "./pages";
+import { Category, Home, Login, Mypage } from "./pages";
 import type { Message } from "./types";
 
 export default function App() {
@@ -42,6 +42,7 @@ export default function App() {
             <MainTemplate>
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="category/:cat" element={<Category />} />
                 <Route path="/mypage" element={<Mypage />} />
               </Routes>
