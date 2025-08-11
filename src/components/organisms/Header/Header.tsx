@@ -45,17 +45,13 @@ export default function Header({
               icon={Heart}
               size={20}
               count={wishlistCount}
-              onClick={() => {
-                /* handle wishlist click */
-              }}
+              to="/mypage/wishlist"
             />
             <IconButton
               icon={ShoppingCart}
               size={20}
               count={cartCount}
-              onClick={() => {
-                /* handle cart click */
-              }}
+              to="/cart"
             />
           </div>
         ) : (

@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Badge } from "../../atoms";
 import styles from "./IconButton.module.css";
 
@@ -6,19 +7,19 @@ type IconButtonProps = {
   icon: LucideIcon;
   size?: number;
   count?: number;
-  onClick: () => void;
+  to: string;
 };
 
 export default function IconButton({
   icon: Icon,
   size,
   count,
-  onClick,
+  to,
 }: IconButtonProps) {
   return (
-    <button type="button" className={styles.button} onClick={onClick}>
+    <Link to={to} className={styles.button}>
       <Icon size={size} />
       {typeof count === "number" && <Badge count={count} />}
-    </button>
+    </Link>
   );
 }
