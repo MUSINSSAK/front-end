@@ -5,4 +5,5 @@ export { default as Login } from "./Login/Login";
 export { default as Mypage } from "./Mypage/Mypage";
 export { default as Payment } from "./Payment/Payment";
 export { default as ProductDetail } from "./ProductDetail/ProductDetail";
+export { default as ProductInquiry } from "./ProductDetail/ProductInquiry/ProductInquiry";
 export { default as SignUp } from "./SignUp/SignUp";

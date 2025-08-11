@@ -14,6 +14,7 @@ import {
   Mypage,
   Payment,
   ProductDetail,
+  ProductInquiry,
   SignUp,
 } from "./pages";
 import type { Message } from "./types";
@@ -53,10 +54,17 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
+
                 <Route path="/category/:cat" element={<Category />} />
                 <Route path="/products/:id" element={<ProductDetail />} />
+                <Route
+                  path="/products/:id/inquiry"
+                  element={<ProductInquiry />}
+                />
+
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/payment" element={<Payment />} />
+
                 <Route path="/mypage/:tab?" element={<Mypage />} />
               </Routes>
 
