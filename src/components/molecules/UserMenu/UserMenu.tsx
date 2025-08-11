@@ -10,6 +10,7 @@ type UserMenuProps = {
 
 export default function UserMenu({ userName }: UserMenuProps) {
   const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
 
   return (
     <div className={styles.container}>
@@ -20,7 +21,7 @@ export default function UserMenu({ userName }: UserMenuProps) {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <Avatar className={styles.icon} color="#fff" />
+        <Avatar className={styles.icon} color="var(--color-white)" />
         <span>{userName}님</span>
         {open ? <ChevronUp /> : <ChevronDown />}
       </button>
@@ -42,7 +43,7 @@ export default function UserMenu({ userName }: UserMenuProps) {
           <div className={styles.divider} />
           <Link to="/logout" className={styles.item} onClick={close}>
             로그아웃
-          </Link>{" "}
+          </Link>
         </div>
       )}
     </div>
