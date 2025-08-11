@@ -6,7 +6,7 @@ import { MainTemplate } from "./components/templates";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CategoryProvider } from "./contexts/CategoryContext";
 import { ToastProvider } from "./contexts/ToastContext";
-import { Category, Home, Login, Mypage, SignUp } from "./pages";
+import { Cart, Category, Home, Login, Mypage, SignUp } from "./pages";
 import type { Message } from "./types";
 
 export default function App() {
@@ -45,6 +45,7 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="category/:cat" element={<Category />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/mypage/:tab?" element={<Mypage />} />
               </Routes>
               <ChatWidget
