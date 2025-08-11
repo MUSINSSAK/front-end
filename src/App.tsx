@@ -53,12 +53,13 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="category/:cat" element={<Category />} />
+                <Route path="/category/:cat" element={<Category />} />
                 <Route path="/products/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/mypage/:tab?" element={<Mypage />} />
               </Routes>
+
               <ChatWidget
                 isOpen={isChatOpen}
                 messages={messages}
