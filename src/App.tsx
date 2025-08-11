@@ -12,6 +12,7 @@ import {
   Home,
   Login,
   Mypage,
+  Payment,
   ProductDetail,
   SignUp,
 } from "./pages";
@@ -55,6 +56,7 @@ export default function App() {
                 <Route path="category/:cat" element={<Category />} />
                 <Route path="/products/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/payment" element={<Payment />} />
                 <Route path="/mypage/:tab?" element={<Mypage />} />
               </Routes>
               <ChatWidget
