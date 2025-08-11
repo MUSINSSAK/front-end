@@ -45,7 +45,7 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="category/:cat" element={<Category />} />
-                <Route path="/mypage" element={<Mypage />} />
+                <Route path="/mypage/:tab?" element={<Mypage />} />
               </Routes>
               <ChatWidget
                 isOpen={isChatOpen}
