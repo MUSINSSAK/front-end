@@ -1,4 +1,3 @@
-import type React from "react";
 import { HeroSection, ProductSection } from "../../components/organisms";
 import { useCategory } from "../../contexts/CategoryContext";
 import type { Product } from "../../types";
@@ -165,7 +164,7 @@ const bestProducts: Product[] = [
   },
 ];
 
-const Home: React.FC = () => {
+const Home = () => {
   const { selected } = useCategory();
 
   return (

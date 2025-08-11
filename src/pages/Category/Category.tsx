@@ -1,4 +1,3 @@
-import type React from "react";
 import { useParams } from "react-router-dom";
 import { ProductSection } from "../../components/organisms";
 import { ShopTemplate } from "../../components/templates";
@@ -118,7 +117,7 @@ const newProducts: Product[] = [
   },
 ];
 
-const Category: React.FC = () => {
+const Category = () => {
   const { cat } = useParams<{ cat: string }>();
   const category = CATEGORIES.find((c) => c.id === cat) ?? CATEGORIES[0];
 

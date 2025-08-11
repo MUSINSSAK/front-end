@@ -1,4 +1,3 @@
-import type React from "react";
 import { useState } from "react";
 import {
   CouponsSection,
@@ -13,7 +12,7 @@ import {
 } from "../../components/organisms";
 import { MypageTemplate } from "../../components/templates";
 
-const Mypage: React.FC = () => {
+const Mypage = () => {
   const [selected, setSelected] = useState("profile");
   return (
     <div>
