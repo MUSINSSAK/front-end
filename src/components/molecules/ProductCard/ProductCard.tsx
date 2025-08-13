@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "../../../contexts/ToastContext";
-import type { Product } from "../../../types/types";
+import type { Product } from "../../../types/products";
 import { LikeButton, PriceTag, Tag } from "../../atoms";
 import styles from "./ProductCard.module.css";
 
