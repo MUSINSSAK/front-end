@@ -1,125 +1,124 @@
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import { listProducts } from "../../api/products"; // API 호출 함수
 import { ProductSection } from "../../components/organisms";
 import { ShopTemplate } from "../../components/templates";
 import { CATEGORIES } from "../../constants/categories";
-import type { Product } from "../../types";
+import type { Product } from "../../types/products";
 
-const newProducts: Product[] = [
-  {
-    id: 1,
-    brand: "NIKE",
-    name: "에어맥스 270 스니커즈",
-    price: 159000,
-    originalPrice: 189000,
-    discount: 16,
-    category: "shoes",
-    image:
-      "https://readdy.ai/api/search-image?query=modern%20white%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product1&orientation=squarish",
-  },
-  {
-    id: 2,
-    brand: "ZARA",
-    name: "오버사이즈 블레이저",
-    price: 89000,
-    originalPrice: 119000,
-    discount: 25,
-    category: "outerwear",
-    image:
-      "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
-  },
-  {
-    id: 3,
-    brand: "H&M",
-    name: "코튼 와이드 팬츠",
-    price: 39000,
-    originalPrice: 49000,
-    discount: 20,
-    category: "pants",
-    image:
-      "https://readdy.ai/api/search-image?query=beige%20wide%20leg%20pants%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product3&orientation=squarish",
-  },
-  {
-    id: 9,
-    brand: "INNISFREE",
-    name: "그린티 세럼",
-    price: 28000,
-    originalPrice: 35000,
-    discount: 20,
-    category: "beauty",
-    image:
-      "https://readdy.ai/api/search-image?query=green%20tea%20serum%20in%20transparent%20bottle%20on%20white%20background%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product9&orientation=squarish",
-  },
-  {
-    id: 12,
-    brand: "COS",
-    name: "오가닉 코튼 티셔츠",
-    price: 29000,
-    category: "tops",
-    image:
-      "https://readdy.ai/api/search-image?query=organic%20cotton%20t-shirt%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product12&orientation=squarish",
-  },
-  {
-    id: 8,
-    brand: "LANEIGE",
-    name: "수분 크림",
-    price: 38000,
-    originalPrice: 42000,
-    discount: 10,
-    category: "beauty",
-    image:
-      "https://readdy.ai/api/search-image?query=luxury%20moisturizing%20cream%20in%20elegant%20glass%20jar%20on%20clean%20white%20background%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product8&orientation=squarish",
-  },
-
-  {
-    id: 13,
-    brand: "MANGO",
-    name: "리넨 셔츠",
-    price: 45000,
-    category: "tops",
-    image:
-      "https://readdy.ai/api/search-image?query=light%20linen%20shirt%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product13&orientation=squarish",
-  },
-  {
-    id: 14,
-    brand: "CONVERSE",
-    name: "척 테일러 올스타",
-    price: 79000,
-    category: "shoes",
-    image:
-      "https://readdy.ai/api/search-image?query=classic%20white%20canvas%20sneakers%20on%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product14&orientation=squarish",
-  },
-  {
-    id: 15,
-    brand: "MULBERRY",
-    name: "베이시스 백",
-    price: 450000,
-    category: "bags",
-    image:
-      "https://readdy.ai/api/search-image?query=luxury%20brown%20leather%20handbag%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product15&orientation=squarish",
-  },
-  {
-    id: 16,
-    brand: "SK-II",
-    name: "페이셜 트리트먼트 에센스",
-    price: 150000,
-    category: "beauty",
-    image:
-      "https://readdy.ai/api/search-image?query=luxury%20facial%20essence%20bottle%20on%20white%20background%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product16&orientation=squarish",
-  },
-  {
-    id: 17,
-    brand: "ADIDAS",
-    name: "스탠 스미스 스니커즈",
-    price: 119000,
-    category: "shoes",
-    image:
-      "https://readdy.ai/api/search-image?query=classic%20white%20leather%20sneakers%20on%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product17&orientation=squarish",
-  },
-];
-
-const Category = () => {
+const Category: React.FC = () => {
   const { cat } = useParams<{ cat: string }>();
   const category = CATEGORIES.find((c) => c.id === cat) ?? CATEGORIES[0];
+
+  const [searchParams] = useSearchParams(); // ShopTemplate가 기록한 쿼리 읽기
+  const brands = useMemo(() => searchParams.getAll("brand"), [searchParams]); // 쿼리 읽은 후에 &brand=... 반복 파라미터
+  const brandsKey = brands.join("|");
+  const minPrice = searchParams.get("minPrice")
+    ? Number(searchParams.get("minPrice"))
+    : undefined; // [ADD]
+  const maxPrice = searchParams.get("maxPrice")
+    ? Number(searchParams.get("maxPrice"))
+    : undefined; // [ADD]
+
+  // 서버 데이터/상태
+  const [products, setProducts] = useState<Product[]>([]);
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [hasNext, setHasNext] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 👇 무한 스크롤용 센티넬
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // 첫 로드 & 카테고리 변경 시 조회
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <Infinite loop>
+  useEffect(() => {
+    let ignore = false;
+    async function fetchFirst() {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await listProducts({
+          category: category.id, // 백엔드 카테고리 슬러그
+          size: 12,
+          brand: brands.length ? brands : undefined, // 브랜드 필터 전파
+          minPrice,
+          maxPrice,
+        });
+        if (ignore) return;
+        setProducts(data.products);
+        setNextCursor(data.nextCursor);
+        setHasNext(data.hasNext);
+      } catch (error: unknown) {
+        if (!ignore) {
+          setError(`${error}`);
+        }
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    fetchFirst();
+    return () => {
+      ignore = true;
+    };
+  }, [category.id, brandsKey, minPrice, maxPrice, brands]); // 필터 변경 시 재조회
+
+  // 다음 페이지 로드 (커서 기반)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <Infinite loop>
+  const loadMore = useCallback(async () => {
+    if (!hasNext || loading) return;
+    try {
+      setLoading(true);
+      const data = await listProducts({
+        category: category.id,
+        size: 12,
+        cursor: nextCursor ?? undefined,
+        brand: brands.length ? brands : undefined, // [ADD] 다음 페이지에도 동일 필터 전달
+        minPrice, // [ADD]
+        maxPrice, // [ADD]
+      });
+      setProducts((prev) => [...prev, ...data.products]);
+      setNextCursor(data.nextCursor);
+      setHasNext(data.hasNext);
+    } catch (error: unknown) {
+      setError(`${error}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    category.id,
+    hasNext,
+    loading,
+    nextCursor,
+    brandsKey,
+    minPrice,
+    maxPrice,
+  ]);
+
+  // IntersectionObserver로 무한 스크롤
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNext) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first.isIntersecting && !loading) {
+          loadMore();
+        }
+      },
+      {
+        root: null, // 뷰포트 기준
+        rootMargin: "200px", // 200px 남았을 때 미리 로드
+        threshold: 0,
+      },
+    );
+
+    io.observe(el);
+    return () => {
+      io.disconnect();
+    };
+  }, [hasNext, loading, loadMore]);
 
   return (
     <div>
@@ -127,9 +126,14 @@ const Category = () => {
         <ProductSection
           title={category.name}
           numberOfProducts={true}
-          products={newProducts}
+          products={products} // 서버에서 받은 목록
           selectedCategory={category.id}
+          disableFiltering={true} // 서버에서 이미 카테고리 필터링했으니 중복 필터 X
         />
+        <div ref={sentinelRef} style={{ height: 1 }} />
+        {error && ( // ← 이 부분이 추가됨
+          <div className="error-message">{error}</div>
+        )}
       </ShopTemplate>
     </div>
   );
