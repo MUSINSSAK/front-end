@@ -1,4 +1,4 @@
-import type { Review } from "../../../types";
+import type { Review } from "../../../types/types";
 import { ReviewableItem, ReviewItem } from "../../molecules";
 import styles from "./ReviewsSection.module.css";
 

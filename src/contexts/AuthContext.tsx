@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
-import type { User } from "../types";
+import type { User } from "../types/types";
 
 type AuthState = {
   isLoggedIn: boolean;

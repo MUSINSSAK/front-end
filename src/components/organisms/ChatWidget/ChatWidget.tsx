@@ -1,6 +1,6 @@
 import { MessagesSquare, Send, X } from "lucide-react";
 import { type FormEvent, useEffect, useRef } from "react";
-import type { Message } from "../../../types";
+import type { Message } from "../../../types/types";
 import { Input } from "../../atoms";
 import styles from "./ChatWidget.module.css";
 

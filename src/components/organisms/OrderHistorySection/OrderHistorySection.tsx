@@ -1,6 +1,6 @@
 import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
-import type { Order } from "../../../types";
+import type { Order } from "../../../types/types";
 import { Select, Tag } from "../../atoms";
 import { EmptyState, Table } from "../../molecules";
 import styles from "./OrderHistorySection.module.css";

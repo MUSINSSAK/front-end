@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "../../../contexts/ToastContext";
-import type { Product } from "../../../types";
+import type { Product } from "../../../types/types";
 import { LikeButton, PriceTag, Tag } from "../../atoms";
 import styles from "./ProductCard.module.css";
 
@@ -44,7 +44,7 @@ export default function ProductCard({ product, deleteAble }: Props) {
     >
       <div className={styles.imageWrapper}>
         <img src={product.image} alt={product.name} className={styles.image} />
-        {product.discount && (
+        {product.discount !== undefined && product.discount > 0 && (
           <Tag
             discount={product.discount}
             variant="discount"

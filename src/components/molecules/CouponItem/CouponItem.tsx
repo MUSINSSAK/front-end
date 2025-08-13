@@ -1,5 +1,5 @@
 import { CircleAlert, CircleCheck } from "lucide-react";
-import type { Coupon } from "../../../types";
+import type { Coupon } from "../../../types/types";
 import { Tag } from "../../atoms";
 import styles from "./CouponItem.module.css";
 

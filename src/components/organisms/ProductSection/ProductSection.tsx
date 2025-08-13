@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Product } from "../../../types";
+import type { Product } from "../../../types/products";
 import { SectionHeader, Select } from "../../atoms";
 import { ProductCard } from "../../molecules";
 import styles from "./ProductSection.module.css";
@@ -25,7 +25,9 @@ export default function ProductSection({
         (p) => selectedCategory === "all" || p.category === selectedCategory,
       );
 
+  // 원복: 내부에서 정렬 상태를 로컬로 관리
   const [selected, setSelected] = useState("추천순");
+  // (참고) option의 value와 맞추려면 "recommended"가 더 일관적입니다.
 
   return (
     <section className={styles.section}>
