@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { CATEGORIES } from "../../../constants/categories";
 import { Breadcrumb } from "../../molecules";
 import { SidebarFilters } from "../../organisms";
@@ -59,11 +59,11 @@ export default function ShopTemplate({ children }: ShopTemplateProps) {
       setPriceRange([min ? Number(min) : 0, max ? Number(max) : 1000000]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 최초 1회만
+  }, [searchParams]); // 최초 1회만
 
   // 2) 상태 → URL 동기화 (렌더 단계가 아닌 effect에서만 수행)
   useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
 
     // brand 재작성 (영→한 변환 후 URL에 기록)
     params.delete("brand");
@@ -84,9 +84,9 @@ export default function ShopTemplate({ children }: ShopTemplateProps) {
     params.delete("cursor");
 
     // 렌더 중이 아닌 effect에서만 라우터 상태 업데이트 → 경고 해결
-    setSearchParams(params);
+    setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBrands, priceRange]);
+  }, [selectedBrands, priceRange, setSearchParams]);
 
   // 3) 핸들러: 상태만 변경 (URL 갱신은 위 effect가 담당)
   const handleBrandToggle = (brand: string) => {
