@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import type { Review } from "../../../types";
+import type { Review } from "../../../types/types";
 import { Button } from "../../atoms";
 import styles from "./ReviewItem.module.css";
 

@@ -17,7 +17,7 @@ import {
   ProductInquiry,
   SignUp,
 } from "./pages";
-import type { Message } from "./types";
+import type { Message } from "./types/types";
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);

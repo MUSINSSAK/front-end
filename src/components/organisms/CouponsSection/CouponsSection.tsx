@@ -1,6 +1,6 @@
 import { Ticket } from "lucide-react";
 import { useState } from "react";
-import type { Coupon } from "../../../types";
+import type { Coupon } from "../../../types/types";
 import { Button } from "../../atoms";
 import { CouponItem, EmptyState } from "../../molecules";
 import styles from "./CouponsSection.module.css";
