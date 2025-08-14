@@ -14,7 +14,7 @@ export type User = {
 export type Order = {
   date: string;
   orderNumber: string;
-  products: { name: string; image: string; details: string }[];
+  products: { name: string; image: string; option: string; count: number }[];
   amount: string;
   status: string;
   statusType: "success" | "processing" | "canceled" | "done";
