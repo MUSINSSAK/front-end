@@ -1,5 +1,5 @@
 import { Heart, Trash } from "lucide-react";
-import type { Product } from "../../../types";
+import type { Product } from "../../../types/products";
 import { EmptyState, ProductCard } from "../../molecules";
 import styles from "./WishListSection.module.css";
 

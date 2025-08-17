@@ -1,4 +1,5 @@
 .card {
+  width: 12.75rem;
   display: flex;
   flex-direction: column;
   text-decoration: none;
@@ -12,7 +13,9 @@
   height: 12.75rem;
 }
 .image {
-  width: 100%;
+  width: 12.75rem;
+  height: 12.75rem;
+  object-fit: cover;
   border-radius: 0.5rem;
 }
 .cartBtn {

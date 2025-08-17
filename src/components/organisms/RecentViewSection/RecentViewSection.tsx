@@ -1,5 +1,5 @@
 import { Eye, Trash } from "lucide-react";
-import type { Product } from "../../../types";
+import type { Product } from "../../../types/products";
 import { EmptyState, ProductCard } from "../../molecules";
 import styles from "./RecentViewSection.module.css";
 
