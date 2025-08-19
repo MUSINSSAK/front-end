@@ -1,3 +1,4 @@
+export { default as BrandGroup } from "./BrandGroup/BrandGroup";
 export { default as ChatWidget } from "./ChatWidget/ChatWidget";
 export { default as CouponsSection } from "./CouponsSection/CouponsSection";
 export { default as FAQSection } from "./FAQSection/FAQSection";
