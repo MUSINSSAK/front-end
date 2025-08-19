@@ -1,19 +1,7 @@
 import { X } from "lucide-react";
+import type { OrderItemData } from "../../../types/order";
 import { Checkbox, NumberStepper, PriceTag } from "../../atoms";
 import styles from "./OrderItem.module.css";
-
-type OrderItemData = {
-  id: number;
-  brand: string;
-  name: string;
-  option: string;
-  price: number;
-  originalPrice: number;
-  quantity: number;
-  image: string;
-  selected: boolean;
-  stock: number;
-};
 
 type OrderItemProps = {
   item: OrderItemData;

@@ -6,3 +6,16 @@ export type Order = {
   status: string;
   statusType: "success" | "processing" | "canceled" | "done";
 };
+
+export type OrderItemData = {
+  id: number;
+  brand: string;
+  name: string;
+  option: string;
+  price: number;
+  originalPrice: number;
+  quantity: number;
+  image: string;
+  selected: boolean;
+  stock: number;
+};
