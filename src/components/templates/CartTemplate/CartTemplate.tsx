@@ -7,6 +7,7 @@ type CartTemplateProps = {
   items: OrderItemData[];
   selected: number;
   finalAmount: number;
+  onDeleteSelected: () => void;
   children: React.ReactNode;
 };
 
@@ -14,11 +15,12 @@ export default function CartTemplate({
   items,
   selected,
   finalAmount,
+  onDeleteSelected,
   children,
 }: CartTemplateProps) {
   return (
     <div className={styles.container}>
-      <CartHeader items={items.length} />
+      <CartHeader items={items.length} onDeleteSelected={onDeleteSelected} />
 
       <div className={styles.content}>{children}</div>
 
