@@ -1,0 +1,15 @@
+.container {
+  margin: 3rem 5rem;
+  height: 75dvh; /* 모바일 뷰포트 대응 */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+.content {
+  min-height: 0; /* 그리드/플렉스 자식에서 스크롤 되도록 */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+}
+.content::-webkit-scrollbar {
+  /* Chrome/Safari/Edge(Chromium) */
+  display: none;
+}

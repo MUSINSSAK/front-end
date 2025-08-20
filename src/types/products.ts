@@ -9,7 +9,6 @@ export type Product = {
   image: string;
 };
 
-// 2) 요청/응답 타입
 export type ListProductsParams = {
   category: string; // 필수: 카테고리 슬러그 (e.g. 'shoes')
   brand?: string[]; // &brand=나이키&brand=반스
