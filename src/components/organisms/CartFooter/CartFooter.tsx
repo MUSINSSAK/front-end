@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../atoms";
 import styles from "./CartFooter.module.css";
 
@@ -12,6 +13,7 @@ export default function CartFooter({
   selectedCount,
   finalAmount,
 }: CartFooterProps) {
+  const navigate = useNavigate();
   return (
     <div>
       {items !== 0 && (
@@ -27,6 +29,7 @@ export default function CartFooter({
             type="button"
             variant={selectedCount > 0 ? "active" : "disabled"}
             className={styles.checkoutButton}
+            onClick={() => navigate("/payment")}
           >
             주문하기 ({selectedCount})
           </Button>
