@@ -1,4 +1,3 @@
-export { default as BrandGroup } from "./BrandGroup/BrandGroup";
 export { default as CartFooter } from "./CartFooter/CartFooter";
 export { default as CartHeader } from "./CartHeader/CartHeader";
 export { default as ChatWidget } from "./ChatWidget/ChatWidget";
