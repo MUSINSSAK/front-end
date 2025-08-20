@@ -68,6 +68,10 @@
 .tableWrapper {
   overflow-x: auto;
 }
+.tableWrapper ::-webkit-scrollbar {
+  display: none;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
