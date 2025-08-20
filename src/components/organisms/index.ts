@@ -1,5 +1,6 @@
 export { default as CartFooter } from "./CartFooter/CartFooter";
 export { default as CartHeader } from "./CartHeader/CartHeader";
+export { default as CartList } from "./CartList/CartList";
 export { default as ChatWidget } from "./ChatWidget/ChatWidget";
 export { default as CouponsSection } from "./CouponsSection/CouponsSection";
 export { default as FAQSection } from "./FAQSection/FAQSection";
