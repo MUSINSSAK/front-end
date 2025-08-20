@@ -25,7 +25,7 @@ export default function CartFooter({
 
           <Button
             type="button"
-            variant="active"
+            variant={selectedCount > 0 ? "active" : "disabled"}
             className={styles.checkoutButton}
           >
             주문하기 ({selectedCount})
