@@ -5,6 +5,7 @@ import { ChatWidget } from "./components/organisms";
 import { MainTemplate } from "./components/templates";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CategoryProvider } from "./contexts/CategoryContext";
+import { ModalProvider } from "./contexts/ModalContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import {
   Cart,
@@ -49,34 +50,36 @@ export default function App() {
       <ToastProvider>
         <AuthProvider>
           <CategoryProvider>
-            <MainTemplate>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
+            <ModalProvider>
+              <MainTemplate>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<SignUp />} />
 
-                <Route path="/category/:cat" element={<Category />} />
-                <Route path="/products/:id" element={<ProductDetail />} />
-                <Route
-                  path="/products/:id/inquiry"
-                  element={<ProductInquiry />}
+                  <Route path="/category/:cat" element={<Category />} />
+                  <Route path="/products/:id" element={<ProductDetail />} />
+                  <Route
+                    path="/products/:id/inquiry"
+                    element={<ProductInquiry />}
+                  />
+
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/payment" element={<Payment />} />
+
+                  <Route path="/mypage/:tab?" element={<Mypage />} />
+                </Routes>
+
+                <ChatWidget
+                  isOpen={isChatOpen}
+                  messages={messages}
+                  newMessage={newMessage}
+                  onToggle={() => setIsChatOpen(!isChatOpen)}
+                  onChange={setNewMessage}
+                  onSend={handleSendMessage}
                 />
-
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/payment" element={<Payment />} />
-
-                <Route path="/mypage/:tab?" element={<Mypage />} />
-              </Routes>
-
-              <ChatWidget
-                isOpen={isChatOpen}
-                messages={messages}
-                newMessage={newMessage}
-                onToggle={() => setIsChatOpen(!isChatOpen)}
-                onChange={setNewMessage}
-                onSend={handleSendMessage}
-              />
-            </MainTemplate>
+              </MainTemplate>
+            </ModalProvider>
           </CategoryProvider>
         </AuthProvider>
       </ToastProvider>
