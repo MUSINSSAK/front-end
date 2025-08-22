@@ -7,6 +7,7 @@ export { default as FooterTitle } from "./FooterTitle/FooterTitle";
 export { default as Input } from "./Input/Input";
 export { default as LikeButton } from "./LikeButton/LikeButton";
 export { default as Logo } from "./Logo/Logo";
+export { default as Modal } from "./Modal/Modal";
 export { default as NavButton } from "./NavButton/NavButton";
 export { default as NumberStepper } from "./NumberStepper/NumberStepper";
 export { default as PriceTag } from "./PriceTag/PriceTag";
