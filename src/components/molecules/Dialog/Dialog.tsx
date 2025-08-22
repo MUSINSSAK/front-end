@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { Modal } from "../../atoms";
 import styles from "./Dialog.module.css";
 
@@ -31,6 +32,8 @@ export default function Dialog({
   return (
     <Modal open={open} onClose={onClose} closeOnBackdrop={closeOnBackdrop}>
       <div
+        role="dialog"
+        aria-modal="true"
         className={`${styles.panel} ${styles[size]} ${styles[align]} ${classNames?.panel ?? ""}`}
       >
         {children}
@@ -41,7 +44,7 @@ export default function Dialog({
             onClick={onClose}
             aria-label="닫기"
           >
-            ×
+            <X />
           </button>
         )}
       </div>

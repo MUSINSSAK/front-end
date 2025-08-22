@@ -6,11 +6,3 @@
   place-items: center;
   z-index: 150;
 }
-
-.content {
-  background: var(--color-white);
-  width: min(92vw, 520px);
-  border-radius: 12px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
-  padding: 20px;
-}

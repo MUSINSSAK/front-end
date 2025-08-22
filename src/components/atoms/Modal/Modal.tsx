@@ -36,32 +36,22 @@ export default function Modal({
     <div
       className={styles.backdrop}
       onClick={closeOnBackdrop ? onClose : undefined}
-      onKeyDown={
-        closeOnBackdrop
-          ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                onClose?.();
-              }
-            }
-          : undefined
-      }
-      role="dialog"
-      aria-modal="true"
-      tabIndex={-1}
+      aria-hidden="true"
     >
-      <div
-        className={styles.content}
+      <button
+        type="button"
+        className={styles.slot}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.stopPropagation();
           }
         }}
-        role="dialog"
-        aria-modal="true"
+        tabIndex={0}
+        style={{ all: "unset" }}
       >
         {children}
-      </div>
+      </button>
     </div>,
     document.body,
   );
