@@ -1,3 +1,10 @@
 .container {
   width: 100%;
+  min-height: 100dvh; /* 모바일 뷰포트 대응: 100vh 대신 100dvh */
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1 0 auto; /* 본문이 남는 공간을 채움 */
 }

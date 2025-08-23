@@ -9,6 +9,8 @@ export { default as FilterSection } from "./FilterSection/FilterSection";
 export { default as FooterColumn } from "./FooterColumn/FooterColumn";
 export { default as IconButton } from "./IconButton/IconButton";
 export { default as NavMenu } from "./NavMenu/NavMenu";
+export { default as OrderItem } from "./OrderItem/OrderItem";
+export { default as OrderSummary } from "./OrderSummary/OrderSummary";
 export { default as PriceFilter } from "./PriceFilter/PriceFilter";
 export { default as ProductCard } from "./ProductCard/ProductCard";
 export { default as ProfileSection } from "./ProfileSection/ProfileSection";

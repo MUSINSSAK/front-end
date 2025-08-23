@@ -23,7 +23,7 @@ export default function MainTemplate({ children }: Props) {
         setSelectedCategory={setSelected}
       />
 
-      <main>{children}</main>
+      <main className={styles.main}>{children}</main>
 
       <HomeFooter />
     </div>

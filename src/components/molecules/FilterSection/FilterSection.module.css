@@ -11,10 +11,9 @@
   gap: 0.75rem;
   max-height: 12rem;
   overflow-y: auto;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
+}
+.options::-webkit-scrollbar {
+  display: none;
 }
 .option {
   display: flex;

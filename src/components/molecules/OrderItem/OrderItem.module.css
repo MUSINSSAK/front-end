@@ -1,0 +1,68 @@
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.checkbox {
+  margin-top: 0.5rem;
+}
+
+.image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.details {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.brand {
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+  margin-bottom: 0.25rem;
+}
+
+.name {
+  font-weight: 500;
+  color: var(--color-footer);
+  margin-bottom: 0.25rem;
+}
+
+.size {
+  font-size: 0.875rem;
+  color: var(--color-gray-800);
+}
+
+.removeBtn {
+  cursor: pointer;
+  margin-left: 1rem;
+  color: var(--color-gray-700);
+  transition: color 0.2s;
+  border: none;
+  background: none;
+}
+.removeBtn:hover {
+  color: var(--color-gray-900);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.divider {
+  border-bottom: 1px solid var(--color-gray-300);
+}

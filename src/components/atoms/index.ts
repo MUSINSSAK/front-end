@@ -8,6 +8,7 @@ export { default as Input } from "./Input/Input";
 export { default as LikeButton } from "./LikeButton/LikeButton";
 export { default as Logo } from "./Logo/Logo";
 export { default as NavButton } from "./NavButton/NavButton";
+export { default as NumberStepper } from "./NumberStepper/NumberStepper";
 export { default as PriceTag } from "./PriceTag/PriceTag";
 export { default as SectionHeader } from "./SectionHeader/SectionHeader";
 export { default as Select } from "./Select/Select";

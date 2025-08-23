@@ -29,10 +29,11 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
-  ::-webkit-scrollbar {
-    display: none;
-  }
 }
+.window ::-webkit-scrollbar {
+  display: none;
+}
+
 .header {
   background-color: var(--color-black);
   color: var(--color-white);
