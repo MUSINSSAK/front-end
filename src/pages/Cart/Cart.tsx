@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { EmptyState, OrderSummary } from "../../components/molecules";
 import { CartList } from "../../components/organisms";
 import { CartTemplate } from "../../components/templates";
+import { useModal } from "../../contexts/ModalContext";
 import type { OrderItemData } from "../../types/order";
 
 const initial: OrderItemData[] = [
@@ -88,6 +89,7 @@ const initial: OrderItemData[] = [
 
 export default function CartPage() {
   const [items, setItems] = useState<OrderItemData[]>(initial);
+  const { confirm } = useModal();
 
   // 선택/수량 변경
   const toggleItem = (id: number) =>
@@ -107,12 +109,27 @@ export default function CartPage() {
       ),
     );
 
-  // 삭제
-  const deleteItem = (id: number) =>
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  // 개별 삭제
+  const deleteItem = async (id: number) => {
+    const ok = await confirm({
+      title: "상품을 삭제하시겠습니까?",
+      description: "장바구니에서 해당 상품이 제거됩니다.",
+      confirmText: "삭제",
+      cancelText: "취소",
+    });
+    if (ok) setItems((prev) => prev.filter((i) => i.id !== id));
+  };
 
-  const deleteSelected = () =>
-    setItems((prev) => prev.filter((i) => !i.selected));
+  // 선택 삭제
+  const deleteSelected = async () => {
+    const ok = await confirm({
+      title: "선택한 상품을 삭제하시겠습니까?",
+      description: "선택한 모든 상품이 장바구니에서 제거됩니다.",
+      confirmText: "삭제",
+      cancelText: "취소",
+    });
+    if (ok) setItems((prev) => prev.filter((i) => !i.selected));
+  };
 
   const selected = items.filter((i) => i.selected);
   const originalTotal = useMemo(

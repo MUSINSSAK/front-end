@@ -14,5 +14,6 @@ export { default as ProductSection } from "./ProductSection/ProductSection";
 export { default as ProfileEditSection } from "./ProfileEditSection/ProfileEditSection";
 export { default as RecentViewSection } from "./RecentViewSection/RecentViewSection";
 export { default as ReviewsSection } from "./ReviewsSection/ReviewsSection";
+export { default as ReviewWriteModal } from "./ReviewWriteModal/ReviewWriteModal";
 export { default as SidebarFilters } from "./SidebarFilters/SidebarFilters";
 export { default as WishListSection } from "./WishListSection/WishListSection";
