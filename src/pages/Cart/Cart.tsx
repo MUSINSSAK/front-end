@@ -1,13 +1,10 @@
 import { ShoppingCart } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 import { EmptyState, OrderSummary } from "../../components/molecules";
 import { CartList } from "../../components/organisms";
 import { CartTemplate } from "../../components/templates";
+import { useModal } from "../../contexts/ModalContext";
 import type { OrderItemData } from "../../types/order";
-
-const SS_KEY = "musinssak_cart_selected";
-const CART_SUMMARY_SS = "musinssak_cart_summary";
 
 const initial: OrderItemData[] = [
   {
@@ -91,8 +88,8 @@ const initial: OrderItemData[] = [
 ];
 
 export default function CartPage() {
-  const nav = useNavigate();
   const [items, setItems] = useState<OrderItemData[]>(initial);
+  const { confirm } = useModal();
 
   // 선택/수량 변경
   const toggleItem = (id: number) =>
@@ -103,19 +100,38 @@ export default function CartPage() {
     setItems((prev) =>
       prev.map((i) => (i.id === id ? { ...i, quantity: qty } : i)),
     );
+
+  // 브랜드 토글 (그룹 전체 토글)
   const toggleBrand = (brand: string, nextChecked: boolean) =>
     setItems((prev) =>
       prev.map((i) =>
         i.brand === brand ? { ...i, selected: nextChecked } : i,
       ),
     );
-  const deleteItem = (id: number) =>
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  const deleteSelected = () =>
-    setItems((prev) => prev.filter((i) => !i.selected));
 
-  // 합계 계산(선택 품목 기준)
-  const selected = useMemo(() => items.filter((i) => i.selected), [items]);
+  // 개별 삭제
+  const deleteItem = async (id: number) => {
+    const ok = await confirm({
+      title: "상품을 삭제하시겠습니까?",
+      description: "장바구니에서 해당 상품이 제거됩니다.",
+      confirmText: "삭제",
+      cancelText: "취소",
+    });
+    if (ok) setItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  // 선택 삭제
+  const deleteSelected = async () => {
+    const ok = await confirm({
+      title: "선택한 상품을 삭제하시겠습니까?",
+      description: "선택한 모든 상품이 장바구니에서 제거됩니다.",
+      confirmText: "삭제",
+      cancelText: "취소",
+    });
+    if (ok) setItems((prev) => prev.filter((i) => !i.selected));
+  };
+
+  const selected = items.filter((i) => i.selected);
   const originalTotal = useMemo(
     () => selected.reduce((s, i) => s + i.originalPrice * i.quantity, 0),
     [selected],
@@ -132,50 +148,9 @@ export default function CartPage() {
   const shippingFee = productPaid >= 50000 ? 0 : productPaid > 0 ? 3000 : 0;
   const finalAmount = productPaid + shippingFee;
 
-  // 항상 장바구니 상태 백업 (Order 복구/할인계산용)
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(SS_KEY, JSON.stringify(items));
-    } catch {}
-  }, [items]);
-
-  // 주문하기
-  const handleProceedOrder = () => {
-    const sel = items.filter((i) => i.selected);
-    if (sel.length === 0) return;
-
-    // Cart 합계 요약 저장 → Order에서 “그대로” 사용
-    try {
-      sessionStorage.setItem(
-        CART_SUMMARY_SS,
-        JSON.stringify({
-          originalTotal,
-          discountTotal,
-          productPaid,
-        }),
-      );
-      sessionStorage.setItem(SS_KEY, JSON.stringify(items)); // 안전 백업
-    } catch {}
-
-    // 선택 품목만 state로 넘겨도 OK(오더 복구가 mapCartDataToOrderItems 지원)
-    nav("/order", {
-      state: {
-        orderItems: sel.map((i) => ({
-          id: i.id,
-          brand: i.brand,
-          name: i.name,
-          size: i.option,
-          price: i.price,
-          quantity: i.quantity,
-          image: i.image,
-        })),
-      },
-    });
-  };
-
   return (
     <CartTemplate
-      items={items}
+      items={initial}
       selected={selected.length}
       finalAmount={finalAmount}
       onDeleteSelected={deleteSelected}
@@ -201,17 +176,6 @@ export default function CartPage() {
             shippingFee={shippingFee}
             finalAmount={finalAmount}
           />
-          {/* 주문하기 버튼 (CartTemplate에 동일 기능이 이미 있으면 생략 가능) */}
-          {/* <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <button
-              type="button"
-              onClick={handleProceedOrder}
-              disabled={selected.length === 0}
-              className="rounded-md px-4 py-2 bg-black text-white disabled:opacity-40"
-            >
-              주문하기
-            </button>
-          </div> */}
         </>
       )}
     </CartTemplate>
