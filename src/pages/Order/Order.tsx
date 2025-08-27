@@ -1,38 +1,90 @@
 import type React from "react";
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import type {
+  CartToOrderState,
+  Coupon,
+  OrderItem,
+  OrderItemData,
+  OrderToPaymentState,
+} from "../../types/order";
 import styles from "./Order.module.css";
 
-type OrderItem = {
-  id: number;
-  brand: string;
-  name: string;
-  size: string;
-  price: number;
-  quantity: number;
-  image: string;
-};
-
-type Coupon = {
-  id: string;
-  name: string;
-  discountRate: number;
-  discountAmount: number;
-  minOrderAmount: number;
-  maxDiscountAmount: number;
-  validUntil: string;
-  description: string;
-};
-
+// 숫자 포맷터
 const fmt = (n: number) =>
   n.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
 
-const MIN_POINT_USE = 0;
+// ====== Cart → Order 복구 유틸 ======
+const SS_KEY = "musinssak_cart_selected";
+const CART_SUMMARY_SS = "musinssak_cart_summary";
 
-const Order: React.FC = () => {
-  const nav = useNavigate();
+// (선택) 로그인 이메일 자동 복구 (원하는 키로 바꿔도 됩니다)
+function restoreUserEmail(): string {
+  const keys = ["musinssak_user_email", "logged_in_email", "user_email"];
+  for (const k of keys) {
+    try {
+      const v = sessionStorage.getItem(k) || localStorage.getItem(k);
+      if (v) return v;
+    } catch {}
+  }
+  return "";
+}
 
-  const [orderItems] = useState<OrderItem[]>([
+function isOrderItemsState(v: any): v is CartToOrderState {
+  return v && typeof v === "object" && Array.isArray(v.orderItems);
+}
+
+// Cart(OrderItemData[]) → Order(OrderItem[])
+function mapCartDataToOrderItems(arr: OrderItemData[]): OrderItem[] {
+  return arr
+    .filter((i) => i.selected)
+    .map((i) => ({
+      id: i.id,
+      brand: i.brand,
+      name: i.name,
+      size: i.option,
+      price: i.price,
+      quantity: i.quantity,
+      image: i.image,
+    }));
+}
+
+function restoreOrderItemsFromAnyState(locationState: unknown): OrderItem[] {
+  // 1) 라우터 state
+  if (isOrderItemsState(locationState) && locationState.orderItems.length) {
+    return locationState.orderItems;
+  }
+
+  // 2) 세션
+  try {
+    const raw = sessionStorage.getItem(SS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        if (parsed.length && "option" in parsed[0]) {
+          return mapCartDataToOrderItems(parsed as OrderItemData[]);
+        }
+        return parsed as OrderItem[];
+      }
+    }
+  } catch {}
+
+  // 3) 로컬
+  try {
+    const raw = localStorage.getItem(SS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        if (parsed.length && "option" in parsed[0]) {
+          return mapCartDataToOrderItems(parsed as OrderItemData[]);
+        }
+        return parsed as OrderItem[];
+      }
+    }
+  } catch {}
+
+  // 4) 폴백(데모)
+  return [
     {
       id: 1,
       brand: "NIKE",
@@ -53,8 +105,134 @@ const Order: React.FC = () => {
       image:
         "https://readdy.ai/api/search-image?query=white%20leather%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=80&height=80&seq=order2&orientation=squarish",
     },
-  ]);
+  ];
+}
+
+// 장바구니 합계 요약 복구
+function restoreCartSummary(): {
+  originalTotal: number;
+  discountTotal: number;
+  productPaid: number;
+} | null {
+  try {
+    const raw =
+      sessionStorage.getItem(CART_SUMMARY_SS) ||
+      localStorage.getItem(CART_SUMMARY_SS);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed.originalTotal === "number" &&
+      typeof parsed.discountTotal === "number" &&
+      typeof parsed.productPaid === "number"
+    ) {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// 저장된 originalPrice로 원가합 복구 (CartSummary 없을 때 폴백)
+function restoreOriginalTotalFromStorage(
+  orderItems: OrderItem[],
+): number | null {
+  try {
+    const raw = sessionStorage.getItem(SS_KEY) || localStorage.getItem(SS_KEY);
+    if (!raw) return null;
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+    const hasOriginal = "originalPrice" in (arr[0] || {});
+    if (!hasOriginal) return null;
+
+    const byId = new Map<number, any>();
+    arr.filter((x: any) => x.selected).forEach((x: any) => byId.set(x.id, x));
+    return orderItems.reduce((sum, oi) => {
+      const src = byId.get(oi.id);
+      if (!src) return sum;
+      return sum + Number(src.originalPrice) * Number(oi.quantity);
+    }, 0);
+  } catch {
+    return null;
+  }
+}
+
+// 장바구니 할인 합계(원가-판매가)
+function computeCartDiscountFromStorage(orderItems: OrderItem[]): number {
+  let raw: string | null = null;
+  try {
+    raw = sessionStorage.getItem(SS_KEY);
+  } catch {}
+  if (!raw) {
+    try {
+      raw = localStorage.getItem(SS_KEY);
+    } catch {}
+  }
+  if (!raw) return 0;
+
+  try {
+    const arr = JSON.parse(raw) as any[];
+    if (!Array.isArray(arr) || arr.length === 0) return 0;
+    const hasOriginal = "originalPrice" in (arr[0] || {});
+    if (!hasOriginal) return 0;
+
+    const byId = new Map<number, OrderItemData>();
+    (arr as OrderItemData[])
+      .filter((x) => x.selected)
+      .forEach((x) => byId.set(x.id, x));
+
+    let sum = 0;
+    for (const oi of orderItems) {
+      const src = byId.get(oi.id);
+      if (!src) continue;
+      const perItem = (src.originalPrice - src.price) * oi.quantity;
+      if (perItem > 0) sum += perItem;
+    }
+    return Math.max(0, sum);
+  } catch {
+    return 0;
+  }
+}
+
+const MIN_POINT_USE = 0;
+
+const Order: React.FC = () => {
+  const nav = useNavigate();
+  const { state } = useLocation();
+
+  // 복구
+  const [orderItems] = useState<OrderItem[]>(
+    restoreOrderItemsFromAnyState(state),
+  );
   const [showOrderItems, setShowOrderItems] = useState(false);
+
+  const cartSummary = restoreCartSummary();
+
+  // 장바구니 할인(표시)
+  const cartDiscount = useMemo(
+    () =>
+      cartSummary
+        ? Math.max(0, cartSummary.discountTotal)
+        : computeCartDiscountFromStorage(orderItems),
+    [orderItems, cartSummary],
+  );
+
+  // 상품금액(표시) = 할인 전 원가합
+  const originalTotalForDisplay = useMemo(() => {
+    if (cartSummary) return cartSummary.originalTotal;
+    const fromStorage = restoreOriginalTotalFromStorage(orderItems);
+    if (typeof fromStorage === "number") return fromStorage;
+    // 최후 폴백
+    const discountedSum = orderItems.reduce(
+      (sum, it) => sum + it.price * it.quantity,
+      0,
+    );
+    return discountedSum + cartDiscount;
+  }, [orderItems, cartSummary, cartDiscount]);
+
+  // 계산 기준(쿠폰/배송비/최종) = 할인 후 금액
+  const baseAmount = Math.max(0, originalTotalForDisplay - cartDiscount);
 
   // ===== 배송지 정보 =====
   const [deliveryInfo, setDeliveryInfo] = useState({
@@ -66,7 +244,26 @@ const Order: React.FC = () => {
     deliveryRequest: "직접 수령",
   });
 
-  // 주소 검색 모달
+  // ===== 주문자 정보 =====
+  const [ordererInfo, setOrdererInfo] = useState({
+    name: "",
+    email: restoreUserEmail(),
+    phone: "",
+    sameAsDelivery: false,
+  });
+
+  const toggleSameAsDelivery = () => {
+    const next = !ordererInfo.sameAsDelivery;
+    setOrdererInfo((p) => ({
+      ...p,
+      sameAsDelivery: next,
+      name: next ? deliveryInfo.recipient : p.name,
+      phone: next ? deliveryInfo.phone : p.phone,
+      email: p.email || restoreUserEmail(),
+    }));
+  };
+
+  // ===== 주소 검색 모달 =====
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState<
@@ -114,24 +311,6 @@ const Order: React.FC = () => {
     setSearchResults([]);
   };
 
-  // ===== 주문자 정보 =====
-  const [ordererInfo, setOrdererInfo] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    sameAsDelivery: false,
-  });
-
-  const toggleSameAsDelivery = () => {
-    const next = !ordererInfo.sameAsDelivery;
-    setOrdererInfo((p) => ({
-      ...p,
-      sameAsDelivery: next,
-      name: next ? deliveryInfo.recipient : p.name,
-      phone: next ? deliveryInfo.phone : p.phone,
-    }));
-  };
-
   // ===== 쿠폰 / 적립금 =====
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<string>("");
@@ -168,22 +347,9 @@ const Order: React.FC = () => {
     },
   ]);
   const [couponDiscount, setCouponDiscount] = useState(0);
-
   const [pointsUsed, setPointsUsed] = useState(0);
   const [availablePoints] = useState(5000);
 
-  // ===== 금액 계산 =====
-  const totalAmount = useMemo(
-    () => orderItems.reduce((sum, it) => sum + it.price * it.quantity, 0),
-    [orderItems],
-  );
-  const shippingFee = totalAmount >= 50000 ? 0 : 3000;
-  const finalAmount = Math.max(
-    0,
-    totalAmount + shippingFee - couponDiscount - pointsUsed,
-  );
-
-  // ===== 유틸 =====
   const handleDeliveryInfoChange = (
     field: keyof typeof deliveryInfo,
     value: string,
@@ -198,6 +364,7 @@ const Order: React.FC = () => {
       [field]: value,
     }));
 
+  // 쿠폰은 baseAmount 기준
   const applyCouponById = (id: string | "") => {
     setSelectedCoupon(id);
     if (!id) {
@@ -207,7 +374,7 @@ const Order: React.FC = () => {
     const c = availableCoupons.find((x) => x.id === id);
     if (!c) return setCouponDiscount(0);
 
-    if (totalAmount < c.minOrderAmount) {
+    if (baseAmount < c.minOrderAmount) {
       setCouponDiscount(0);
       return;
     }
@@ -215,7 +382,7 @@ const Order: React.FC = () => {
     const raw =
       c.discountAmount > 0
         ? c.discountAmount
-        : Math.floor((totalAmount * c.discountRate) / 100);
+        : Math.floor((baseAmount * c.discountRate) / 100);
 
     setCouponDiscount(Math.min(raw, c.maxDiscountAmount));
   };
@@ -225,9 +392,17 @@ const Order: React.FC = () => {
     setPointsUsed(safe);
   };
 
+  // ===== 금액 계산 =====
+  const shippingFee = baseAmount >= 50000 ? 0 : baseAmount > 0 ? 3000 : 0;
+  const finalAmount = Math.max(
+    0,
+    baseAmount + shippingFee - couponDiscount - pointsUsed,
+  );
+
   // ===== 제출 가능 여부 =====
   const isEmailValid =
-    !!ordererInfo.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ordererInfo.email);
+    !!ordererInfo.email &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(ordererInfo.email));
 
   const isFormValid =
     !!deliveryInfo.recipient &&
@@ -240,18 +415,23 @@ const Order: React.FC = () => {
   // ===== 결제(다음 단계) =====
   const handleProceedPayment = () => {
     if (!isFormValid) return;
-    nav("/payment", {
-      state: {
-        orderItems,
-        appliedCouponDiscount: couponDiscount,
-        appliedPointsUsed: pointsUsed,
-        shippingFee,
-        totalPay: finalAmount,
-      },
-    });
+
+    const state: OrderToPaymentState = {
+      orderItems,
+      appliedCouponDiscount: couponDiscount,
+      appliedPointsUsed: pointsUsed,
+      shippingFee,
+      totalPay: finalAmount,
+    };
+
+    try {
+      sessionStorage.setItem("musinssak_order_state", JSON.stringify(state));
+    } catch {}
+
+    nav("/payment", { state });
   };
 
-  // ====== input/select IDs (label 연결용) ======
+  // ====== input/select IDs ======
   const ids = {
     dName: "d-name",
     dRecipient: "d-recipient",
@@ -596,7 +776,8 @@ const Order: React.FC = () => {
                   id={ids.couponSelect}
                   className={styles.select}
                   value={selectedCoupon}
-                  onChange={(e) => applyCouponById(e.target.value)}
+                  onChange={(e) => setSelectedCoupon(e.target.value)}
+                  onBlur={(e) => applyCouponById(e.target.value)}
                 >
                   <option value="">사용 가능한 쿠폰 선택</option>
                   {availableCoupons.map((c) => (
@@ -616,7 +797,6 @@ const Order: React.FC = () => {
               </button>
             </div>
 
-            {/* 쿠폰 모달 */}
             {isCouponModalOpen && (
               <div className={styles.modalBackdrop}>
                 <div className={styles.modalBox}>
@@ -709,18 +889,11 @@ const Order: React.FC = () => {
                 type="button"
                 className={styles.btnGhost}
                 onClick={() => clampPoints(availablePoints)}
-                title={
-                  availablePoints < MIN_POINT_USE
-                    ? `${fmt(MIN_POINT_USE)}원 이상부터 사용 가능`
-                    : ""
-                }
               >
                 전액 사용
               </button>
             </div>
-            <p className={styles.helper}>
-              보유 적립금: {fmt(availablePoints)}원
-            </p>
+            <p className={styles.helper}>보유 적립금: {fmt(5000)}원</p>
           </div>
         </section>
 
@@ -730,7 +903,13 @@ const Order: React.FC = () => {
           <div className={styles.summaryRows}>
             <div className={styles.summaryRow}>
               <span className={styles.muted}>상품 금액</span>
-              <span className={styles.bold}>{fmt(totalAmount)}원</span>
+              <span className={styles.bold}>
+                {fmt(originalTotalForDisplay)}원
+              </span>
+            </div>
+            <div className={styles.summaryRow}>
+              <span className={styles.muted}>장바구니 할인</span>
+              <span className={styles.minus}>- {fmt(cartDiscount)}원</span>
             </div>
             <div className={styles.summaryRow}>
               <span className={styles.muted}>쿠폰 할인</span>

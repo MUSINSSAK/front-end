@@ -1,61 +1,202 @@
 import type React from "react";
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { OrderItem, PaymentState } from "../../types/order";
 import styles from "./Payment.module.css";
 
-/** Order → Payment 로 전달되는 라우터 state 타입 */
-type OrderItem = {
-  id: number;
-  brand: string;
-  name: string;
-  size: string;
-  price: number;
-  quantity: number;
-  image: string;
-};
+// 숫자 포맷터
+const fmt = (n: number) =>
+  n.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
 
-type PaymentState = {
-  orderItems: OrderItem[];
-  appliedCouponDiscount: number;
-  appliedPointsUsed: number;
-  shippingFee: number;
-  totalPay: number;
-};
+// ===== 키 =====
+const ORDER_STATE_SS = "musinssak_order_state"; // Order에서 백업한 결제 상태
+const CART_SS = "musinssak_cart_selected"; // Cart 저장본(선택항목 포함)
+
+// ===== 타입 가드 =====
+function isPaymentStateLike(v: any): v is PaymentState {
+  return (
+    v &&
+    typeof v === "object" &&
+    Array.isArray(v.orderItems) &&
+    typeof v.appliedCouponDiscount === "number" &&
+    typeof v.appliedPointsUsed === "number" &&
+    typeof v.shippingFee === "number" &&
+    typeof v.totalPay === "number"
+  );
+}
+
+// Cart(OrderItemData[]) 또는 OrderItem[] → OrderItem[]
+function mapCartDataToOrderItems(arr: any[]): OrderItem[] {
+  if (!Array.isArray(arr) || arr.length === 0) return [];
+  if ("option" in (arr[0] as any)) {
+    // Cart 포맷
+    return arr
+      .filter((i: any) => i.selected)
+      .map((i: any) => ({
+        id: i.id,
+        brand: i.brand,
+        name: i.name,
+        size: i.option,
+        price: i.price,
+        quantity: i.quantity,
+        image: i.image,
+      }));
+  }
+  return arr as OrderItem[];
+}
+
+// ===== Cart 저장값으로부터 "원가 합계"와 "장바구니 할인 합계" 복원 =====
+// - productAmount(할인가 합계)는 orderItems에서 계산
+// - originalTotal과 cartDiscount는 CART_SS에서 originalPrice를 읽어 계산
+function restoreOriginalAndDiscount(orderItems: OrderItem[]): {
+  originalTotal: number; // 할인 전 상품금액
+  cartDiscount: number; // 장바구니 할인(= 원가-판매가)
+} {
+  let raw: string | null = null;
+  try {
+    raw = sessionStorage.getItem(CART_SS);
+  } catch {}
+  if (!raw) {
+    try {
+      raw = localStorage.getItem(CART_SS);
+    } catch {}
+  }
+  if (!raw) return { originalTotal: 0, cartDiscount: 0 };
+
+  try {
+    const arr = JSON.parse(raw) as any[];
+    if (!Array.isArray(arr) || arr.length === 0)
+      return { originalTotal: 0, cartDiscount: 0 };
+
+    // 선택된 항목만 id → 데이터 매핑
+    const byId = new Map<number, any>();
+    arr.filter((x) => x.selected).forEach((x) => byId.set(x.id, x));
+
+    let originalTotal = 0;
+    let discount = 0;
+
+    for (const oi of orderItems) {
+      const src = byId.get(oi.id);
+      if (!src) continue;
+      const qty = oi.quantity ?? 1;
+      const orig = (src.originalPrice ?? oi.price) * qty; // originalPrice 불가시 fallback
+      const sale = (src.price ?? oi.price) * qty;
+      originalTotal += orig;
+      discount += Math.max(0, orig - sale);
+    }
+    return { originalTotal, cartDiscount: discount };
+  } catch {
+    return { originalTotal: 0, cartDiscount: 0 };
+  }
+}
+
+// ===== Payment state 복구 =====
+function restorePaymentState(locationState: unknown): PaymentState | undefined {
+  // 1) 라우터 state
+  if (isPaymentStateLike(locationState)) return locationState as PaymentState;
+
+  // 2) 세션 저장본(주문서에서 백업)
+  try {
+    const raw = sessionStorage.getItem(ORDER_STATE_SS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (isPaymentStateLike(parsed)) return parsed as PaymentState;
+    }
+  } catch {}
+
+  // 3) Cart 저장본으로 최소 구성
+  try {
+    const raw =
+      sessionStorage.getItem(CART_SS) || localStorage.getItem(CART_SS);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      const orderItems = mapCartDataToOrderItems(arr);
+      if (orderItems.length) {
+        const productAmount = orderItems.reduce(
+          (s, it) => s + it.price * it.quantity,
+          0,
+        );
+        const shippingFee = productAmount >= 50000 ? 0 : 3000;
+        return {
+          orderItems,
+          appliedCouponDiscount: 0,
+          appliedPointsUsed: 0,
+          shippingFee,
+          totalPay: productAmount + shippingFee,
+        };
+      }
+    }
+  } catch {}
+
+  // 4) 최종 폴백(데모)
+  const demoItems: OrderItem[] = [
+    {
+      id: 1,
+      brand: "NIKE",
+      name: "에어맥스 270 스니커즈",
+      size: "250",
+      price: 159000,
+      quantity: 1,
+      image:
+        "https://readdy.ai/api/search-image?query=nike%20air%20max%20270%20white%20sneakers%20side%20view%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=80&height=80&seq=order1&orientation=squarish",
+    },
+    {
+      id: 2,
+      brand: "ADIDAS",
+      name: "스탠 스미스 스니커즈",
+      size: "245",
+      price: 109000,
+      quantity: 2,
+      image:
+        "https://readdy.ai/api/search-image?query=white%20leather%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=80&height=80&seq=order2&orientation=squarish",
+    },
+  ];
+  const productAmount = demoItems.reduce(
+    (s, it) => s + it.price * it.quantity,
+    0,
+  );
+  const shippingFee = productAmount >= 50000 ? 0 : 3000;
+
+  return {
+    orderItems: demoItems,
+    appliedCouponDiscount: 0,
+    appliedPointsUsed: 0,
+    shippingFee,
+    totalPay: productAmount + shippingFee,
+  };
+}
 
 type PaymentMethod = "card" | "simple" | "transfer";
 type SimplePay = "" | "kakao" | "naver";
-
-const fmt = (n: number) =>
-  n.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
 
 const Payment: React.FC = () => {
   const nav = useNavigate();
   const { state } = useLocation() as { state?: Partial<PaymentState> };
 
-  // ====== 1) Order에서 넘겨준 최종 결제 정보 ======
-  const hasState =
-    !!state &&
-    Array.isArray(state.orderItems) &&
-    typeof state.totalPay === "number";
+  const restored = restorePaymentState(state);
+  const hasState = !!restored;
 
-  /** non-null assertion 없이 안전 접근 */
-  const s: PaymentState | undefined = hasState
-    ? (state as PaymentState)
-    : undefined;
+  const s = restored as PaymentState;
 
-  const orderItems: OrderItem[] = s?.orderItems ?? [];
-  const appliedCouponDiscount = s?.appliedCouponDiscount ?? 0;
-  const appliedPointsUsed = s?.appliedPointsUsed ?? 0;
-  const shippingFee = s?.shippingFee ?? 0;
-  const totalPayFromOrder = s?.totalPay ?? 0;
+  const orderItems: OrderItem[] = s.orderItems ?? [];
+  const appliedCouponDiscount = s.appliedCouponDiscount ?? 0;
+  const appliedPointsUsed = s.appliedPointsUsed ?? 0;
+  const shippingFee = s.shippingFee ?? 0;
+  const totalPayFromOrder = s.totalPay ?? 0;
 
+  // 판매가 합계(= Order/Cart에서 세일가 합계)
   const productAmount = useMemo(
-    () => orderItems.reduce((s, it) => s + it.price * it.quantity, 0),
+    () => orderItems.reduce((sum, it) => sum + it.price * it.quantity, 0),
     [orderItems],
   );
-  const totalDiscount = appliedCouponDiscount + appliedPointsUsed;
 
-  // ====== 2) 결제 수단/폼 및 동의 ======
+  // 저장된 Cart 기준 "원가 합계"와 "장바구니 할인" 복원 (표시용)
+  const { originalTotal, cartDiscount } = useMemo(
+    () => restoreOriginalAndDiscount(orderItems),
+    [orderItems],
+  );
+
+  // ===== 결제 수단/폼 및 동의 =====
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("card");
 
@@ -114,7 +255,7 @@ const Payment: React.FC = () => {
     return false;
   };
 
-  // ====== 3) 결제 처리 (데모) ======
+  // ====== 결제 처리 (데모) ======
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -129,7 +270,6 @@ const Payment: React.FC = () => {
     }, 1200);
   };
 
-  // ====== 4) 빈 상태 가드 ======
   if (!hasState) {
     return (
       <div className={styles.emptyWrap}>
@@ -150,7 +290,6 @@ const Payment: React.FC = () => {
     );
   }
 
-  // ====== ids (label 연결용) ======
   const ids = {
     cardNumber: "card-number",
     cardExpiry: "card-expiry",
@@ -178,49 +317,58 @@ const Payment: React.FC = () => {
       </header>
 
       <main className={styles.main}>
-        {/* ① 주문 상품 확인 */}
+        {/* ① 주문 상품 확인 (Order와 동일한 레이아웃) */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>주문 상품 확인</h2>
 
           <div className={styles.itemsStack}>
-            {orderItems.map((it) => (
-              <div key={it.id} className={styles.itemRow}>
+            {orderItems.map((item, idx) => (
+              <div key={item.id} className={styles.itemRow}>
                 <div className={styles.thumbBox}>
-                  <img src={it.image} alt={it.name} className={styles.thumb} />
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className={styles.thumb}
+                  />
                 </div>
                 <div className={styles.itemMeta}>
-                  <p className={styles.itemBrand}>{it.brand}</p>
-                  <p className={styles.itemName}>{it.name}</p>
+                  <p className={styles.itemBrand}>{item.brand}</p>
+                  <p className={styles.itemName}>{item.name}</p>
                   <p className={styles.itemOpt}>
-                    사이즈: {it.size} | 수량: {it.quantity}개
+                    사이즈: {item.size} | 수량: {item.quantity}개
                   </p>
                 </div>
                 <div className={styles.itemPrice}>
-                  {fmt(it.price * it.quantity)}원
+                  {fmt(item.price * item.quantity)}원
                 </div>
+                {idx < orderItems.length - 1 && (
+                  <div className={styles.rowDivider} />
+                )}
               </div>
             ))}
           </div>
 
           <div className={styles.divider} />
 
-          <div className={styles.priceGroup}>
-            <div className={styles.priceRowSm}>
+          {/* ② 결제 정보 — Order 페이지와 같은 순서/표현 */}
+          <div className={styles.totalWrap}>
+            <div className={styles.priceRow}>
+              <span className={styles.muted}>상품 금액</span>
+              <span>{fmt(originalTotal || productAmount)}원</span>
+            </div>
+            <div className={styles.priceRow}>
+              <span className={styles.muted}>장바구니 할인</span>
+              <span className={styles.minus}>- {fmt(cartDiscount)}원</span>
+            </div>
+            <div className={styles.priceRow}>
               <span className={styles.muted}>쿠폰 할인</span>
               <span className={styles.minus}>
                 - {fmt(appliedCouponDiscount)}원
               </span>
             </div>
-            <div className={styles.priceRowSm}>
+            <div className={styles.priceRow}>
               <span className={styles.muted}>적립금 사용</span>
               <span className={styles.minus}>- {fmt(appliedPointsUsed)}원</span>
-            </div>
-          </div>
-
-          <div className={styles.totalWrap}>
-            <div className={styles.priceRow}>
-              <span className={styles.muted}>상품 금액</span>
-              <span>{fmt(productAmount)}원</span>
             </div>
             <div className={styles.priceRow}>
               <span className={styles.muted}>배송비</span>
@@ -232,10 +380,7 @@ const Payment: React.FC = () => {
                 )}
               </span>
             </div>
-            <div className={`${styles.priceRow} ${styles.minusRow}`}>
-              <span>총 할인 금액</span>
-              <span>- {fmt(totalDiscount)}원</span>
-            </div>
+
             <div className={styles.totalBar}>
               <span className={styles.totalLabel}>총 결제 금액</span>
               <span className={styles.totalPay}>
@@ -245,7 +390,7 @@ const Payment: React.FC = () => {
           </div>
         </section>
 
-        {/* ② 결제 동의 사항 */}
+        {/* ③ 결제 동의 사항 */}
         <section className={styles.section}>
           <h3 className={styles.sectionTitle}>결제 동의 사항</h3>
           {[
@@ -295,7 +440,7 @@ const Payment: React.FC = () => {
           ))}
         </section>
 
-        {/* ③ 결제 수단 선택 & 입력 */}
+        {/* ④ 결제 수단 선택 & 입력 */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>결제 수단 선택</h2>
 
@@ -473,7 +618,6 @@ const Payment: React.FC = () => {
 
             {selectedPaymentMethod === "simple" && (
               <div className={styles.formItem}>
-                {/* 컨트롤이 없으므로 label 사용 X */}
                 <p className={styles.label}>
                   간편결제 서비스 선택 <span className={styles.req}>*</span>
                 </p>
