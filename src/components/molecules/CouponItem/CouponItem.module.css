@@ -1,0 +1,70 @@
+.card {
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: var(--color-white);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.discount {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.days-left {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-gray-200);
+  color: var(--color-text);
+}
+.title {
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+  margin-bottom: 0.75rem;
+}
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+}
+.rule {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.icon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-white);
+  fill: var(--color-green-300);
+}
+.expiry {
+  font-size: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.expiryDate {
+  color: var(--color-gray-800);
+}
+.alert {
+  display: flex;
+  align-items: center;
+  color: var(--color-red-500);
+  font-weight: 500;
+}
+.alertIcon {
+  margin-right: 0.25rem;
+  width: 14px;
+  height: 14px;
+  color: var(--color-white);
+  fill: var(--color-red-500);
+}

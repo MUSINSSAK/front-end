@@ -1,0 +1,28 @@
+.wrapper {
+  background-color: var(--color-gray-100);
+  padding: 1rem 0;
+}
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+.list {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-gray-900);
+  gap: 0.5rem;
+}
+.separator {
+  font-size: 0.75rem;
+  color: inherit;
+}
+.link {
+  text-decoration: none;
+  cursor: pointer;
+  color: inherit;
+}
+.link:hover {
+  color: var(--color-black);
+}

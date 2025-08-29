@@ -1,0 +1,15 @@
+.priceWrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.price {
+  font-weight: bold;
+  font-size: 1.125rem; /* 18px */
+  color: var(--color-black);
+}
+.originalPrice {
+  text-decoration: line-through;
+  color: var(--color-gray-700);
+  font-size: 0.875rem; /* 14px */
+}

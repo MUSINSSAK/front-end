@@ -1,31 +1,88 @@
-import { useState } from "react";
-import logo from "./assets/logo.svg";
-import "./App.css";
+import { type FormEvent, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import styles from "./App.module.css";
+import { ChatWidget } from "./components/organisms";
+import { MainTemplate } from "./components/templates";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CategoryProvider } from "./contexts/CategoryContext";
+import { ModalProvider } from "./contexts/ModalContext";
+import { ToastProvider } from "./contexts/ToastContext";
+import {
+  Cart,
+  Category,
+  Home,
+  Login,
+  Mypage,
+  Payment,
+  ProductDetail,
+  ProductInquiry,
+  SignUp,
+} from "./pages";
+import type { Message } from "./types/types";
 
-function App() {
-	const [count, setCount] = useState(0);
+export default function App() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, text: "안녕하세요! 무엇을 도와드릴까요?", isUser: false },
+  ]);
+  const [newMessage, setNewMessage] = useState("");
 
-	return (
-		<>
-			<div>
-				<a href="https://react.dev" target="_blank" rel="noopener">
-					<img src={logo} className="logo react" alt="React logo" />
-				</a>
-			</div>
-			<h1>Vite + React</h1>
-			<div className="card">
-				<button type="button" onClick={() => setCount((count) => count + 1)}>
-					count is {count}
-				</button>
-				<p>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
-			</div>
-			<p className="read-the-docs">
-				Click on the Vite and React logos to learn more
-			</p>
-		</>
-	);
+  const handleSendMessage = (e: FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    const nextId = messages.length
+      ? Math.max(...messages.map((m) => m.id)) + 1
+      : 1;
+    setMessages([
+      ...messages,
+      { id: nextId, text: newMessage, isUser: true },
+      {
+        id: nextId + 1,
+        text: "죄송합니다. 지금은 상담이 불가능합니다. 상담원 연결은 평일 09:00~18:00에 가능합니다.",
+        isUser: false,
+      },
+    ]);
+    setNewMessage("");
+  };
+
+  return (
+    <div className={styles.app}>
+      <ToastProvider>
+        <AuthProvider>
+          <CategoryProvider>
+            <ModalProvider>
+              <MainTemplate>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<SignUp />} />
+
+                  <Route path="/category/:cat" element={<Category />} />
+                  <Route path="/products/:id" element={<ProductDetail />} />
+                  <Route
+                    path="/products/:id/inquiry"
+                    element={<ProductInquiry />}
+                  />
+
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/payment" element={<Payment />} />
+
+                  <Route path="/mypage/:tab?" element={<Mypage />} />
+                </Routes>
+
+                <ChatWidget
+                  isOpen={isChatOpen}
+                  messages={messages}
+                  newMessage={newMessage}
+                  onToggle={() => setIsChatOpen(!isChatOpen)}
+                  onChange={setNewMessage}
+                  onSend={handleSendMessage}
+                />
+              </MainTemplate>
+            </ModalProvider>
+          </CategoryProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </div>
+  );
 }
-
-export default App;

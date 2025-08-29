@@ -1,0 +1,129 @@
+/* 패널 공통 */
+.panel {
+  position: relative;
+  width: min(92vw, 520px);
+  background: var(--color-white);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  padding: 20px 24px;
+  color: var(--color-footer);
+  outline: none;
+}
+
+/* 크기 */
+.sm {
+  max-width: 360px;
+}
+.md {
+  max-width: 520px;
+}
+.lg {
+  max-width: 720px;
+}
+.xl {
+  max-width: 920px;
+}
+
+/* 정렬 및 진입 애니메이션(Modal이 grid-center라고 가정) */
+.center {
+  justify-self: center;
+  align-self: center;
+  animation: zoomIn 180ms ease-out;
+}
+.top {
+  justify-self: center;
+  align-self: start;
+  margin-top: 10vh;
+  animation: slideDown 200ms ease-out;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 헤더/본문/푸터 슬롯 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-gray-200);
+  margin-bottom: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-footer);
+}
+
+.body {
+  padding: 6px 0 2px;
+  color: var(--color-gray-800);
+  line-height: 1.6;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end; /* ✅ 버튼 오른쪽 정렬 */
+  gap: 8px; /* ✅ 버튼 간격 */
+  padding-top: 14px;
+  margin-top: 14px;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+/* 우측 상단 닫기 버튼 */
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+.close:hover {
+  background: var(--color-gray-100);
+  color: var(--color-gray-800);
+}
+
+/* 모바일 대응 */
+@media (max-width: 640px) {
+  .panel {
+    max-width: calc(100vw - 32px);
+    padding: 16px 18px;
+    border-radius: 12px;
+  }
+  .title {
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,30 @@
+.badge {
+  color: var(--color-white);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.default {
+  background-color: var(--color-black);
+}
+.discount {
+  background-color: var(--color-red-400);
+}
+.success {
+  background-color: var(--color-green-200);
+  color: var(--color-green-500);
+}
+.processing {
+  background-color: var(--color-blue-200);
+  color: var(--color-blue-600);
+}
+.canceled {
+  background-color: var(--color-red-200);
+  color: var(--color-red-500);
+}
+.done {
+  background-color: var(--color-yellow-200);
+  color: var(--color-yellow-600);
+}

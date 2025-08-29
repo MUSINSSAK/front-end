@@ -1,0 +1,44 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 320px;
+}
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-footer);
+}
+.desc {
+  margin: 0;
+  color: var(--color-gray-700);
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+.btn {
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+  width: 3.6rem;
+  height: 2.25rem;
+}
+.ghost {
+  border: 1px solid var(--color-gray-300);
+  background: var(--color-white);
+  color: var(--color-footer);
+}
+.primary {
+  border: none;
+  background: var(--color-footer);
+  color: var(--color-white);
+}
+.danger {
+  border: none;
+  background: var(--color-red-400);
+  color: var(--color-white);
+}
