@@ -38,8 +38,8 @@ export default function Modal({
       onClick={closeOnBackdrop ? onClose : undefined}
       aria-hidden="true"
     >
-      <button
-        type="button"
+      {/** biome-ignore lint/a11y/noStaticElementInteractions: <browser error> */}
+      <div
         className={styles.slot}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
@@ -47,11 +47,10 @@ export default function Modal({
             e.stopPropagation();
           }
         }}
-        tabIndex={0}
         style={{ all: "unset" }}
       >
         {children}
-      </button>
+      </div>
     </div>,
     document.body,
   );
