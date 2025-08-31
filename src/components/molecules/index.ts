@@ -1,4 +1,5 @@
 export { default as AccountSecurity } from "./AccountSecurity/AccountSecurity";
+export { default as AddressSearchItem } from "./AddressSearchItem/AddressSearchItem";
 export { default as AddressSection } from "./AddressSection/AddressSection";
 export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
@@ -22,4 +23,3 @@ export { default as SearchBar } from "./SearchBar/SearchBar";
 export { default as SidebarMenu } from "./SidebarMenu/SidebarMenu";
 export { default as Table } from "./Table/Table";
 export { default as UserMenu } from "./UserMenu/UserMenu";
-export { default as AddressSearchItem } from "./AddressSearchItem/AddressSearchItem";
