@@ -1,27 +1,34 @@
 import { MessagesSquare, Send, X } from "lucide-react";
-import { type FormEvent, useEffect, useRef } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import type { Message } from "../../../types/types";
 import { Input } from "../../atoms";
 import styles from "./ChatWidget.module.css";
 
-type Props = {
-  isOpen: boolean;
-  messages: Message[];
-  newMessage: string;
-  onToggle: () => void;
-  onChange: (v: string) => void;
-  onSend: (e: FormEvent) => void;
-};
-
-export default function ChatWidget({
-  isOpen,
-  messages,
-  newMessage,
-  onToggle,
-  onChange,
-  onSend,
-}: Props) {
+export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, text: "안녕하세요! 무엇을 도와드릴까요?", isUser: false },
+  ]);
+  const [newMessage, setNewMessage] = useState("");
+
+  const handleSendMessage = (e: FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+    const nextId = messages.length
+      ? Math.max(...messages.map((m) => m.id)) + 1
+      : 1;
+    setMessages([
+      ...messages,
+      { id: nextId, text: newMessage, isUser: true },
+      {
+        id: nextId + 1,
+        text: "죄송합니다. 지금은 상담이 불가능합니다. 상담원 연결은 평일 09:00~18:00에 가능합니다.",
+        isUser: false,
+      },
+    ]);
+    setNewMessage("");
+  };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional non-exhaustive deps for scroll behavior
   useEffect(() => {
@@ -30,7 +37,11 @@ export default function ChatWidget({
 
   return (
     <>
-      <button type="button" className={styles.button} onClick={onToggle}>
+      <button
+        type="button"
+        className={styles.button}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {isOpen ? <X size={20} /> : <MessagesSquare size={20} />}
       </button>
 
@@ -48,11 +59,11 @@ export default function ChatWidget({
             ))}
             <div ref={messagesEndRef} />
           </div>
-          <form onSubmit={onSend} className={styles.form}>
+          <form onSubmit={handleSendMessage} className={styles.form}>
             <Input
               type="text"
               value={newMessage}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={(e) => setNewMessage(e.target.value)}
               placeholder="메시지를 입력하세요"
               className={styles.input}
             />
