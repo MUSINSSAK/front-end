@@ -208,7 +208,7 @@ const FindPassword = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
+      <div className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
             <h1>비밀번호 찾기</h1>
@@ -217,9 +217,9 @@ const FindPassword = () => {
             <h2>MUSINSSAK</h2>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className={styles.mainContent}>
+      <div className={styles.mainContent}>
         <div className={styles.formWrapper}>
           <div className={styles.formContainer}>
             <div className={styles.titleSection}>
@@ -239,14 +239,14 @@ const FindPassword = () => {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
-      <footer className={styles.footer}>
+      <div className={styles.footer}>
         <div className={styles.footerInner}>
           <p>고객센터: 1588-0000 | 평일 09:00~18:00 (주말/공휴일 휴무)</p>
           <p>&copy; 2024 MUSINSSAK. All rights reserved.</p>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };

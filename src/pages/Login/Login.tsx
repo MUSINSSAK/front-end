@@ -19,7 +19,7 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
+      <div className={styles.header}>
         <div className={styles.headerInner}>
           <div className={styles.headerLeft}>
             <h1 className={styles.headerTitle}>로그인</h1>
@@ -28,7 +28,7 @@ const Login = () => {
             <h2 className={styles.logo}>MUSINSSAK</h2>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className={styles.mainContent}>
         <div className={styles.formWrapper}>
@@ -101,7 +101,7 @@ const Login = () => {
         </div>
       </div>
 
-      <footer className={styles.footer}>
+      <div className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerInner}>
             <p className={styles.footerText}>
@@ -112,7 +112,7 @@ const Login = () => {
             </p>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };

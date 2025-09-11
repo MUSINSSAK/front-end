@@ -53,7 +53,7 @@ const SignUp: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
+      <div className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerInner}>
             <div className={styles.headerLeft}>
@@ -67,9 +67,9 @@ const SignUp: React.FC = () => {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className={styles.main}>
+      <div className={styles.main}>
         <div className={styles.formContainer}>
           <div>
             <div className={styles.titleSection}>
@@ -280,9 +280,9 @@ const SignUp: React.FC = () => {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
-      <footer className={styles.footer}>
+      <div className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerInner}>
             <p className={styles.footerText}>
@@ -293,7 +293,7 @@ const SignUp: React.FC = () => {
             </p>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };
