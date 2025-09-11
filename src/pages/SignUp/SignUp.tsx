@@ -1,8 +1,8 @@
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
-import styles from "./Signup.module.css";
+import styles from "./SignUp.module.css";
 
-const Signup: React.FC = () => {
+const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -298,4 +298,4 @@ const Signup: React.FC = () => {
   );
 };
 
-export default Signup;
+export default SignUp;
