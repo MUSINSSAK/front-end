@@ -10,22 +10,19 @@ import styles from "./FindPassword.module.css";
 
 const FindPassword = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [email, setEmail] = useState(""); // accountInfo를 email로 변경
+  const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   // 로딩 및 에러 상태 추가
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
   // 인증번호 타이머 관련 상태
-  const [timeLeft, setTimeLeft] = useState(0); // 0분 0초부터 시작
+  const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<number | null>(null);
-  const VERIFICATION_CODE_EXPIRY_SECONDS = 3 * 60; // 3분으로 설정
-
+  const VERIFICATION_CODE_EXPIRY_SECONDS = 10 * 60; // 인증번호 10분으로 설정
   // 타이머 시작/정지 로직
   useEffect(() => {
     if (timeLeft > 0) {
@@ -52,7 +49,7 @@ const FindPassword = () => {
       if (currentStep === 1) {
         // 1단계: 이메일 입력 -> 인증번호 전송
         await requestPasswordResetCode({ email });
-        alert("인증번호가 이메일로 전송되었습니다. (유효시간 3분)"); // UI에 3분으로 표시
+        alert("인증번호가 이메일로 전송되었습니다. (유효시간 10분)");
         setTimeLeft(VERIFICATION_CODE_EXPIRY_SECONDS); // 타이머 시작
         setCurrentStep(2);
       } else if (currentStep === 2) {
@@ -72,7 +69,6 @@ const FindPassword = () => {
       const axiosError = err as AxiosError<{ code: string; message: string }>;
       const errorCode = axiosError.response?.data?.code;
       const errorMessage = axiosError.response?.data?.message;
-
       // 각 단계별 에러 처리
       if (currentStep === 1) {
         if (errorCode === "EMAIL_NOT_FOUND") {
@@ -118,7 +114,7 @@ const FindPassword = () => {
     setIsLoading(true);
     try {
       await requestPasswordResetCode({ email });
-      alert("인증번호가 다시 전송되었습니다. (유효시간 3분)");
+      alert("인증번호가 다시 전송되었습니다. (유효시간 10분)");
       setTimeLeft(VERIFICATION_CODE_EXPIRY_SECONDS); // 타이머 재시작
     } catch (err) {
       const axiosError = err as AxiosError<{ code: string; message: string }>;
@@ -213,7 +209,7 @@ const FindPassword = () => {
         </label>
         <input
           id="email"
-          type="email" // email 타입으로 변경
+          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={styles.input}
@@ -226,8 +222,7 @@ const FindPassword = () => {
         <i className="fas fa-envelope"></i>
         <span>입력하신 이메일로 인증번호가 전송됩니다.</span>
       </div>
-      {error && <p className={styles.errorMessage}>{error}</p>}{" "}
-      {/* 에러 메시지 표시 */}
+      {error && <p className={styles.errorMessage}>{error}</p>}
       <button
         type="button"
         onClick={handleNextStep}
@@ -280,8 +275,7 @@ const FindPassword = () => {
           인증번호 유효 시간이 만료되었습니다.
         </div>
       )}
-      {error && <p className={styles.errorMessage}>{error}</p>}{" "}
-      {/* 에러 메시지 표시 */}
+      {error && <p className={styles.errorMessage}>{error}</p>}
       <div className={styles.buttonGroup}>
         <button
           type="button"
@@ -305,8 +299,6 @@ const FindPassword = () => {
 
   const renderStep3 = () => (
     <form onSubmit={handleSubmitNewPassword} className={styles.stepContent}>
-      {" "}
-      {/* 새로운 핸들러 */}
       <div>
         <label htmlFor="new-password" className={styles.label}>
           새 비밀번호
@@ -370,8 +362,7 @@ const FindPassword = () => {
           <li>• 아이디와 동일하거나 포함된 비밀번호 사용 금지</li>
         </ul>
       </div>
-      {error && <p className={styles.errorMessage}>{error}</p>}{" "}
-      {/* 에러 메시지 표시 */}
+      {error && <p className={styles.errorMessage}>{error}</p>}
       <div className={styles.buttonGroup}>
         <button
           type="button"
