@@ -11,49 +11,34 @@ type ChangePasswordData = {
 
 // 비밀번호 마지막 변경일 조회 응답 타입
 type PasswordLastModifiedData = {
-  lastModifiedDate: string; // e.g. "2024-06-15"
+  lastModifiedDate: string;
 };
 
 // 비밀번호 변경
 export async function changePassword(
   body: ChangePasswordBody,
 ): Promise<ChangePasswordData> {
-  const accessToken = import.meta.env.VITE_ACCESS_TOKEN as string;
-  if (!accessToken) throw new Error("VITE_ACCESS_TOKEN is missing in .env");
+  const res = await api.put("/users/me/password", body);
 
-  const res = await api.put("/users/me/password", body, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  // 서버 공통 포맷: { status, code, message, data }
-  // return res.data.data as ChangePasswordData;
-
-  // 서버가 data를 "문자열" 또는 { lastModifiedDate }로 줄 수 있으니 통일
+  // 데이터를 항상 { lastModifiedDate: "날짜" } 형태로 통일(정규화)합니다.
   const raw = res.data.data;
   const lastModifiedDate =
     typeof raw === "string"
       ? raw
       : (raw?.lastModifiedDate as string | undefined);
 
+  // lastModifiedDate 값이 정상적으로 확보되었는지 확인합니다.
   if (!lastModifiedDate) {
     throw new Error("Invalid response: lastModifiedDate missing");
   }
-  return { lastModifiedDate }; // 항상 동일한 형태로 반환
+
+  // 항상 동일한 형태의 객체로 반환합니다.
+  return { lastModifiedDate };
 }
 
 // 초기 진입시 비밀번호 마지막 변경일 조회
 export async function getPasswordLastModified(): Promise<PasswordLastModifiedData> {
-  const accessToken = import.meta.env.VITE_ACCESS_TOKEN as string;
-  if (!accessToken) throw new Error("VITE_ACCESS_TOKEN is missing in .env");
+  const res = await api.get("/users/me/password/last-modified");
 
-  // 백엔드 엔드포인트 이름은 실제 구현에 맞게 변경하세요.
-  const res = await api.get("/users/me/password/last-modified", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
   return res.data.data as PasswordLastModifiedData;
 }
