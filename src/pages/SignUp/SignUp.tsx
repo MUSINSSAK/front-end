@@ -1,13 +1,15 @@
+import type { AxiosError } from "axios"; // AxiosError 타입 임포트
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
-import styles from "./SignUp.module.css";
+import { register } from "../../api/authApi"; // register 함수 임포트
+import styles from "./Signup.module.css";
 
-const SignUp: React.FC = () => {
+const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
+    name: "", // UI 필드는 name이지만, API에는 nickname으로 전송
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -18,11 +20,16 @@ const SignUp: React.FC = () => {
     marketing: false,
   });
 
+  // 로딩 및 에러 상태 추가
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+    setError(""); // 입력 시 에러 메시지 초기화
   };
 
   const handleAgreementChange = (field: string, checked: boolean) => {
@@ -38,17 +45,61 @@ const SignUp: React.FC = () => {
         ...agreements,
         [field]: checked,
       };
-      // 다른 모든 약관이 선택되었을 때 '전체 동의'를 자동으로 체크
       newAgreements.all =
         newAgreements.terms && newAgreements.privacy && newAgreements.marketing;
       setAgreements(newAgreements);
     }
+    setError(""); // 약관 변경 시 에러 메시지 초기화
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("제출된 폼 데이터:", { formData, agreements });
-    alert("UI 확인용 회원가입 버튼 클릭!");
+    setError("");
+    setIsLoading(true);
+
+    // 필수 약관 동의 확인 (이용약관, 개인정보 처리방침)
+    if (!agreements.terms || !agreements.privacy) {
+      setError("필수 약관에 동의해야 합니다.");
+      setIsLoading(false);
+      return;
+    }
+
+    // 비밀번호 일치 여부 확인
+    if (formData.password !== formData.confirmPassword) {
+      setError("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // 명세서에 따라 'name' 필드를 'nickname'으로 전송
+      await register({
+        email: formData.email,
+        password: formData.password,
+        nickname: formData.name, // UI의 name 필드를 nickname으로 매핑
+      });
+      alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
+      window.location.href = "/login"; // 회원가입 성공 시 로그인 페이지로 이동
+    } catch (err) {
+      const error = err as AxiosError<{ code: string; message: string }>;
+      const errorCode = error.response?.data?.code;
+      const errorMessage = error.response?.data?.message;
+
+      if (errorCode === "EMAIL_DUPLICATED") {
+        setError("이미 사용 중인 이메일입니다.");
+      } else if (errorCode === "NICKNAME_DUPLICATED") {
+        setError("이미 사용 중인 닉네임입니다.");
+      } else if (errorCode === "INVALID_REQUEST") {
+        setError("입력 형식이 올바르지 않습니다.");
+      } else {
+        setError(
+          errorMessage || "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
+        );
+      }
+      console.error("회원가입 오류:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -80,6 +131,7 @@ const SignUp: React.FC = () => {
             </div>
 
             <form className={styles.form} onSubmit={handleSubmit}>
+              {/* Email Input */}
               <div className={styles.inputGroup}>
                 <label htmlFor="email" className={styles.label}>
                   이메일 *
@@ -93,9 +145,11 @@ const SignUp: React.FC = () => {
                   className={styles.input}
                   placeholder="이메일을 입력하세요"
                   required
+                  disabled={isLoading}
                 />
               </div>
 
+              {/* Password Input */}
               <div className={styles.inputGroup}>
                 <label htmlFor="password" className={styles.label}>
                   비밀번호 *
@@ -112,6 +166,7 @@ const SignUp: React.FC = () => {
                     className={`${styles.input} ${styles.passwordInput}`}
                     placeholder="비밀번호를 입력하세요"
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
@@ -120,12 +175,14 @@ const SignUp: React.FC = () => {
                     aria-label={
                       showPassword ? "비밀번호 숨기기" : "비밀번호 보기"
                     }
+                    disabled={isLoading}
                   >
                     {showPassword ? <Eye /> : <EyeClosed />}
                   </button>
                 </div>
               </div>
 
+              {/* Confirm Password Input */}
               <div className={styles.inputGroup}>
                 <label htmlFor="confirmPassword" className={styles.label}>
                   비밀번호 확인 *
@@ -142,6 +199,7 @@ const SignUp: React.FC = () => {
                     className={`${styles.input} ${styles.passwordInput}`}
                     placeholder="비밀번호를 다시 입력하세요"
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
@@ -150,15 +208,17 @@ const SignUp: React.FC = () => {
                     aria-label={
                       showConfirmPassword ? "비밀번호 숨기기" : "비밀번호 보기"
                     }
+                    disabled={isLoading}
                   >
                     {showConfirmPassword ? <Eye /> : <EyeClosed />}
                   </button>
                 </div>
               </div>
 
+              {/* Name Input (will be sent as nickname) */}
               <div className={styles.inputGroup}>
                 <label htmlFor="name" className={styles.label}>
-                  이름 *
+                  이름 * (닉네임으로 사용됩니다)
                 </label>
                 <input
                   id="name"
@@ -169,12 +229,18 @@ const SignUp: React.FC = () => {
                   className={styles.input}
                   placeholder="이름을 입력하세요"
                   required
+                  disabled={isLoading}
                 />
               </div>
 
+              {/* Error message display */}
+              {error && <p className={styles.errorMessage}>{error}</p>}
+
+              {/* Terms Agreement Section */}
               <div className={styles.agreementSection}>
                 <h3 className={styles.agreementTitle}>약관 동의</h3>
 
+                {/* All Agreement */}
                 <div className={styles.agreementItem}>
                   <input
                     id="agree-all"
@@ -184,6 +250,7 @@ const SignUp: React.FC = () => {
                       handleAgreementChange("all", e.target.checked)
                     }
                     className={styles.checkbox}
+                    disabled={isLoading}
                   />
                   <label
                     htmlFor="agree-all"
@@ -194,6 +261,7 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className={styles.agreementDivider}>
+                  {/* Terms Agreement */}
                   <div className={styles.agreementItemWithButton}>
                     <div className={styles.agreementLeft}>
                       <input
@@ -204,6 +272,7 @@ const SignUp: React.FC = () => {
                           handleAgreementChange("terms", e.target.checked)
                         }
                         className={styles.checkbox}
+                        disabled={isLoading}
                       />
                       <label
                         htmlFor="agree-terms"
@@ -217,6 +286,7 @@ const SignUp: React.FC = () => {
                     </button>
                   </div>
 
+                  {/* Privacy Agreement */}
                   <div className={styles.agreementItemWithButton}>
                     <div className={styles.agreementLeft}>
                       <input
@@ -227,6 +297,7 @@ const SignUp: React.FC = () => {
                           handleAgreementChange("privacy", e.target.checked)
                         }
                         className={styles.checkbox}
+                        disabled={isLoading}
                       />
                       <label
                         htmlFor="agree-privacy"
@@ -240,6 +311,7 @@ const SignUp: React.FC = () => {
                     </button>
                   </div>
 
+                  {/* Marketing Agreement */}
                   <div className={styles.agreementItemWithButton}>
                     <div className={styles.agreementLeft}>
                       <input
@@ -250,6 +322,7 @@ const SignUp: React.FC = () => {
                           handleAgreementChange("marketing", e.target.checked)
                         }
                         className={styles.checkbox}
+                        disabled={isLoading}
                       />
                       <label
                         htmlFor="agree-marketing"
@@ -265,11 +338,17 @@ const SignUp: React.FC = () => {
                 </div>
               </div>
 
-              <button type="submit" className={styles.submitButton}>
-                회원가입
+              {/* Sign Up Button */}
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={isLoading} // 로딩 중 버튼 비활성화
+              >
+                {isLoading ? "회원가입 중..." : "회원가입"}
               </button>
             </form>
 
+            {/* Login Link */}
             <div className={styles.loginSection}>
               <p className={styles.loginText}>
                 이미 회원이신가요?{" "}
@@ -298,4 +377,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default Signup;
