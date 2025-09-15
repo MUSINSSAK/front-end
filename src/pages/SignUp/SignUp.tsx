@@ -2,7 +2,7 @@ import type { AxiosError } from "axios"; // AxiosError 타입 임포트
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import { register } from "../../api/authApi"; // register 함수 임포트
-import styles from "./Signup.module.css";
+import styles from "./SignUp.module.css";
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState({
