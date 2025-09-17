@@ -1,10 +1,13 @@
 import type { AxiosError } from "axios";
 import { Eye, EyeClosed } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { login } from "../../api/authApi";
 import styles from "./Login.module.css";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +29,7 @@ const Login = () => {
       localStorage.setItem("accessToken", data.accessToken);
 
       // 3. alert 대신 메인 페이지('/')로 즉시 리다이렉트(이동)합니다.
-      window.location.href = "/";
+      navigate("/");
     } catch (err) {
       const error = err as AxiosError<{ code: string; message: string }>;
       const errorCode = error.response?.data?.code;
