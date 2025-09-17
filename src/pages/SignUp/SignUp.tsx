@@ -1,10 +1,12 @@
-import type { AxiosError } from "axios"; // AxiosError 타입 임포트
+import type { AxiosError } from "axios";
 import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
-import { register } from "../../api/authApi"; // register 함수 임포트
+import { useNavigate } from "react-router-dom";
+import { register } from "../../api/authApi";
 import styles from "./SignUp.module.css";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,7 +21,6 @@ const Signup = () => {
     privacy: false,
     marketing: false,
   });
-
   // 로딩 및 에러 상태 추가
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -52,19 +53,59 @@ const Signup = () => {
     setError(""); // 약관 변경 시 에러 메시지 초기화
   };
 
+  // 비밀번호 유효성 검사
+  const validatePassword = (password: string, email: string) => {
+    if (password.length < 8 || password.length > 16) {
+      return "비밀번호는 8자 이상 16자 이하로 설정해주세요.";
+    }
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()]/.test(password);
+    const typesCount = [
+      hasUpperCase,
+      hasLowerCase,
+      hasNumber,
+      hasSpecialChar,
+    ].filter(Boolean).length;
+    if (typesCount < 3) {
+      return "영문 대소문자, 숫자, 특수문자 중 3가지 이상을 조합해주세요.";
+    }
+
+    for (let i = 0; i < password.length - 2; i++) {
+      if (
+        password[i] === password[i + 1] &&
+        password[i + 1] === password[i + 2]
+      ) {
+        return "동일한 문자나 숫자를 3개 이상 연속으로 사용할 수 없습니다.";
+      }
+    }
+
+    const emailId = email.split("@")[0];
+    if (emailId && password.includes(emailId)) {
+      return "비밀번호에 아이디(이메일)를 포함할 수 없습니다.";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    // 필수 약관 동의 확인 (이용약관, 개인정보 처리방침)
     if (!agreements.terms || !agreements.privacy) {
       setError("필수 약관에 동의해야 합니다.");
       setIsLoading(false);
       return;
     }
 
-    // 비밀번호 일치 여부 확인
+    const passwordError = validatePassword(formData.password, formData.email);
+    if (passwordError) {
+      setError(passwordError);
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       setIsLoading(false);
@@ -72,14 +113,13 @@ const Signup = () => {
     }
 
     try {
-      // 명세서에 따라 'name' 필드를 'nickname'으로 전송
       await register({
         email: formData.email,
         password: formData.password,
-        nickname: formData.name, // UI의 name 필드를 nickname으로 매핑
+        nickname: formData.name,
       });
       alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
-      window.location.href = "/login"; // 회원가입 성공 시 로그인 페이지로 이동
+      navigate("/login");
     } catch (err) {
       const error = err as AxiosError<{ code: string; message: string }>;
       const errorCode = error.response?.data?.code;
@@ -129,7 +169,6 @@ const Signup = () => {
                 MUSINSSAK에 오신 것을 환영합니다
               </p>
             </div>
-
             <form className={styles.form} onSubmit={handleSubmit}>
               {/* Email Input */}
               <div className={styles.inputGroup}>
@@ -164,7 +203,7 @@ const Signup = () => {
                       handleInputChange("password", e.target.value)
                     }
                     className={`${styles.input} ${styles.passwordInput}`}
-                    placeholder="비밀번호를 입력하세요"
+                    placeholder="8~16자, 영문/숫자/특수문자 3가지 이상 조합"
                     required
                     disabled={isLoading}
                   />
@@ -240,7 +279,6 @@ const Signup = () => {
               <div className={styles.agreementSection}>
                 <h3 className={styles.agreementTitle}>약관 동의</h3>
 
-                {/* All Agreement */}
                 <div className={styles.agreementItem}>
                   <input
                     id="agree-all"
@@ -261,7 +299,6 @@ const Signup = () => {
                 </div>
 
                 <div className={styles.agreementDivider}>
-                  {/* Terms Agreement */}
                   <div className={styles.agreementItemWithButton}>
                     <div className={styles.agreementLeft}>
                       <input
@@ -286,7 +323,6 @@ const Signup = () => {
                     </button>
                   </div>
 
-                  {/* Privacy Agreement */}
                   <div className={styles.agreementItemWithButton}>
                     <div className={styles.agreementLeft}>
                       <input
@@ -311,7 +347,6 @@ const Signup = () => {
                     </button>
                   </div>
 
-                  {/* Marketing Agreement */}
                   <div className={styles.agreementItemWithButton}>
                     <div className={styles.agreementLeft}>
                       <input
@@ -342,7 +377,7 @@ const Signup = () => {
               <button
                 type="submit"
                 className={styles.submitButton}
-                disabled={isLoading} // 로딩 중 버튼 비활성화
+                disabled={isLoading}
               >
                 {isLoading ? "회원가입 중..." : "회원가입"}
               </button>
