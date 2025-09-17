@@ -4,7 +4,7 @@ import { useState } from "react";
 import { register } from "../../api/authApi"; // register 함수 임포트
 import styles from "./SignUp.module.css";
 
-const Signup: React.FC = () => {
+const Signup = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
