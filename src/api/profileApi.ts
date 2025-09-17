@@ -11,20 +11,8 @@ type ProfileData = {
 
 // 프로필 조회 함수
 export async function getProfile(): Promise<ProfileData> {
-  const accessToken = import.meta.env.VITE_ACCESS_TOKEN as string; // Vite 방식 (타입 OK)
+  const res = await api.get("/users/me/profile");
 
-  if (!accessToken) {
-    // 선택: 런타임 보호
-    throw new Error("VITE_ACCESS_TOKEN is missing in .env");
-  }
-
-  const res = await api.get("/users/me/profile", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  // 서버 공통 포맷: { status, code, message, data }
   return res.data.data as ProfileData;
 }
 
@@ -35,17 +23,7 @@ export async function updateProfile(updatedData: {
   birthDate: string;
   profileImageUrl: string;
 }): Promise<ProfileData> {
-  const accessToken = import.meta.env.VITE_ACCESS_TOKEN as string;
-
-  if (!accessToken) {
-    throw new Error("VITE_ACCESS_TOKEN is missing in .env");
-  }
-
-  const res = await api.put("/users/me/profile", updatedData, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const res = await api.put("/users/me/profile", updatedData);
 
   return res.data.data as ProfileData;
 }

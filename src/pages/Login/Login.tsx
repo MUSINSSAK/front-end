@@ -1,16 +1,48 @@
+import type { AxiosError } from "axios";
 import { Eye, EyeClosed } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../../api/authApi";
 import styles from "./Login.module.css";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("로그인 시도:", { email, password });
-    alert("UI 확인용 로그인 버튼이 클릭되었습니다.");
+    setError("");
+    setIsLoading(true);
+
+    try {
+      // 1. API를 호출하여 응답 데이터를 받습니다.
+      const data = await login({ email, password });
+      console.log("로그인 성공:", data);
+
+      // 2. 받은 accessToken을 localStorage에 저장합니다.
+      localStorage.setItem("accessToken", data.accessToken);
+
+      // 3. alert 대신 메인 페이지('/')로 즉시 리다이렉트(이동)합니다.
+      navigate("/");
+    } catch (err) {
+      const error = err as AxiosError<{ code: string; message: string }>;
+      const errorCode = error.response?.data?.code;
+
+      if (errorCode === "EMAIL_NOT_FOUND" || errorCode === "INVALID_PASSWORD") {
+        setError("이메일 또는 비밀번호가 일치하지 않습니다.");
+      } else {
+        setError("알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요");
+      }
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -54,6 +86,7 @@ const Login = () => {
                   className={styles.input}
                   placeholder="이메일 또는 아이디를 입력하세요"
                   required
+                  disabled={isLoading} // 로딩 중 비활성화
                 />
               </div>
 
@@ -71,6 +104,7 @@ const Login = () => {
                     className={`${styles.input} ${styles.passwordInput}`}
                     placeholder="비밀번호를 입력하세요"
                     required
+                    disabled={isLoading} // 로딩 중 비활성화
                   />
                   <button
                     type="button"
@@ -85,14 +119,21 @@ const Login = () => {
                 </div>
               </div>
 
+              {/* 4. 에러 메시지 표시 UI 추가 */}
+              {error && <p className={styles.errorMessage}>{error}</p>}
+
               <div className={styles.forgotPassword}>
                 <a href="/find-password" className={styles.link}>
                   비밀번호 찾기
                 </a>
               </div>
 
-              <button type="submit" className={styles.loginButton}>
-                로그인
+              <button
+                type="submit"
+                className={styles.loginButton}
+                disabled={isLoading} // 5. 로딩 중 버튼 비활성화
+              >
+                {isLoading ? "로그인 중..." : "로그인"}
               </button>
             </form>
 
