@@ -41,6 +41,11 @@ type LoginData = {
   accessToken: string;
 };
 
+// Access Token 재발급 성공 시 받을 데이터 타입
+type RefreshData = {
+  accessToken: string;
+};
+
 //  로그인 API 함수
 export async function login(body: LoginBody): Promise<LoginData> {
   const res = await api.post("/auth/login", body);
@@ -51,6 +56,13 @@ export async function login(body: LoginBody): Promise<LoginData> {
 export async function register(body: RegisterBody): Promise<ApiSuccessMessage> {
   const res = await api.post("/auth/register", body);
   return { message: res.data.message };
+}
+
+// HttpOnly 쿠키에 담긴 Refresh Token을 이용해 새 Access Token을 요청합니다.
+
+export async function refreshAccessToken(): Promise<RefreshData> {
+  const res = await api.post("/auth/refresh");
+  return res.data.data as RefreshData;
 }
 
 // 4. 비밀번호 찾기 1단계: 인증번호 요청
