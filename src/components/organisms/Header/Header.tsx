@@ -1,14 +1,7 @@
-import { Heart, ShoppingCart } from "lucide-react";
 import { CATEGORIES } from "../../../constants/categories";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuthStore } from "../../../store/authStore";
 import { Logo } from "../../atoms";
-import {
-  AuthNav,
-  IconButton,
-  NavMenu,
-  SearchBar,
-  UserMenu,
-} from "../../molecules";
+import { AuthNav, NavMenu, SearchBar, UserNav } from "../../molecules";
 import styles from "./Header.module.css";
 
 type HeaderProps = {
@@ -24,7 +17,8 @@ export default function Header({
   selectedCategory,
   setSelectedCategory,
 }: HeaderProps) {
-  const { isLoggedIn, user, wishlistCount, cartCount } = useAuth();
+  const { accessToken } = useAuthStore();
+  const isLoggedIn = !!accessToken;
 
   return (
     <header className={styles.header}>
@@ -38,25 +32,9 @@ export default function Header({
           }
         />
 
-        {isLoggedIn ? (
-          <div className={styles.rightMenu}>
-            <UserMenu userName={user?.name ?? ""} />
-            <IconButton
-              icon={Heart}
-              size={20}
-              count={wishlistCount}
-              to="/mypage/wishlist"
-            />
-            <IconButton
-              icon={ShoppingCart}
-              size={20}
-              count={cartCount}
-              to="/cart"
-            />
-          </div>
-        ) : (
-          <AuthNav />
-        )}
+        <div className={styles.rightMenu}>
+          {isLoggedIn ? <UserNav /> : <AuthNav />}
+        </div>
       </div>
 
       <NavMenu
