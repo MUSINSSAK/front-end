@@ -4,21 +4,20 @@ export const api = axios.create({
   baseURL: "/api",
 });
 
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("accessToken");
-//   if (token) config.headers.Authorization = `Bearer ${token}`;
-//   return config;
-// });
+api.interceptors.request.use(
+  (config) => {
+    // localStorage에서 accessToken을 가져옵니다.
+    const accessToken = localStorage.getItem("accessToken");
 
-// api.interceptors.response.use(
-//   (res) => res,
-//   (error) => {
-//     const status = error.response?.status;
-//     if (status === 401) {
-//       localStorage.removeItem("accessToken");
-//       // TODO: 전역 토스트/스낵바
-//       window.location.href = "/login";
-//     }
-//     return Promise.reject(error);
-//   },
-// );
+    // 토큰이 존재하면, 모든 요청 헤더에 Authorization을 추가합니다.
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    // 요청 에러 처리
+    return Promise.reject(error);
+  },
+);

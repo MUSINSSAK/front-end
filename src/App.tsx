@@ -9,6 +9,7 @@ import { ToastProvider } from "./contexts/ToastContext";
 import {
   Cart,
   Category,
+  FindPassword,
   Home,
   Login,
   Mypage,
@@ -30,6 +31,7 @@ export default function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<SignUp />} />
+                  <Route path="/find-password" element={<FindPassword />} />
 
                   <Route path="/category/:cat" element={<Category />} />
                   <Route path="/products/:id" element={<ProductDetail />} />
