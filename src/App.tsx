@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { CategoryProvider } from "./contexts/CategoryContext";
 import { ModalProvider } from "./contexts/ModalContext";
 import { ToastProvider } from "./contexts/ToastContext";
+import { useTokenExpirationCheck } from "./hooks/useTokenExpirationCheck";
 import {
   Cart,
   Category,
@@ -20,6 +21,11 @@ import {
   SignUp,
 } from "./pages";
 import type { Message } from "./types/types";
+
+function GlobalAppSetup() {
+  useTokenExpirationCheck();
+  return null;
+}
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -52,23 +58,21 @@ export default function App() {
         <AuthProvider>
           <CategoryProvider>
             <ModalProvider>
+              <GlobalAppSetup />
               <MainTemplate>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/find-password" element={<FindPassword />} />
-
                   <Route path="/category/:cat" element={<Category />} />
                   <Route path="/products/:id" element={<ProductDetail />} />
                   <Route
                     path="/products/:id/inquiry"
                     element={<ProductInquiry />}
                   />
-
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/payment" element={<Payment />} />
-
                   <Route path="/mypage/:tab?" element={<Mypage />} />
                 </Routes>
 
