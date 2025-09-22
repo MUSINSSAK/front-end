@@ -1,0 +1,54 @@
+.close {
+  display: flex;
+  margin-left: auto;
+  margin-bottom: 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.input {
+  flex: 1;
+}
+
+.button {
+  width: 4rem;
+  height: 2.5rem;
+}
+
+.headRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.listWrap {
+  margin-top: 12px;
+}
+
+.loading,
+.error,
+.empty {
+  padding: 12px;
+}
+
+.error {
+  color: #d33;
+}
+
+.empty {
+  color: #666;
+}
+
+.items {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  gap: 8px;
+}

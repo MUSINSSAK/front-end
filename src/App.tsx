@@ -3,13 +3,14 @@ import { Route, Routes } from "react-router-dom";
 import styles from "./App.module.css";
 import { ChatWidget } from "./components/organisms";
 import { MainTemplate } from "./components/templates";
-import { AuthProvider } from "./contexts/AuthContext";
 import { CategoryProvider } from "./contexts/CategoryContext";
 import { ModalProvider } from "./contexts/ModalContext";
 import { ToastProvider } from "./contexts/ToastContext";
+import { useTokenExpirationCheck } from "./hooks/useTokenExpirationCheck";
 import {
   Cart,
   Category,
+  FindPassword,
   Home,
   Login,
   Mypage,
@@ -19,6 +20,11 @@ import {
   SignUp,
 } from "./pages";
 import type { Message } from "./types/types";
+
+function GlobalAppSetup() {
+  useTokenExpirationCheck();
+  return null;
+}
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -48,40 +54,37 @@ export default function App() {
   return (
     <div className={styles.app}>
       <ToastProvider>
-        <AuthProvider>
-          <CategoryProvider>
-            <ModalProvider>
-              <MainTemplate>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<SignUp />} />
-
-                  <Route path="/category/:cat" element={<Category />} />
-                  <Route path="/products/:id" element={<ProductDetail />} />
-                  <Route
-                    path="/products/:id/inquiry"
-                    element={<ProductInquiry />}
-                  />
-
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/payment" element={<Payment />} />
-
-                  <Route path="/mypage/:tab?" element={<Mypage />} />
-                </Routes>
-
-                <ChatWidget
-                  isOpen={isChatOpen}
-                  messages={messages}
-                  newMessage={newMessage}
-                  onToggle={() => setIsChatOpen(!isChatOpen)}
-                  onChange={setNewMessage}
-                  onSend={handleSendMessage}
+        <CategoryProvider>
+          <ModalProvider>
+            <GlobalAppSetup />
+            <MainTemplate>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/find-password" element={<FindPassword />} />
+                <Route path="/category/:cat" element={<Category />} />
+                <Route path="/products/:id" element={<ProductDetail />} />
+                <Route
+                  path="/products/:id/inquiry"
+                  element={<ProductInquiry />}
                 />
-              </MainTemplate>
-            </ModalProvider>
-          </CategoryProvider>
-        </AuthProvider>
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route path="/mypage/:tab?" element={<Mypage />} />
+              </Routes>
+
+              <ChatWidget
+                isOpen={isChatOpen}
+                messages={messages}
+                newMessage={newMessage}
+                onToggle={() => setIsChatOpen(!isChatOpen)}
+                onChange={setNewMessage}
+                onSend={handleSendMessage}
+              />
+            </MainTemplate>
+          </ModalProvider>
+        </CategoryProvider>
       </ToastProvider>
     </div>
   );

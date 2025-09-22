@@ -1,3 +1,4 @@
+export { default as AddressSearch } from "./AddressSearch/AddressSearch";
 export { default as CartFooter } from "./CartFooter/CartFooter";
 export { default as CartHeader } from "./CartHeader/CartHeader";
 export { default as CartList } from "./CartList/CartList";
