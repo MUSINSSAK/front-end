@@ -23,3 +23,4 @@ export { default as SearchBar } from "./SearchBar/SearchBar";
 export { default as SidebarMenu } from "./SidebarMenu/SidebarMenu";
 export { default as Table } from "./Table/Table";
 export { default as UserMenu } from "./UserMenu/UserMenu";
+export { default as UserNav } from "./UserNav/UserNav";

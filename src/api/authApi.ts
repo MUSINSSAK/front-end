@@ -88,3 +88,9 @@ export async function resetPassword(
   const res = await api.post("/auth/password/reset", body);
   return { message: res.data.message };
 }
+
+// 로그아웃 API 함수
+export async function logout(): Promise<ApiSuccessMessage> {
+  const res = await api.post("/auth/logout");
+  return { message: res.data.message };
+}
