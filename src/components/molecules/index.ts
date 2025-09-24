@@ -14,6 +14,7 @@ export { default as EmptyState } from "./EmptyState/EmptyState";
 export { default as FilterSection } from "./FilterSection/FilterSection";
 export { default as FooterColumn } from "./FooterColumn/FooterColumn";
 export { default as IconButton } from "./IconButton/IconButton";
+export { default as ImageGallery } from "./ImageGallery/ImageGallery";
 export { default as NavMenu } from "./NavMenu/NavMenu";
 export { default as OrderItem } from "./OrderItem/OrderItem";
 export { default as OrderSummary } from "./OrderSummary/OrderSummary";
