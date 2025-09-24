@@ -1,7 +1,7 @@
 import { Minus, Plus } from "lucide-react";
 import styles from "./NumberStepper.module.css";
 
-export type NumberStepperProps = {
+type NumberStepperProps = {
   value: number;
   min: number;
   max: number;
