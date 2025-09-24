@@ -27,7 +27,7 @@ export type PaymentInfoResponse = {
 };
 
 // 결제 요청 API 응답 타입
-export type PaymentRequestResponse = {
+type PaymentRequestResponse = {
   paymentId: string;
   merchantId: string;
   channelKey: string; // V2 API용 추가
@@ -82,12 +82,12 @@ export async function requestPayment(
 }
 
 // 결제 완료 API 타입
-export type PaymentCompleteRequest = {
+type PaymentCompleteRequest = {
   transactionId: string;
   status: string;
 };
 
-export type PaymentCompleteResponse = {
+type PaymentCompleteResponse = {
   orderNumber: string;
   paymentId: string;
   transactionId: string;

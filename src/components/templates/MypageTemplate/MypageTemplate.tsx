@@ -13,7 +13,7 @@ import type React from "react";
 import { SidebarMenu } from "../../molecules";
 import styles from "./MypageTemplate.module.css";
 
-export type MypageTemplateProps = {
+type MypageTemplateProps = {
   activeKey: string;
   onSelect: (key: string) => void;
   children: React.ReactNode;

@@ -55,7 +55,7 @@ export async function getOrderItems(orderIdentifier: string | number) {
   return response.data.data;
 }
 
-export type UpdateOrderInfoRequest = {
+type UpdateOrderInfoRequest = {
   deliveryInfo: {
     recipient: string;
     phone: string;
