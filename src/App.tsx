@@ -14,11 +14,14 @@ import {
   Home,
   Login,
   Mypage,
+  Order,
   Payment,
+  PaymentSuccess,
   ProductDetail,
   ProductInquiry,
   SignUp,
 } from "./pages";
+
 import type { Message } from "./types/types";
 
 function GlobalAppSetup() {
@@ -71,6 +74,8 @@ export default function App() {
                 />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/payment" element={<Payment />} />
+                <Route path="/payment/success" element={<PaymentSuccess />} />
+                <Route path="/order" element={<Order />} />
                 <Route path="/mypage/:tab?" element={<Mypage />} />
               </Routes>
 
