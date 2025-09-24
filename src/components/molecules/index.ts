@@ -1,10 +1,14 @@
 export { default as AccountSecurity } from "./AccountSecurity/AccountSecurity";
 export { default as AddressSearchItem } from "./AddressSearchItem/AddressSearchItem";
+export { default as AddressSearchModal } from "./AddressSearchModal/AddressSearchModal";
 export { default as AddressSection } from "./AddressSection/AddressSection";
 export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
+export { default as CartBrandGroup } from "./CartBrandGroup/CartBrandGroup";
+export { default as CartSelectionBar } from "./CartSelectionBar/CartSelectionBar";
 export { default as CouponItem } from "./CouponItem/CouponItem";
+export { default as CouponModal } from "./CouponModal/CouponModal";
 export { default as Dialog } from "./Dialog/Dialog";
 export { default as EmptyState } from "./EmptyState/EmptyState";
 export { default as FilterSection } from "./FilterSection/FilterSection";

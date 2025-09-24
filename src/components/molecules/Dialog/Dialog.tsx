@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { Modal } from "../../atoms";
 import styles from "./Dialog.module.css";
 
-export type DialogProps = {
+type DialogProps = {
   open: boolean;
   onClose?: () => void;
   closeOnBackdrop?: boolean;

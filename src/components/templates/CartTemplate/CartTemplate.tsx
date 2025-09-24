@@ -8,6 +8,8 @@ type CartTemplateProps = {
   selected: number;
   finalAmount: number;
   onDeleteSelected: () => void;
+  onOrder?: () => void;
+  ordering?: boolean;
   children: React.ReactNode;
 };
 
@@ -16,6 +18,8 @@ export default function CartTemplate({
   selected,
   finalAmount,
   onDeleteSelected,
+  onOrder,
+  ordering = false,
   children,
 }: CartTemplateProps) {
   return (
@@ -28,6 +32,8 @@ export default function CartTemplate({
         items={items.length}
         selectedCount={selected}
         finalAmount={finalAmount}
+        onOrder={onOrder}
+        ordering={ordering}
       />
     </div>
   );

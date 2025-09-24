@@ -1,11 +1,24 @@
-import { ShoppingBag } from "lucide-react";
+﻿import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
-import type { Order } from "../../../types/order";
 import { Select, Tag } from "../../atoms";
 import { EmptyState, Table } from "../../molecules";
 import styles from "./OrderHistorySection.module.css";
 
-const dummyOrders: Order[] = [
+type OrderHistory = {
+  date: string;
+  orderNumber: string;
+  products: Array<{
+    name: string;
+    image: string;
+    option: string;
+    count: number;
+  }>;
+  amount: string;
+  status: string;
+  statusType: "success" | "processing" | "canceled";
+};
+
+const dummyOrders: OrderHistory[] = [
   {
     date: "2023-10-01",
     orderNumber: "ORD123456",
@@ -27,7 +40,7 @@ const dummyOrders: Order[] = [
     orderNumber: "ORD123457",
     products: [
       {
-        name: "오버사이즈 블레이저",
+        name: "오버핏 블레이저",
         image:
           "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
         option: "M",
@@ -57,15 +70,14 @@ const dummyOrders: Order[] = [
         count: 1,
       },
       {
-        name: "레트로 매트 립스틱",
+        name: "매트 립스틱",
         image:
           "https://readdy.ai/api/search-image?query=elegant%20red%20lipstick%20on%20black%20glossy%20surface%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product11&orientation=squarish",
-
-        option: "312호",
+        option: "312",
         count: 1,
       },
       {
-        name: "수분 크림",
+        name: "보습 크림",
         image:
           "https://readdy.ai/api/search-image?query=luxury%20moisturizing%20cream%20in%20elegant%20glass%20jar%20on%20clean%20white%20background%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product8&orientation=squarish",
         option: "50ml",
@@ -91,7 +103,7 @@ export default function OrderHistorySection() {
 
   const onPeriodChange = (period: string) => {
     setSelected(period);
-    // 여기에 기간 변경에 따른 추가 로직을 작성할 수 있습니다.
+    // TODO: 기간 변경에 따른 필터링 로직을 추가하세요.
   };
 
   return (
@@ -101,9 +113,9 @@ export default function OrderHistorySection() {
           <h3 className={styles.cardTitle}>주문 내역</h3>
           <Select
             value={selected}
-            onChange={(e) => {
-              setSelected(e.target.value);
-              onPeriodChange(e.target.value);
+            onChange={(event) => {
+              setSelected(event.target.value);
+              onPeriodChange(event.target.value);
             }}
           >
             {periods.map((period) => (
@@ -125,25 +137,25 @@ export default function OrderHistorySection() {
             columns={columns}
             data={dummyOrders}
             rowClassName={() => styles.row}
-            renderRow={(o) => [
-              o.date,
-              o.orderNumber,
+            renderRow={(order: OrderHistory) => [
+              order.date,
+              order.orderNumber,
               <div className={styles.products} key="products">
-                {o.products.map((p) => (
-                  <div key={p.name} className={styles.product}>
-                    <img src={p.image} alt={p.name} />
+                {order.products.map((product) => (
+                  <div key={product.name} className={styles.product}>
+                    <img src={product.image} alt={product.name} />
                     <div>
-                      <p className={styles.productName}>{p.name}</p>
+                      <p className={styles.productName}>{product.name}</p>
                       <p className={styles.productDetails}>
-                        {p.option} / {p.count}개
+                        {product.option} / {product.count}개
                       </p>
                     </div>
                   </div>
                 ))}
               </div>,
-              `${o.amount}원`,
-              <Tag variant={o.statusType} key="status">
-                {o.status}
+              `${order.amount}원`,
+              <Tag variant={order.statusType} key="status">
+                {order.status}
               </Tag>,
             ]}
           />

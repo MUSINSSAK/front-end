@@ -1,6 +1,6 @@
+import { useMemo } from "react";
 import type { OrderItemData } from "../../../types/order";
-import { Checkbox } from "../../atoms";
-import { OrderItem } from "../../molecules";
+import { CartBrandGroup, CartSelectionBar } from "../../molecules";
 import styles from "./CartList.module.css";
 
 type CartListProps = {
@@ -9,6 +9,7 @@ type CartListProps = {
   onToggleItem: (id: number) => void;
   onChangeQty: (id: number, qty: number) => void;
   onDelete: (id: number) => void;
+  onToggleAll?: (checked: boolean) => void;
 };
 
 export default function CartList({
@@ -17,47 +18,56 @@ export default function CartList({
   onToggleItem,
   onChangeQty,
   onDelete,
+  onToggleAll,
 }: CartListProps) {
-  const grouped = items.reduce<Record<string, OrderItemData[]>>((acc, cur) => {
-    if (!acc[cur.brand]) {
-      acc[cur.brand] = [];
+  const totalCount = items.length;
+  const selectedCount = useMemo(
+    () => items.filter((item) => item.selected).length,
+    [items],
+  );
+  const allChecked = totalCount > 0 && selectedCount === totalCount;
+
+  const grouped = useMemo(() => {
+    return items.reduce<Record<string, OrderItemData[]>>((acc, cur) => {
+      if (!acc[cur.brand]) acc[cur.brand] = [];
+      acc[cur.brand].push(cur);
+      return acc;
+    }, {});
+  }, [items]);
+
+  const handleToggleAll = () => {
+    const next = !allChecked;
+    if (onToggleAll) {
+      onToggleAll(next);
+      return;
     }
-    acc[cur.brand].push(cur);
-    return acc;
-  }, {});
+
+    items.forEach((item) => {
+      if (item.selected !== next) onToggleItem(item.id);
+    });
+  };
 
   return (
-    <div className="space-y-8 mb-8">
-      {Object.entries(grouped).map(([brand, group]) => {
-        const allChecked = group.every((i) => i.selected);
-        const handleBrandToggle = () => onToggleBrand(brand, !allChecked);
+    <div className={styles.listWrapper}>
+      <CartSelectionBar
+        checked={allChecked}
+        totalCount={totalCount}
+        selectedCount={selectedCount}
+        onToggle={handleToggleAll}
+      />
 
-        return (
-          <div key={brand} className={styles.container}>
-            <div className={styles.header}>
-              <Checkbox
-                checked={allChecked}
-                onChange={handleBrandToggle}
-                className={styles.checkbox}
-              />
-              <span className={styles.brand}>{brand}</span>
-            </div>
-
-            <div className={styles.list}>
-              {group.map((item) => (
-                <OrderItem
-                  key={item.id}
-                  item={item}
-                  onToggleSelect={onToggleItem}
-                  onChangeQty={onChangeQty}
-                  onDelete={onDelete}
-                  showDivider={false}
-                />
-              ))}
-            </div>
-          </div>
-        );
-      })}
+      {Object.entries(grouped).map(([brand, group]) => (
+        <CartBrandGroup
+          key={brand}
+          brand={brand}
+          items={group}
+          checked={group.every((item) => item.selected)}
+          onToggleBrand={onToggleBrand}
+          onToggleItem={onToggleItem}
+          onChangeQty={onChangeQty}
+          onDelete={onDelete}
+        />
+      ))}
     </div>
   );
 }
