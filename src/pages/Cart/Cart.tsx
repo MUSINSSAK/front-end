@@ -56,31 +56,33 @@ export default function CartPage() {
       try {
         const body = await getCart();
         const mapped: OrderItemData[] =
-          body?.cartItems?.map((it: {
-            cartItemId: number;
-            brandName: string;
-            productName: string;
-            size: string;
-            salePrice?: number;
-            discountedPrice?: number;
-            originalPrice: number;
-            quantity: number;
-            thumbnailImageUrl?: string;
-            productImageUrl?: string;
-            selected: boolean;
-            stock: number;
-          }) => ({
-            id: it.cartItemId,
-            brand: it.brandName,
-            name: it.productName,
-            option: String(it.size),
-            price: it.salePrice ?? it.discountedPrice ?? it.originalPrice,
-            originalPrice: it.originalPrice,
-            quantity: it.quantity,
-            image: it.thumbnailImageUrl ?? it.productImageUrl ?? "",
-            selected: it.selected,
-            stock: it.stock,
-          })) ?? [];
+          body?.cartItems?.map(
+            (it: {
+              cartItemId: number;
+              brandName: string;
+              productName: string;
+              size: string;
+              salePrice?: number;
+              discountedPrice?: number;
+              originalPrice: number;
+              quantity: number;
+              thumbnailImageUrl?: string;
+              productImageUrl?: string;
+              selected: boolean;
+              stock: number;
+            }) => ({
+              id: it.cartItemId,
+              brand: it.brandName,
+              name: it.productName,
+              option: String(it.size),
+              price: it.salePrice ?? it.discountedPrice ?? it.originalPrice,
+              originalPrice: it.originalPrice,
+              quantity: it.quantity,
+              image: it.thumbnailImageUrl ?? it.productImageUrl ?? "",
+              selected: it.selected,
+              stock: it.stock,
+            }),
+          ) ?? [];
         setItems(mapped);
       } catch (e) {
         console.error("장바구니 조회 실패:", e);
@@ -303,7 +305,10 @@ export default function CartPage() {
         state: { orderPk: created.orderPk, orderId: created.orderId },
       });
     } catch (e: unknown) {
-      const error = e as { response?: { status?: number; data?: { message?: string } }; message?: string };
+      const error = e as {
+        response?: { status?: number; data?: { message?: string } };
+        message?: string;
+      };
       if (error?.response?.status === 401) {
         alert("로그인이 필요합니다.");
         navigate("/login", { replace: true });

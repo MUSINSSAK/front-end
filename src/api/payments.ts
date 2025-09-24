@@ -66,7 +66,10 @@ export async function requestPayment(
     console.log("결제 요청 API 성공:", response.data);
     return response.data.data;
   } catch (error: unknown) {
-    const apiError = error as { response?: { status?: number; statusText?: string; data?: unknown }; message?: string };
+    const apiError = error as {
+      response?: { status?: number; statusText?: string; data?: unknown };
+      message?: string;
+    };
     console.error("결제 요청 API 오류:", {
       orderId,
       status: apiError.response?.status,
@@ -114,7 +117,10 @@ export async function completePayment(
     console.log("✅ 백엔드 결제 완료 처리 성공:", response.data);
     return response.data.data;
   } catch (error: unknown) {
-    const apiError = error as { response?: { status?: number; statusText?: string; data?: unknown }; message?: string };
+    const apiError = error as {
+      response?: { status?: number; statusText?: string; data?: unknown };
+      message?: string;
+    };
     console.error("❌ 백엔드 결제 완료 처리 실패:", {
       paymentId,
       status: apiError.response?.status,
