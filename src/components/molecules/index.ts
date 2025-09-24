@@ -4,6 +4,8 @@ export { default as AddressSection } from "./AddressSection/AddressSection";
 export { default as AuthNav } from "./AuthNav/AuthNav";
 export { default as Banner } from "./Banner/Banner";
 export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
+export { default as CartBrandGroup } from "./CartBrandGroup/CartBrandGroup";
+export { default as CartSelectionBar } from "./CartSelectionBar/CartSelectionBar";
 export { default as CouponItem } from "./CouponItem/CouponItem";
 export { default as Dialog } from "./Dialog/Dialog";
 export { default as EmptyState } from "./EmptyState/EmptyState";

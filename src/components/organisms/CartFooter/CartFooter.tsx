@@ -1,3 +1,4 @@
+// src/components/organisms/CartFooter/CartFooter.tsx
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../atoms";
 import styles from "./CartFooter.module.css";
@@ -6,7 +7,8 @@ type CartFooterProps = {
   items: number;
   selectedCount: number;
   finalAmount: number;
-  onOrder?: () => void; // ✅ 외부에서 주문 클릭 동작을 주입받음
+  onOrder?: () => void; // 외부에서 주문 클릭 동작 주입
+  ordering?: boolean; // ✅ 주문 진행 중
 };
 
 export default function CartFooter({
@@ -14,17 +16,18 @@ export default function CartFooter({
   selectedCount,
   finalAmount,
   onOrder,
+  ordering = false,
 }: CartFooterProps) {
   const navigate = useNavigate();
 
-  // ✅ 기본 동작: onOrder가 있으면 그걸 실행, 없으면 /order로 이동
+  // onOrder 있으면 실행, 없으면 /order로 이동
   const handleOrderClick = () => {
-    if (onOrder) {
-      onOrder();
-    } else {
-      navigate("/order");
-    }
+    if (ordering) return; // ✅ 진행 중엔 무시
+    if (onOrder) onOrder();
+    else navigate("/order");
   };
+
+  const disabled = ordering || selectedCount === 0;
 
   return (
     <div>
@@ -39,12 +42,13 @@ export default function CartFooter({
 
           <Button
             type="button"
-            variant={selectedCount > 0 ? "active" : "disabled"}
+            variant={!disabled ? "active" : "disabled"}
             className={styles.checkoutButton}
-            onClick={handleOrderClick} // ✅ 수정됨
-            disabled={selectedCount === 0}
+            onClick={handleOrderClick}
+            disabled={disabled}
+            aria-busy={ordering}
           >
-            주문하기 ({selectedCount})
+            {ordering ? "주문 처리 중…" : `주문하기 (${selectedCount})`}
           </Button>
         </div>
       )}
