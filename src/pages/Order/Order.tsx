@@ -1,6 +1,17 @@
-import type React from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { OrderItemsApiData } from "../../api/orders";
+import { getOrderItems, updateOrderInfo } from "../../api/orders";
+import {
+  DeliveryInfoSection,
+  DiscountSection,
+  OrdererInfoSection,
+  OrderFixedBar,
+  OrderHeader,
+  OrderItemsSection,
+  OrderSummarySection,
+} from "../../components/organisms";
+import { OrderTemplate } from "../../components/templates";
 import type {
   CartToOrderState,
   Coupon,
@@ -8,87 +19,167 @@ import type {
   OrderItemData,
   OrderToPaymentState,
 } from "../../types/order";
-import styles from "./Order.module.css";
 
-// 숫자 포맷터
-const fmt = (n: number) =>
-  n.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
+const MIN_POINT_USE = 2000;
+const DELIVERY_REQUEST_OPTIONS = [
+  "직접 입력",
+  "문 앞에 놓아주세요",
+  "부재 시 경비실에 맡겨주세요",
+  "택배함에 넣어주세요",
+  "배송 전 연락 부탁드립니다",
+];
 
-// ====== Cart → Order 복구 유틸 ======
-const SS_KEY = "musinssak_cart_selected";
-const CART_SUMMARY_SS = "musinssak_cart_summary";
+const formatCurrency = (value: number) =>
+  `${Math.max(0, value).toLocaleString("ko-KR", { maximumFractionDigits: 0 })}원`;
 
-// (선택) 로그인 이메일 자동 복구 (원하는 키로 바꿔도 됩니다)
 function restoreUserEmail(): string {
   const keys = ["musinssak_user_email", "logged_in_email", "user_email"];
-  for (const k of keys) {
+  for (const key of keys) {
     try {
-      const v = sessionStorage.getItem(k) || localStorage.getItem(k);
-      if (v) return v;
+      const value = sessionStorage.getItem(key) || localStorage.getItem(key);
+      if (value) return value;
     } catch {}
   }
   return "";
 }
 
-function isOrderItemsState(v: any): v is CartToOrderState {
-  return v && typeof v === "object" && Array.isArray(v.orderItems);
+function isOrderItemsState(value: unknown): value is CartToOrderState {
+  if (!value || typeof value !== "object") return false;
+  const maybe = value as { orderItems?: unknown };
+  return Array.isArray(maybe.orderItems);
 }
 
-// Cart(OrderItemData[]) → Order(OrderItem[])
-function mapCartDataToOrderItems(arr: OrderItemData[]): OrderItem[] {
-  return arr
-    .filter((i) => i.selected)
-    .map((i) => ({
-      id: i.id,
-      brand: i.brand,
-      name: i.name,
-      size: i.option,
-      price: i.price,
-      quantity: i.quantity,
-      image: i.image,
+function mapCartDataToOrderItems(items: OrderItemData[]): OrderItem[] {
+  return items
+    .filter((item) => item.selected)
+    .map((item) => ({
+      id: item.id,
+      brand: item.brand,
+      name: item.name,
+      size: item.option,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image,
     }));
 }
 
+function isOrderItemData(value: unknown): value is OrderItemData {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Partial<OrderItemData>;
+  return (
+    typeof item.id === "number" &&
+    typeof item.brand === "string" &&
+    typeof item.name === "string" &&
+    typeof item.option === "string" &&
+    typeof item.price === "number" &&
+    typeof item.originalPrice === "number" &&
+    typeof item.quantity === "number" &&
+    typeof item.image === "string" &&
+    typeof item.selected === "boolean"
+  );
+}
+
+const isOrderItemDataArray = (value: unknown): value is OrderItemData[] =>
+  Array.isArray(value) && value.every(isOrderItemData);
+
+function isOrderItem(value: unknown): value is OrderItem {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Partial<OrderItem>;
+  return (
+    typeof item.id === "number" &&
+    typeof item.brand === "string" &&
+    typeof item.name === "string" &&
+    typeof item.size === "string" &&
+    typeof item.price === "number" &&
+    typeof item.quantity === "number" &&
+    typeof item.image === "string"
+  );
+}
+
+const isOrderItemArray = (value: unknown): value is OrderItem[] =>
+  Array.isArray(value) && value.every(isOrderItem);
+
+function parseOrderPk(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    if (/^\d+$/.test(trimmed)) {
+      const parsed = Number(trimmed);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return undefined;
+}
+
+type OrderMeta = {
+  orderId?: string;
+  orderPk?: number;
+};
+
+function restoreOrderMeta(locationState: unknown): OrderMeta {
+  if (locationState && typeof locationState === "object") {
+    const maybe = locationState as Record<string, unknown>;
+    const orderId =
+      typeof maybe.orderId === "string" ? maybe.orderId : undefined;
+    const orderPk = parseOrderPk(maybe.orderPk);
+    if (orderId || typeof orderPk === "number") {
+      return { orderId, orderPk };
+    }
+  }
+  try {
+    const raw = sessionStorage.getItem("musinssak_recent_order");
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      const orderId =
+        typeof parsed?.orderId === "string"
+          ? (parsed.orderId as string)
+          : undefined;
+      const orderPk = parseOrderPk(parsed?.orderPk);
+      if (orderId || typeof orderPk === "number") {
+        return { orderId, orderPk };
+      }
+    }
+  } catch {}
+  return {};
+}
+
 function restoreOrderItemsFromAnyState(locationState: unknown): OrderItem[] {
-  // 1) 라우터 state
   if (isOrderItemsState(locationState) && locationState.orderItems.length) {
     return locationState.orderItems;
   }
 
-  // 2) 세션
   try {
-    const raw = sessionStorage.getItem(SS_KEY);
+    const raw = sessionStorage.getItem("musinssak_cart_selected");
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        if (parsed.length && "option" in parsed[0]) {
-          return mapCartDataToOrderItems(parsed as OrderItemData[]);
-        }
-        return parsed as OrderItem[];
+      if (isOrderItemDataArray(parsed)) {
+        return mapCartDataToOrderItems(parsed);
+      }
+      if (isOrderItemArray(parsed)) {
+        return parsed;
       }
     }
   } catch {}
 
-  // 3) 로컬
   try {
-    const raw = localStorage.getItem(SS_KEY);
+    const raw = localStorage.getItem("musinssak_cart_selected");
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        if (parsed.length && "option" in parsed[0]) {
-          return mapCartDataToOrderItems(parsed as OrderItemData[]);
-        }
-        return parsed as OrderItem[];
+      if (isOrderItemDataArray(parsed)) {
+        return mapCartDataToOrderItems(parsed);
+      }
+      if (isOrderItemArray(parsed)) {
+        return parsed;
       }
     }
   } catch {}
 
-  // 4) 폴백(데모)
   return [
     {
       id: 1,
       brand: "NIKE",
-      name: "에어맥스 270 스니커즈",
+      name: "에어맥스 270 화이트 스니커즈",
       size: "250",
       price: 159000,
       quantity: 1,
@@ -98,7 +189,7 @@ function restoreOrderItemsFromAnyState(locationState: unknown): OrderItem[] {
     {
       id: 2,
       brand: "ADIDAS",
-      name: "스탠 스미스 스니커즈",
+      name: "스탠 스미스 화이트 스니커즈",
       size: "245",
       price: 109000,
       quantity: 2,
@@ -108,7 +199,6 @@ function restoreOrderItemsFromAnyState(locationState: unknown): OrderItem[] {
   ];
 }
 
-// 장바구니 합계 요약 복구
 function restoreCartSummary(): {
   originalTotal: number;
   discountTotal: number;
@@ -116,8 +206,8 @@ function restoreCartSummary(): {
 } | null {
   try {
     const raw =
-      sessionStorage.getItem(CART_SUMMARY_SS) ||
-      localStorage.getItem(CART_SUMMARY_SS);
+      sessionStorage.getItem("musinssak_cart_summary") ||
+      localStorage.getItem("musinssak_cart_summary");
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (
@@ -128,66 +218,61 @@ function restoreCartSummary(): {
     ) {
       return parsed;
     }
-    return null;
-  } catch {
-    return null;
-  }
+  } catch {}
+  return null;
 }
 
-// 저장된 originalPrice로 원가합 복구 (CartSummary 없을 때 폴백)
 function restoreOriginalTotalFromStorage(
   orderItems: OrderItem[],
 ): number | null {
   try {
-    const raw = sessionStorage.getItem(SS_KEY) || localStorage.getItem(SS_KEY);
+    const raw =
+      sessionStorage.getItem("musinssak_cart_selected") ||
+      localStorage.getItem("musinssak_cart_selected");
     if (!raw) return null;
     const arr = JSON.parse(raw);
-    if (!Array.isArray(arr) || arr.length === 0) return null;
-    const hasOriginal = "originalPrice" in (arr[0] || {});
-    if (!hasOriginal) return null;
+    if (!isOrderItemDataArray(arr) || arr.length === 0) return null;
 
-    const byId = new Map<number, any>();
-    arr.filter((x: any) => x.selected).forEach((x: any) => byId.set(x.id, x));
-    return orderItems.reduce((sum, oi) => {
-      const src = byId.get(oi.id);
-      if (!src) return sum;
-      return sum + Number(src.originalPrice) * Number(oi.quantity);
+    const byId = new Map<number, OrderItemData>();
+    arr
+      .filter((item) => item.selected)
+      .forEach((item) => byId.set(item.id, item));
+    return orderItems.reduce((sum, item) => {
+      const source = byId.get(item.id);
+      if (!source) return sum;
+      return sum + Number(source.originalPrice) * Number(item.quantity);
     }, 0);
-  } catch {
-    return null;
-  }
+  } catch {}
+  return null;
 }
 
-// 장바구니 할인 합계(원가-판매가)
 function computeCartDiscountFromStorage(orderItems: OrderItem[]): number {
   let raw: string | null = null;
   try {
-    raw = sessionStorage.getItem(SS_KEY);
+    raw = sessionStorage.getItem("musinssak_cart_selected");
   } catch {}
   if (!raw) {
     try {
-      raw = localStorage.getItem(SS_KEY);
+      raw = localStorage.getItem("musinssak_cart_selected");
     } catch {}
   }
   if (!raw) return 0;
 
   try {
-    const arr = JSON.parse(raw) as any[];
-    if (!Array.isArray(arr) || arr.length === 0) return 0;
-    const hasOriginal = "originalPrice" in (arr[0] || {});
-    if (!hasOriginal) return 0;
+    const arr = JSON.parse(raw);
+    if (!isOrderItemDataArray(arr) || arr.length === 0) return 0;
 
     const byId = new Map<number, OrderItemData>();
-    (arr as OrderItemData[])
-      .filter((x) => x.selected)
-      .forEach((x) => byId.set(x.id, x));
+    arr
+      .filter((item) => item.selected)
+      .forEach((item) => byId.set(item.id, item));
 
     let sum = 0;
-    for (const oi of orderItems) {
-      const src = byId.get(oi.id);
-      if (!src) continue;
-      const perItem = (src.originalPrice - src.price) * oi.quantity;
-      if (perItem > 0) sum += perItem;
+    for (const item of orderItems) {
+      const source = byId.get(item.id);
+      if (!source) continue;
+      const discount = (source.originalPrice - source.price) * item.quantity;
+      if (discount > 0) sum += discount;
     }
     return Math.max(0, sum);
   } catch {
@@ -195,56 +280,195 @@ function computeCartDiscountFromStorage(orderItems: OrderItem[]): number {
   }
 }
 
-const MIN_POINT_USE = 0;
+const AVAILABLE_COUPONS: Coupon[] = [
+  {
+    id: "coupon1",
+    name: "웰컴 신규 10% 할인 쿠폰",
+    discountRate: 10,
+    discountAmount: 0,
+    minOrderAmount: 30000,
+    maxDiscountAmount: 10000,
+    validUntil: "2025-08-19",
+    description: "웰컴 회원 대상 할인 혜택입니다.",
+  },
+  {
+    id: "coupon2",
+    name: "주말 한정 15% 할인 쿠폰",
+    discountRate: 15,
+    discountAmount: 0,
+    minOrderAmount: 50000,
+    maxDiscountAmount: 15000,
+    validUntil: "2025-08-31",
+    description: "주말 동안 특정 상품 할인 혜택입니다.",
+  },
+  {
+    id: "coupon3",
+    name: "첫 주문 5,000원 할인 쿠폰",
+    discountRate: 0,
+    discountAmount: 5000,
+    minOrderAmount: 20000,
+    maxDiscountAmount: 5000,
+    validUntil: "2025-12-31",
+    description: "첫 주문 고객 전용 정액 할인 쿠폰입니다.",
+  },
+];
 
-const Order: React.FC = () => {
-  const nav = useNavigate();
-  const { state } = useLocation();
+const Order = () => {
+  const navigate = useNavigate();
+  const { state } = useLocation() as { state?: unknown };
 
-  // 복구
-  const [orderItems] = useState<OrderItem[]>(
-    restoreOrderItemsFromAnyState(state),
+  const orderMeta = useMemo(() => restoreOrderMeta(state), [state]);
+  const fallbackOrderItems = useMemo(
+    () => restoreOrderItemsFromAnyState(state),
+    [state],
   );
-  const [showOrderItems, setShowOrderItems] = useState(false);
 
+  const [orderId, setOrderId] = useState<string | undefined>(orderMeta.orderId);
+  const [orderPk, setOrderPk] = useState<number | undefined>(orderMeta.orderPk);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>(fallbackOrderItems);
+  const [serverSummary, setServerSummary] = useState<
+    OrderItemsApiData["summary"] | null
+  >(null);
+  const [initialSummaryApplied, setInitialSummaryApplied] = useState(false);
+  const [loadingOrderItems, setLoadingOrderItems] = useState(false);
+  const [orderItemsError, setOrderItemsError] = useState<string | null>(null);
+
+  const resolvedOrderPk = useMemo(() => parseOrderPk(orderPk), [orderPk]);
   const cartSummary = restoreCartSummary();
 
-  // 장바구니 할인(표시)
-  const cartDiscount = useMemo(
-    () =>
-      cartSummary
-        ? Math.max(0, cartSummary.discountTotal)
-        : computeCartDiscountFromStorage(orderItems),
-    [orderItems, cartSummary],
-  );
+  const cartDiscount = useMemo(() => {
+    if (serverSummary) return serverSummary.cartDiscount;
+    return cartSummary
+      ? Math.max(0, cartSummary.discountTotal)
+      : computeCartDiscountFromStorage(orderItems);
+  }, [orderItems, cartSummary, serverSummary]);
 
-  // 상품금액(표시) = 할인 전 원가합
   const originalTotalForDisplay = useMemo(() => {
+    if (serverSummary) return serverSummary.originalTotal;
     if (cartSummary) return cartSummary.originalTotal;
-    const fromStorage = restoreOriginalTotalFromStorage(orderItems);
-    if (typeof fromStorage === "number") return fromStorage;
-    // 최후 폴백
+    const restored = restoreOriginalTotalFromStorage(orderItems);
+    if (typeof restored === "number") return restored;
     const discountedSum = orderItems.reduce(
-      (sum, it) => sum + it.price * it.quantity,
+      (sum, item) => sum + item.price * item.quantity,
       0,
     );
     return discountedSum + cartDiscount;
-  }, [orderItems, cartSummary, cartDiscount]);
+  }, [orderItems, cartSummary, cartDiscount, serverSummary]);
 
-  // 계산 기준(쿠폰/배송비/최종) = 할인 후 금액
   const baseAmount = Math.max(0, originalTotalForDisplay - cartDiscount);
+  useEffect(() => {
+    if (!orderId && typeof resolvedOrderPk !== "number") return;
+    try {
+      sessionStorage.setItem(
+        "musinssak_recent_order",
+        JSON.stringify({
+          orderId: orderId ?? null,
+          orderPk: resolvedOrderPk ?? null,
+        }),
+      );
+    } catch {}
+  }, [orderId, resolvedOrderPk]);
 
-  // ===== 배송지 정보 =====
+  useEffect(() => {
+    // orderPk 또는 orderId가 있을 때 주문 정보 로드
+    const fetchKey = orderPk || orderId;
+    if (!fetchKey) return;
+    let ignore = false;
+    setLoadingOrderItems(true);
+    setOrderItemsError(null);
+
+    getOrderItems(fetchKey)
+      .then((data) => {
+        if (ignore) return;
+        const mappedItems = data.items.map((item, index) => {
+          console.log("Order API 응답 - 상품 정보:", {
+            id: item.id,
+            isDefault: item.isDefault,
+            productName: item.productName,
+            imageUrl: item.imageUrl,
+            hasDetailedInfo: !!(item.productName && item.brandName),
+          });
+
+          // 현재 API 응답에 상세 정보가 없으므로 fallback 데이터 사용
+          return {
+            id: item.id ?? item.cartItemId ?? item.productId ?? index,
+            brand: item.brandName ?? "브랜드명 없음",
+            name: item.productName ?? `상품 ${item.id}`,
+            size: item.size ?? "사이즈 정보 없음",
+            price: item.salePrice ?? item.originalPrice ?? 0,
+            quantity: item.quantity ?? 1,
+            image:
+              item.imageUrl ??
+              item.thumbnailImageUrl ??
+              `https://readdy.ai/api/search-image?query=product%20${item.id}&width=80&height=80&seq=order${index}&orientation=squarish`,
+          };
+        });
+        setOrderItems(mappedItems);
+        setInitialSummaryApplied(false);
+
+        // 현재 API 응답 구조에 맞춰 summary 생성
+        const summary = data.summary ?? {
+          originalTotal: data.totalProductAmount,
+          cartDiscount: data.discountAmount,
+          couponDiscount: 0,
+          pointsUsed: 0,
+          shippingFee: data.deliveryFee,
+          finalAmount: data.finalAmount,
+        };
+        setServerSummary(summary);
+        if (typeof data.orderPk === "number") {
+          setOrderPk(data.orderPk);
+        }
+        if (data.orderNumber) {
+          setOrderId(data.orderNumber);
+        }
+      })
+      .catch((error: unknown) => {
+        if (ignore) return;
+        const response = (
+          error as { response?: { status?: number; data?: { code?: string } } }
+        ).response;
+        const status = response?.status;
+        const code = response?.data?.code;
+        if (status === 400 && code === "ORDER_TIME_EXPIRED") {
+          setOrderItemsError(
+            "주문 가능 시간이 만료되었습니다. 장바구니에서 다시 진행해주세요.",
+          );
+        } else if (status === 403) {
+          setOrderItemsError("해당 주문에 접근할 권한이 없습니다.");
+        } else {
+          setOrderItemsError(
+            "주문 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+          );
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setLoadingOrderItems(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [orderPk, orderId]);
+
+  useEffect(() => {
+    if (!serverSummary || initialSummaryApplied) return;
+    setCouponDiscount(serverSummary.couponDiscount);
+    setPointsUsed(serverSummary.pointsUsed);
+    setInitialSummaryApplied(true);
+  }, [serverSummary, initialSummaryApplied]);
+
   const [deliveryInfo, setDeliveryInfo] = useState({
     name: "",
     recipient: "",
     phone: "",
     address: "",
     detailAddress: "",
-    deliveryRequest: "직접 수령",
+    deliveryRequest: DELIVERY_REQUEST_OPTIONS[0],
   });
 
-  // ===== 주문자 정보 =====
   const [ordererInfo, setOrdererInfo] = useState({
     name: "",
     email: restoreUserEmail(),
@@ -254,16 +478,15 @@ const Order: React.FC = () => {
 
   const toggleSameAsDelivery = () => {
     const next = !ordererInfo.sameAsDelivery;
-    setOrdererInfo((p) => ({
-      ...p,
+    setOrdererInfo((prev) => ({
+      ...prev,
       sameAsDelivery: next,
-      name: next ? deliveryInfo.recipient : p.name,
-      phone: next ? deliveryInfo.phone : p.phone,
-      email: p.email || restoreUserEmail(),
+      name: next ? deliveryInfo.recipient : prev.name,
+      phone: next ? deliveryInfo.phone : prev.phone,
+      email: prev.email || restoreUserEmail(),
     }));
   };
 
-  // ===== 주소 검색 모달 =====
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState<
@@ -277,132 +500,86 @@ const Order: React.FC = () => {
     setIsSearching(true);
     setHasSearched(true);
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      const mockResults = searchKeyword.includes("강남")
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      const results = searchKeyword.includes("서울")
         ? [
             {
               id: 1,
-              address: "서울특별시 강남구 테헤란로 152",
-              detail: "(역삼동, 강남파이낸스센터)",
+              address: "서울특별시 성동구 성수이로 152",
+              detail: "(성수동 트리마제)",
             },
             {
               id: 2,
-              address: "서울특별시 강남구 테헤란로 129",
-              detail: "(역삼동, 강남N타워)",
+              address: "서울특별시 성동구 성수이로 129",
+              detail: "(성수동 우림라이온스밸리)",
             },
             {
               id: 3,
-              address: "서울특별시 강남구 테헤란로 142",
-              detail: "(역삼동, 캐피탈타워)",
+              address: "서울특별시 성동구 아차산로 142",
+              detail: "(성수동 L타워)",
             },
           ]
         : [];
-      setSearchResults(mockResults);
+      setSearchResults(results);
     } finally {
       setIsSearching(false);
     }
   };
 
   const handleAddressSelect = (address: string) => {
-    setDeliveryInfo((p) => ({ ...p, address }));
+    setDeliveryInfo((prev) => ({ ...prev, address }));
     setIsAddressModalOpen(false);
     setSearchKeyword("");
     setHasSearched(false);
     setSearchResults([]);
   };
 
-  // ===== 쿠폰 / 적립금 =====
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<string>("");
-  const [availableCoupons] = useState<Coupon[]>([
-    {
-      id: "coupon1",
-      name: "신규 가입 10% 할인 쿠폰",
-      discountRate: 10,
-      discountAmount: 0,
-      minOrderAmount: 30000,
-      maxDiscountAmount: 10000,
-      validUntil: "2025-08-19",
-      description: "신규 회원 전용 할인 쿠폰입니다.",
-    },
-    {
-      id: "coupon2",
-      name: "여름 시즌 15% 할인 쿠폰",
-      discountRate: 15,
-      discountAmount: 0,
-      minOrderAmount: 50000,
-      maxDiscountAmount: 15000,
-      validUntil: "2025-08-31",
-      description: "여름 시즌 한정 특별 할인 쿠폰입니다.",
-    },
-    {
-      id: "coupon3",
-      name: "첫 구매 5,000원 할인 쿠폰",
-      discountRate: 0,
-      discountAmount: 5000,
-      minOrderAmount: 20000,
-      maxDiscountAmount: 5000,
-      validUntil: "2025-12-31",
-      description: "첫 구매 고객 전용 정액 할인 쿠폰입니다.",
-    },
-  ]);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [pointsUsed, setPointsUsed] = useState(0);
   const [availablePoints] = useState(5000);
 
-  const handleDeliveryInfoChange = (
-    field: keyof typeof deliveryInfo,
-    value: string,
-  ) => setDeliveryInfo((p) => ({ ...p, [field]: value }));
-
-  const handleOrdererInfoChange = (
-    field: keyof typeof ordererInfo,
-    value: string | boolean,
-  ) =>
-    setOrdererInfo((p) => ({
-      ...p,
-      [field]: value,
-    }));
-
-  // 쿠폰은 baseAmount 기준
   const applyCouponById = (id: string | "") => {
     setSelectedCoupon(id);
     if (!id) {
       setCouponDiscount(0);
       return;
     }
-    const c = availableCoupons.find((x) => x.id === id);
-    if (!c) return setCouponDiscount(0);
-
-    if (baseAmount < c.minOrderAmount) {
+    const coupon = AVAILABLE_COUPONS.find((item) => item.id === id);
+    if (!coupon) {
       setCouponDiscount(0);
       return;
     }
-
-    const raw =
-      c.discountAmount > 0
-        ? c.discountAmount
-        : Math.floor((baseAmount * c.discountRate) / 100);
-
-    setCouponDiscount(Math.min(raw, c.maxDiscountAmount));
+    if (baseAmount < coupon.minOrderAmount) {
+      setCouponDiscount(0);
+      return;
+    }
+    const rawDiscount =
+      coupon.discountAmount > 0
+        ? coupon.discountAmount
+        : Math.floor((baseAmount * coupon.discountRate) / 100);
+    setCouponDiscount(Math.min(rawDiscount, coupon.maxDiscountAmount));
   };
 
-  const clampPoints = (val: number) => {
-    const safe = Math.max(0, Math.min(val, availablePoints));
+  const clampPoints = (value: number) => {
+    const safe = Math.max(0, Math.min(value, availablePoints));
     setPointsUsed(safe);
   };
 
-  // ===== 금액 계산 =====
-  const shippingFee = baseAmount >= 50000 ? 0 : baseAmount > 0 ? 3000 : 0;
+  const shippingFee =
+    serverSummary?.shippingFee ??
+    (baseAmount >= 50000 ? 0 : baseAmount > 0 ? 3000 : 0);
   const finalAmount = Math.max(
     0,
     baseAmount + shippingFee - couponDiscount - pointsUsed,
   );
 
-  // ===== 제출 가능 여부 =====
   const isEmailValid =
     !!ordererInfo.email &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(ordererInfo.email));
+
+  const meetsPointRule = pointsUsed === 0 || pointsUsed >= MIN_POINT_USE;
 
   const isFormValid =
     !!deliveryInfo.recipient &&
@@ -410,553 +587,207 @@ const Order: React.FC = () => {
     !!deliveryInfo.address &&
     !!ordererInfo.name &&
     isEmailValid &&
-    !!ordererInfo.phone;
+    !!ordererInfo.phone &&
+    meetsPointRule;
 
-  // ===== 결제(다음 단계) =====
-  const handleProceedPayment = () => {
+  const handleProceedPayment = async () => {
     if (!isFormValid) return;
 
-    const state: OrderToPaymentState = {
-      orderItems,
-      appliedCouponDiscount: couponDiscount,
-      appliedPointsUsed: pointsUsed,
-      shippingFee,
-      totalPay: finalAmount,
-    };
-
     try {
-      sessionStorage.setItem("musinssak_order_state", JSON.stringify(state));
-    } catch {}
+      // DB에 주문자/배송지 정보 저장
+      // 백엔드가 Long 타입만 받을 수 있으므로 orderPk만 사용
+      if (typeof orderPk === "number") {
+        console.log("주문 정보 저장 중...", {
+          orderPk,
+          deliveryInfo,
+          ordererInfo,
+        });
+        await updateOrderInfo(orderPk, {
+          deliveryInfo: {
+            recipient: deliveryInfo.recipient,
+            phone: deliveryInfo.phone,
+            address: deliveryInfo.address,
+            detailAddress: deliveryInfo.detailAddress,
+            deliveryRequest: deliveryInfo.deliveryRequest,
+          },
+          ordererInfo: {
+            name: ordererInfo.name,
+            email: ordererInfo.email,
+            phone: ordererInfo.phone,
+          },
+        });
+        console.log("주문 정보 저장 완료");
+      } else {
+        console.warn("orderPk가 없어서 주문 정보를 저장하지 않음", {
+          orderPk,
+          orderId,
+        });
+      }
 
-    nav("/payment", { state });
+      // 결제 페이지로 이동
+      const stateForPayment: OrderToPaymentState = {
+        orderItems,
+        appliedCouponDiscount: couponDiscount,
+        appliedPointsUsed: pointsUsed,
+        shippingFee,
+        totalPay: finalAmount,
+      };
+
+      try {
+        sessionStorage.setItem(
+          "musinssak_order_state",
+          JSON.stringify(stateForPayment),
+        );
+      } catch {}
+
+      navigate("/payment", { state: stateForPayment });
+    } catch (error: unknown) {
+      const response = (
+        error as { response?: { status?: number; data?: { code?: string } } }
+      ).response;
+      const status = response?.status;
+      const code = response?.data?.code;
+
+      if (status === 400 && code === "ORDER_TIME_EXPIRED") {
+        alert(
+          "주문 가능 시간이 만료되었습니다. 장바구니에서 다시 진행해주세요.",
+        );
+      } else if (status === 403) {
+        alert("해당 주문에 접근할 권한이 없습니다.");
+      } else if (status === 404) {
+        alert("주문을 찾을 수 없습니다.");
+      } else {
+        alert("주문 정보 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      }
+      console.error("주문 정보 저장 실패:", error);
+    }
   };
 
-  // ====== input/select IDs ======
   const ids = {
-    dName: "d-name",
-    dRecipient: "d-recipient",
-    dPhone: "d-phone",
-    dAddress: "d-address",
-    dDetail: "d-detail",
-    dRequest: "d-request",
-    oName: "o-name",
-    oEmail: "o-email",
-    oPhone: "o-phone",
+    deliveryName: "delivery-name",
+    recipient: "delivery-recipient",
+    deliveryPhone: "delivery-phone",
+    deliveryAddress: "delivery-address",
+    deliveryDetail: "delivery-detail",
+    deliveryRequest: "delivery-request",
+    ordererName: "orderer-name",
+    ordererEmail: "orderer-email",
+    ordererPhone: "orderer-phone",
     couponSelect: "coupon-select",
     pointInput: "point-input",
-    searchInput: "addr-search",
+    searchInput: "address-search",
   } as const;
 
   return (
-    <div className={styles.pageWrap}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <button
-            type="button"
-            className={styles.backBtn}
-            aria-label="뒤로가기"
-            onClick={() => window.history.back()}
-          >
-            <span className={styles.iconArrow} aria-hidden />
-          </button>
-          <h1 className={styles.headerTitle}>주문/결제</h1>
-        </div>
-      </header>
+    <OrderTemplate
+      header={
+        <OrderHeader title="주문/결제" onBack={() => window.history.back()} />
+      }
+      footer={
+        <OrderFixedBar
+          itemCount={orderItems.length}
+          finalAmount={finalAmount}
+          disabled={!isFormValid}
+          onSubmit={handleProceedPayment}
+          formatCurrency={formatCurrency}
+        />
+      }
+    >
+      <OrderItemsSection
+        items={orderItems}
+        formatCurrency={formatCurrency}
+        defaultOpen={false}
+        loading={loadingOrderItems}
+        errorMessage={orderItemsError}
+      />
 
-      <main className={styles.main}>
-        {/* 주문 상품 (접기/펼치기) */}
-        <section className={styles.card}>
-          <button
-            type="button"
-            className={styles.cardTitleRow}
-            onClick={() => setShowOrderItems((v) => !v)}
-          >
-            <h2 className={styles.cardTitle}>
-              주문 상품 ({orderItems.length}개)
-            </h2>
-            <span
-              className={`${styles.chev} ${
-                showOrderItems ? styles.chevUp : styles.chevDown
-              }`}
-              aria-hidden
-            />
-          </button>
+      <DeliveryInfoSection
+        info={deliveryInfo}
+        onChange={(field, value) =>
+          setDeliveryInfo((prev) => ({ ...prev, [field]: value }))
+        }
+        requestOptions={DELIVERY_REQUEST_OPTIONS}
+        ids={{
+          name: ids.deliveryName,
+          recipient: ids.recipient,
+          phone: ids.deliveryPhone,
+          address: ids.deliveryAddress,
+          detail: ids.deliveryDetail,
+          request: ids.deliveryRequest,
+        }}
+        addressModal={{
+          isOpen: isAddressModalOpen,
+          keyword: searchKeyword,
+          results: searchResults,
+          isSearching,
+          hasSearched,
+          onKeywordChange: setSearchKeyword,
+          onSearch: handleAddressSearch,
+          onSelect: handleAddressSelect,
+          onClose: () => {
+            setIsAddressModalOpen(false);
+            setIsSearching(false);
+          },
+          onOpen: () => {
+            setIsAddressModalOpen(true);
+            setHasSearched(false);
+            setSearchResults([]);
+          },
+          searchInputId: ids.searchInput,
+        }}
+      />
 
-          {showOrderItems && (
-            <div className={styles.itemsStack}>
-              {orderItems.map((item, idx) => (
-                <div key={item.id} className={styles.itemRow}>
-                  <div className={styles.thumbBox}>
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className={styles.thumb}
-                    />
-                  </div>
-                  <div className={styles.itemMeta}>
-                    <p className={styles.itemBrand}>{item.brand}</p>
-                    <p className={styles.itemName}>{item.name}</p>
-                    <p className={styles.itemOpt}>
-                      사이즈: {item.size} | 수량: {item.quantity}개
-                    </p>
-                    <p className={styles.itemPrice}>
-                      {fmt(item.price * item.quantity)}원
-                    </p>
-                  </div>
-                  {idx < orderItems.length - 1 && (
-                    <div className={styles.rowDivider} />
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+      <OrdererInfoSection
+        info={ordererInfo}
+        onChange={(field, value) =>
+          setOrdererInfo((prev) => ({ ...prev, [field]: value }))
+        }
+        onToggleSameAsDelivery={toggleSameAsDelivery}
+        ids={{
+          name: ids.ordererName,
+          email: ids.ordererEmail,
+          phone: ids.ordererPhone,
+        }}
+      />
 
-        {/* 배송지 정보 */}
-        <section className={styles.card}>
-          <h2 className={styles.cardTitle}>배송지 정보</h2>
-          <div className={styles.formStack}>
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.dName}>
-                배송지명
-              </label>
-              <input
-                id={ids.dName}
-                className={styles.input}
-                value={deliveryInfo.name}
-                onChange={(e) =>
-                  handleDeliveryInfoChange("name", e.target.value)
-                }
-                placeholder="예: 집, 회사"
-              />
-            </div>
+      <DiscountSection
+        ids={{
+          couponSelect: ids.couponSelect,
+          pointInput: ids.pointInput,
+        }}
+        coupons={AVAILABLE_COUPONS}
+        selectedCouponId={selectedCoupon}
+        onSelectCoupon={setSelectedCoupon}
+        onApplyCoupon={applyCouponById}
+        onOpenCouponModal={() => setIsCouponModalOpen(true)}
+        couponModal={{
+          isOpen: isCouponModalOpen,
+          onClose: () => setIsCouponModalOpen(false),
+        }}
+        pointsUsed={pointsUsed}
+        onChangePoints={(value) => {
+          if (value !== 0 && value < MIN_POINT_USE) {
+            setPointsUsed(0);
+          } else {
+            clampPoints(value);
+          }
+        }}
+        onApplyAllPoints={() => clampPoints(availablePoints)}
+        availablePoints={availablePoints}
+        minPointUse={MIN_POINT_USE}
+        formatCurrency={formatCurrency}
+      />
 
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.dRecipient}>
-                수령인 <span className={styles.req}>*</span>
-              </label>
-              <input
-                id={ids.dRecipient}
-                className={styles.input}
-                value={deliveryInfo.recipient}
-                onChange={(e) =>
-                  handleDeliveryInfoChange("recipient", e.target.value)
-                }
-                placeholder="받으실 분의 성함"
-              />
-            </div>
-
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.dPhone}>
-                연락처 <span className={styles.req}>*</span>
-              </label>
-              <input
-                id={ids.dPhone}
-                className={styles.input}
-                value={deliveryInfo.phone}
-                onChange={(e) =>
-                  handleDeliveryInfoChange("phone", e.target.value)
-                }
-                placeholder="010-0000-0000"
-              />
-            </div>
-
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.dAddress}>
-                주소 <span className={styles.req}>*</span>
-              </label>
-              <div className={styles.row}>
-                <input
-                  id={ids.dAddress}
-                  className={styles.input}
-                  value={deliveryInfo.address}
-                  onChange={(e) =>
-                    handleDeliveryInfoChange("address", e.target.value)
-                  }
-                  placeholder="주소를 검색해주세요"
-                />
-                <button
-                  type="button"
-                  onClick={() => setIsAddressModalOpen(true)}
-                  className={styles.btnGhost}
-                >
-                  주소검색
-                </button>
-              </div>
-
-              {/* 주소 검색 모달 */}
-              {isAddressModalOpen && (
-                <div className={styles.modalBackdrop}>
-                  <div className={styles.modalBox}>
-                    <div className={styles.modalHeader}>
-                      <h3 className={styles.modalTitle}>주소 검색</h3>
-                      <button
-                        type="button"
-                        aria-label="닫기"
-                        className={styles.iconBtn}
-                        onClick={() => setIsAddressModalOpen(false)}
-                      >
-                        <span className={styles.iconClose} aria-hidden />
-                      </button>
-                    </div>
-
-                    <div className={styles.searchRow}>
-                      <label htmlFor={ids.searchInput} className="sr-only">
-                        주소 검색어
-                      </label>
-                      <input
-                        id={ids.searchInput}
-                        className={styles.input}
-                        value={searchKeyword}
-                        onChange={(e) => setSearchKeyword(e.target.value)}
-                        placeholder="도로명/지번 주소를 입력하세요"
-                      />
-                      <button
-                        type="button"
-                        className={styles.btnPrimary}
-                        onClick={handleAddressSearch}
-                      >
-                        검색
-                      </button>
-                    </div>
-
-                    <div className={styles.resultList}>
-                      {isSearching ? (
-                        <div className={styles.centerBox}>
-                          <div className={styles.spinner} />
-                        </div>
-                      ) : hasSearched && searchResults.length === 0 ? (
-                        <div className={styles.centerMuted}>
-                          검색 결과가 없습니다
-                        </div>
-                      ) : (
-                        searchResults.map((r) => (
-                          <button
-                            key={r.id}
-                            type="button"
-                            className={styles.addrItem}
-                            onClick={() => handleAddressSelect(r.address)}
-                          >
-                            <p className={styles.addrLine}>{r.address}</p>
-                            <p className={styles.addrDetail}>{r.detail}</p>
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.dDetail}>
-                상세주소
-              </label>
-              <input
-                id={ids.dDetail}
-                className={styles.input}
-                value={deliveryInfo.detailAddress}
-                onChange={(e) =>
-                  handleDeliveryInfoChange("detailAddress", e.target.value)
-                }
-                placeholder="상세주소"
-              />
-            </div>
-
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.dRequest}>
-                배송 요청사항
-              </label>
-              <div className={styles.selectWrap}>
-                <select
-                  id={ids.dRequest}
-                  className={styles.select}
-                  value={deliveryInfo.deliveryRequest}
-                  onChange={(e) =>
-                    handleDeliveryInfoChange("deliveryRequest", e.target.value)
-                  }
-                >
-                  <option value="직접 수령">직접 수령</option>
-                  <option value="문 앞에 놓아주세요">문 앞에 놓아주세요</option>
-                  <option value="경비실에 맡겨주세요">
-                    경비실에 맡겨주세요
-                  </option>
-                  <option value="택배함에 넣어주세요">
-                    택배함에 넣어주세요
-                  </option>
-                  <option value="부재 시 연락 바랍니다">
-                    부재 시 연락 바랍니다
-                  </option>
-                </select>
-                <span className={styles.chevDownSmall} aria-hidden />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 주문자 정보 */}
-        <section className={styles.card}>
-          <h2 className={styles.cardTitle}>주문자 정보</h2>
-
-          <button
-            type="button"
-            className={styles.sameRow}
-            onClick={toggleSameAsDelivery}
-          >
-            <span
-              className={`${styles.checkSquare} ${
-                ordererInfo.sameAsDelivery ? styles.checkOn : ""
-              }`}
-              aria-hidden
-            />
-            <span className={styles.sameLabel}>배송지 정보와 동일</span>
-          </button>
-
-          <div className={styles.formStack}>
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.oName}>
-                이름 <span className={styles.req}>*</span>
-              </label>
-              <input
-                id={ids.oName}
-                className={styles.input}
-                value={ordererInfo.name}
-                onChange={(e) =>
-                  handleOrdererInfoChange("name", e.target.value)
-                }
-                placeholder="주문자 성함"
-              />
-            </div>
-
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.oEmail}>
-                이메일 <span className={styles.req}>*</span>
-              </label>
-              <input
-                id={ids.oEmail}
-                className={styles.input}
-                value={ordererInfo.email}
-                onChange={(e) =>
-                  handleOrdererInfoChange("email", e.target.value)
-                }
-                placeholder="example@email.com"
-              />
-            </div>
-
-            <div className={styles.formItem}>
-              <label className={styles.label} htmlFor={ids.oPhone}>
-                연락처 <span className={styles.req}>*</span>
-              </label>
-              <input
-                id={ids.oPhone}
-                className={styles.input}
-                value={ordererInfo.phone}
-                onChange={(e) =>
-                  handleOrdererInfoChange("phone", e.target.value)
-                }
-                placeholder="010-0000-0000"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* 할인 적용 */}
-        <section className={styles.card}>
-          <h2 className={styles.cardTitle}>할인 적용</h2>
-
-          {/* 쿠폰 */}
-          <div className={styles.formItem}>
-            <label className={styles.label} htmlFor={ids.couponSelect}>
-              쿠폰
-            </label>
-            <div className={styles.row}>
-              <div className={styles.selectWrap}>
-                <select
-                  id={ids.couponSelect}
-                  className={styles.select}
-                  value={selectedCoupon}
-                  onChange={(e) => setSelectedCoupon(e.target.value)}
-                  onBlur={(e) => applyCouponById(e.target.value)}
-                >
-                  <option value="">사용 가능한 쿠폰 선택</option>
-                  {availableCoupons.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                <span className={styles.chevDownSmall} aria-hidden />
-              </div>
-              <button
-                type="button"
-                className={styles.btnGhost}
-                onClick={() => setIsCouponModalOpen(true)}
-              >
-                쿠폰 조회
-              </button>
-            </div>
-
-            {isCouponModalOpen && (
-              <div className={styles.modalBackdrop}>
-                <div className={styles.modalBox}>
-                  <div className={styles.modalHeader}>
-                    <h3 className={styles.modalTitle}>보유 쿠폰 목록</h3>
-                    <button
-                      type="button"
-                      aria-label="닫기"
-                      className={styles.iconBtn}
-                      onClick={() => setIsCouponModalOpen(false)}
-                    >
-                      <span className={styles.iconClose} aria-hidden />
-                    </button>
-                  </div>
-
-                  <div className={styles.couponList}>
-                    {availableCoupons.map((coupon) => {
-                      const isSelected = selectedCoupon === coupon.id;
-                      return (
-                        <button
-                          key={coupon.id}
-                          type="button"
-                          className={`${styles.couponItem} ${
-                            isSelected ? styles.couponOn : ""
-                          }`}
-                          onClick={() => applyCouponById(coupon.id)}
-                        >
-                          <div className={styles.couponHead}>
-                            <h4 className={styles.couponName}>{coupon.name}</h4>
-                            <div className={styles.couponBadge}>
-                              {coupon.discountRate
-                                ? `${coupon.discountRate}%`
-                                : `${fmt(coupon.discountAmount)}원`}
-                            </div>
-                          </div>
-                          <p className={styles.couponDesc}>
-                            {coupon.description}
-                          </p>
-                          <div className={styles.couponMeta}>
-                            <p>최소 주문금액: {fmt(coupon.minOrderAmount)}원</p>
-                            <p>
-                              최대 할인금액: {fmt(coupon.maxDiscountAmount)}원
-                            </p>
-                            <p>유효기간: ~ {coupon.validUntil}</p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className={styles.modalActions}>
-                    <button
-                      type="button"
-                      className={styles.btnGhost}
-                      onClick={() => setIsCouponModalOpen(false)}
-                    >
-                      취소
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.btnPrimary}
-                      onClick={() => setIsCouponModalOpen(false)}
-                    >
-                      적용
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 적립금 */}
-          <div className={styles.formItem}>
-            <label className={styles.label} htmlFor={ids.pointInput}>
-              적립금
-            </label>
-            <div className={styles.row}>
-              <input
-                id={ids.pointInput}
-                className={styles.input}
-                inputMode="numeric"
-                value={pointsUsed || ""}
-                onChange={(e) => {
-                  const n = Number(e.target.value || 0);
-                  clampPoints(n < MIN_POINT_USE && n !== 0 ? 0 : n);
-                }}
-                placeholder="사용할 적립금 입력"
-              />
-              <button
-                type="button"
-                className={styles.btnGhost}
-                onClick={() => clampPoints(availablePoints)}
-              >
-                전액 사용
-              </button>
-            </div>
-            <p className={styles.helper}>보유 적립금: {fmt(5000)}원</p>
-          </div>
-        </section>
-
-        {/* 결제 정보 요약 */}
-        <section className={styles.summaryCard}>
-          <h3 className={styles.cardTitle}>결제 정보</h3>
-          <div className={styles.summaryRows}>
-            <div className={styles.summaryRow}>
-              <span className={styles.muted}>상품 금액</span>
-              <span className={styles.bold}>
-                {fmt(originalTotalForDisplay)}원
-              </span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.muted}>장바구니 할인</span>
-              <span className={styles.minus}>- {fmt(cartDiscount)}원</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.muted}>쿠폰 할인</span>
-              <span className={styles.minus}>- {fmt(couponDiscount)}원</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.muted}>적립금 사용</span>
-              <span className={styles.minus}>- {fmt(pointsUsed)}원</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span className={styles.muted}>배송비</span>
-              <span className={styles.bold}>
-                {shippingFee === 0 ? (
-                  <span className={styles.free}>무료</span>
-                ) : (
-                  `${fmt(shippingFee)}원`
-                )}
-              </span>
-            </div>
-            <div className={styles.summaryTotal}>
-              <span>총 결제 금액</span>
-              <b>{fmt(finalAmount)}원</b>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* 하단 고정 결제 버튼 */}
-      <div className={styles.fixedBar}>
-        <div className={styles.fixedInner}>
-          <div className={styles.fixedRight}>
-            <p className={styles.fixedMeta}>총 {orderItems.length}개 상품</p>
-            <p className={styles.fixedPrice}>{fmt(finalAmount)}원</p>
-          </div>
-          <button
-            type="button"
-            disabled={!isFormValid}
-            onClick={handleProceedPayment}
-            className={`${styles.payButton} ${
-              isFormValid ? "" : styles.payDisabled
-            }`}
-          >
-            {fmt(finalAmount)}원 결제하기
-          </button>
-        </div>
-      </div>
-    </div>
+      <OrderSummarySection
+        originalTotal={originalTotalForDisplay}
+        cartDiscount={cartDiscount}
+        couponDiscount={couponDiscount}
+        pointsUsed={pointsUsed}
+        shippingFee={shippingFee}
+        finalAmount={finalAmount}
+        formatCurrency={formatCurrency}
+      />
+    </OrderTemplate>
   );
 };
 

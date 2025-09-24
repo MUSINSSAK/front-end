@@ -537,3 +537,45 @@ img {
   color: #666;
   cursor: not-allowed;
 }
+.errorBox {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff4f4;
+  border: 1px solid #ffcdcd;
+  color: #c81e1e;
+  font-size: 14px;
+}
+
+.errorBox {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff4f4;
+  border: 1px solid #ffcdcd;
+  color: #c81e1e;
+  font-size: 14px;
+}
+
+.centerMuted {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  padding: 16px 0;
+}
+
+.errorBox {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff4f4;
+  border: 1px solid #ffcdcd;
+  color: #c81e1e;
+  font-size: 14px;
+}
+.centerMuted {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  padding: 16px 0;
+}
