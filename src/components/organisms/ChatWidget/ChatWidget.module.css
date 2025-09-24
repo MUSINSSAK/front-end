@@ -47,21 +47,6 @@
   flex-direction: column;
   gap: 1rem;
 }
-.msg {
-  padding: 0.75rem;
-}
-.user {
-  align-self: flex-end;
-  color: var(--color-white);
-  border-radius: 10px 10px 0 10px;
-  background-color: var(--color-black);
-}
-.bot {
-  align-self: flex-start;
-  border-radius: 10px 10px 10px 0;
-  color: var(--color-black);
-  background-color: var(--color-gray-200);
-}
 .form {
   display: flex;
   gap: 0.5rem;
@@ -88,4 +73,102 @@
 }
 .send:hover {
   background-color: var(--color-navy);
+}
+.messageRow {
+  display: flex;
+  align-items: flex-end; /* 아바타와 말풍선 하단을 정렬 */
+  margin-bottom: 12px;
+  gap: 8px; /* 아바타와 말풍선 사이 간격 */
+}
+
+/* 봇 메시지 행 스타일 */
+.botRow {
+  justify-content: flex-start; /* 왼쪽 정렬 */
+}
+
+/* 사용자 메시지 행 스타일 */
+.userRow {
+  justify-content: flex-end; /* 오른쪽 정렬 */
+}
+
+/* 봇 로고(아바타) 이미지 스타일 */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%; /* 원형으로 만들기 */
+  object-fit: cover;
+  background-color: var(--color-white); /* 이미지가 없을 경우를 대비한 배경색 */
+}
+
+/* 말풍선 기본 스타일 */
+.bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  word-break: break-word;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* 봇 말풍선 스타일 */
+.botBubble {
+  background-color: var(--color-gray-200); /* 옅은 회색 배경 */
+  color: var(--color-text);
+  border-bottom-left-radius: 4px;
+}
+
+/* 사용자 말풍선 스타일 */
+.userBubble {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-bottom-right-radius: 4px;
+}
+.productContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.productItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: var(--color-gray-100);
+  border: 1px solid var(--color-gray-300);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.productItem:hover {
+  background-color: var(--color-gray-300);
+}
+
+.productImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.productBrand {
+  font-size: 0.8rem;
+  color: var(--color-gray-800);
+}
+
+.productName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
