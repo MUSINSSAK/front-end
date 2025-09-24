@@ -6,7 +6,7 @@ type ReviewableItemProps = Pick<Review, "id" | "product">;
 
 const reviews: Review[] = [
   {
-    id: "review1",
+    id: 1,
     product: {
       name: "상품 A",
       image:
@@ -15,12 +15,13 @@ const reviews: Review[] = [
     },
     rating: 5,
     content: "정말 만족스러운 상품이었습니다!",
+    date: "2023-10-01",
     images: [
       "https://readdy.ai/api/search-image?query=modern%20white%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product1&orientation=squarish",
     ],
   },
   {
-    id: "review2",
+    id: 2,
     product: {
       name: "상품 B",
       image:
@@ -29,13 +30,14 @@ const reviews: Review[] = [
     },
     rating: 4,
     content: "좋은 품질이지만 배송이 조금 늦었습니다.",
+    date: "2023-10-02",
     images: [
       "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
       "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
     ],
   },
   {
-    id: "review3",
+    id: 3,
     product: {
       name: "상품 C",
       image:
@@ -45,10 +47,11 @@ const reviews: Review[] = [
     },
     rating: 3,
     content: "보통 수준의 상품이었습니다.",
+    date: "2023-10-03",
     images: [],
   },
   {
-    id: "review4",
+    id: 4,
     product: {
       name: "상품 D",
       image:
@@ -58,6 +61,7 @@ const reviews: Review[] = [
     },
     rating: 2,
     content: "기대 이하의 품질이었습니다.",
+    date: "2023-10-04",
     images: [
       "https://readdy.ai/api/search-image?query=innisfree%20green%20tea%20serum%20on%20white%20background%20minimalist%20product%20photography%20studio%20lighting&width=400&height=400&seq=product4&orientation=squarish",
     ],
@@ -65,7 +69,7 @@ const reviews: Review[] = [
 ];
 const items: ReviewableItemProps[] = [
   {
-    id: "item1",
+    id: 1,
     product: {
       name: "상품 A",
       image:
@@ -74,7 +78,7 @@ const items: ReviewableItemProps[] = [
     },
   },
   {
-    id: "item2",
+    id: 2,
     product: {
       name: "상품 B",
       image:
@@ -85,12 +89,12 @@ const items: ReviewableItemProps[] = [
 ];
 
 export default function ReviewsSection() {
-  const onEdit = (id: string) => {
+  const onEdit = (id: number) => {
     // Implement edit logic here
     console.log("Edit review with id:", id);
   };
 
-  const onDelete = (id: string) => {
+  const onDelete = (id: number) => {
     // Implement delete logic here
     console.log("Delete review with id:", id);
   };

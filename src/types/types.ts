@@ -12,8 +12,10 @@ export type User = {
 };
 
 export type Review = {
-  id: string;
-  product: { name: string; image: string; date: string };
+  id: number;
+  author?: string;
+  date: string;
+  product?: { name: string; image: string; date: string };
   rating: number;
   content: string;
   images?: string[];

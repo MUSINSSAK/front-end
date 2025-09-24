@@ -6,8 +6,8 @@ import styles from "./ReviewItem.module.css";
 
 type ReviewItemProps = {
   review: Review;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
 };
 
 export default function ReviewItem({
@@ -21,23 +21,31 @@ export default function ReviewItem({
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <img
-          src={review.product.image}
-          alt={review.product.name}
-          className={styles.productImage}
-        />
+        {review?.product?.image && (
+          <img
+            src={review.product.image}
+            alt={review.product.name}
+            className={styles.productImage}
+          />
+        )}
         <div>
-          <p className={styles.productName}>{review.product.name}</p>
-          <p className={styles.date}>{review.product.date}</p>
+          {isMypage && (
+            <p className={styles.productName}>{review?.product?.name}</p>
+          )}
+          <span className={styles.author}>{review?.author}</span>
+          <p className={styles.date}>{review?.product?.date}</p>
         </div>
         {isMypage && (
           <div className={styles.actions}>
-            <Button className={styles.action} onClick={() => onEdit(review.id)}>
+            <Button
+              className={styles.action}
+              onClick={() => onEdit?.(review.id)}
+            >
               수정
             </Button>
             <Button
               className={styles.action}
-              onClick={() => onDelete(review.id)}
+              onClick={() => onDelete?.(review.id)}
             >
               삭제
             </Button>
@@ -65,7 +73,7 @@ export default function ReviewItem({
             <img
               key={src}
               src={src}
-              alt={`Review of ${review.product.name}`}
+              alt={`Review of ${review?.product?.name}`}
               className={styles.reviewImage}
             />
           ))}
