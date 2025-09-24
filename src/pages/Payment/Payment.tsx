@@ -522,7 +522,7 @@ export default function Payment() {
 
   return (
     <div className={styles.pageWrap}>
-      <header className={styles.header}>
+      <div className={styles.header}>
         <div className={styles.headerInner}>
           <button
             type="button"
@@ -534,7 +534,7 @@ export default function Payment() {
           </button>
           <h1 className={styles.headerTitle}>결제하기</h1>
         </div>
-      </header>
+      </div>
 
       <main className={styles.main}>
         <section className={styles.section}>

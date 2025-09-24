@@ -7,7 +7,7 @@ type OrderHeaderProps = {
 
 export default function OrderHeader({ title, onBack }: OrderHeaderProps) {
   return (
-    <header className={styles.header}>
+    <div className={styles.header}>
       <div className={styles.headerInner}>
         <button
           type="button"
@@ -19,6 +19,6 @@ export default function OrderHeader({ title, onBack }: OrderHeaderProps) {
         </button>
         <h1 className={styles.headerTitle}>{title}</h1>
       </div>
-    </header>
+    </div>
   );
 }
