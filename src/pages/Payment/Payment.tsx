@@ -109,13 +109,13 @@ function mapCartDataToOrderItems(raw: unknown): OrderItem[] {
     return (raw as Array<Record<string, unknown>>)
       .filter((item) => item.selected)
       .map((item) => ({
-        id: item.id,
-        brand: item.brand,
-        name: item.name,
-        size: item.option,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image,
+        id: Number(item.id),
+        brand: String(item.brand),
+        name: String(item.name),
+        size: String(item.option),
+        price: Number(item.price),
+        quantity: Number(item.quantity),
+        image: String(item.image),
       }));
   }
   return raw as OrderItem[];
@@ -213,10 +213,10 @@ function restoreOriginalAndCartDiscount(orderItems: OrderItem[]): {
       return { originalTotal: 0, cartDiscount: 0 };
 
     const hasOriginalPrice = "originalPrice" in (arr[0] ?? {});
-    const selectedMap = new Map<number, Record<string, any>>();
+    const selectedMap = new Map<number, Record<string, unknown>>();
     arr
       .filter((item) => item.selected)
-      .forEach((item) => selectedMap.set(item.id, item));
+      .forEach((item) => selectedMap.set(Number(item.id), item));
 
     let originalTotal = 0;
     let discount = 0;
@@ -427,8 +427,13 @@ export default function Payment() {
       });
 
       // 백엔드에 결제 완료 알림
+      if (!paymentResponse.txId) {
+        throw new Error(
+          "결제 트랜잭션 ID가 없습니다. 결제 완료 처리를 할 수 없습니다.",
+        );
+      }
       const result = await completePayment(paymentId, {
-        transactionId: paymentResponse.txId!,
+        transactionId: paymentResponse.txId,
         status: "PAID",
       });
 
