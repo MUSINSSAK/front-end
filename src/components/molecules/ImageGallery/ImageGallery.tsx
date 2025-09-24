@@ -24,14 +24,7 @@ export default function ImageGallery({
           alt={`상품 이미지 ${current + 1}`}
           className={styles.mainImg}
         />
-        <button
-          type="button"
-          onClick={onToggleWish}
-          className={styles.wishBtn}
-          aria-label="위시리스트 토글"
-        >
-          <LikeButton inWishlist={inWishlist} onToggleWishlist={onToggleWish} />
-        </button>
+        <LikeButton inWishlist={inWishlist} onToggleWishlist={onToggleWish} />
       </div>
 
       <div className={styles.thumbs}>
