@@ -6,15 +6,25 @@ import styles from "./ReviewWriteModal.module.css";
 type ProductMini = { name: string; image: string; date: string };
 export type ReviewForm = { rating: number; content: string; images: string[] };
 
-type Props = {
-  product: ProductMini;
-  onClose: (v?: ReviewForm) => void; // ModalProvider.openComponent 규약
+type InitialData = {
+  rating: number;
+  content: string;
 };
 
-export default function ReviewWriteModal({ product, onClose }: Props) {
-  const [rating, setRating] = useState(0);
-  const [content, setContent] = useState("");
+type Props = {
+  product: ProductMini;
+  initialData?: InitialData;
+  onClose: (v?: ReviewForm) => void;
+};
 
+export default function ReviewWriteModal({
+  product,
+  initialData,
+  onClose,
+}: Props) {
+  const [rating, setRating] = useState(initialData?.rating ?? 0);
+  const [content, setContent] = useState(initialData?.content ?? "");
+  const isEditMode = initialData !== undefined;
   const canSubmit = rating > 0 && content.trim().length > 0;
 
   const submit = () => {
@@ -25,7 +35,7 @@ export default function ReviewWriteModal({ product, onClose }: Props) {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-        <h4 className={styles.title}>리뷰 작성</h4>
+        <h4 className={styles.title}>리뷰 {isEditMode ? "수정" : "작성"}</h4>
         <button
           type="button"
           className={styles.close}
@@ -56,8 +66,9 @@ export default function ReviewWriteModal({ product, onClose }: Props) {
               key={`star-${i + 1}`}
               type="button"
               className={styles.starBtn}
-              onClick={() => setRating(i + 1)}
+              onClick={() => !isEditMode && setRating(i + 1)}
               aria-label={`${i + 1}점`}
+              disabled={isEditMode}
             >
               <Star
                 size={20}
@@ -96,7 +107,7 @@ export default function ReviewWriteModal({ product, onClose }: Props) {
           onClick={submit}
           variant={canSubmit ? "active" : "disabled"}
         >
-          작성완료
+          {isEditMode ? "수정완료" : "작성완료"}
         </Button>
       </div>
     </div>
