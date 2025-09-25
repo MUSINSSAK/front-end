@@ -1,9 +1,16 @@
 import { api } from "../lib/axios";
 import type {
+  OrderHistoryItem,
   OrderHistoryPeriod,
-  OrderHistoryResponse,
   OrderHistoryStatus,
+  Pagination,
 } from "../types/order";
+
+// GET /api/orders/me API의 전체 응답 타입
+type OrderHistoryResponse = {
+  orders: OrderHistoryItem[];
+  pagination: Pagination;
+};
 
 // getOrderHistory 함수에 전달할 파라미터의 타입
 type GetOrderHistoryParams = {
