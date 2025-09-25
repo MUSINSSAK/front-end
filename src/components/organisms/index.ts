@@ -28,4 +28,5 @@ export { default as ReviewsSection } from "./ReviewsSection/ReviewsSection";
 export { default as ReviewWriteModal } from "./ReviewWriteModal/ReviewWriteModal";
 export { default as ShippingReturnSection } from "./ShippingReturnSection/ShippingReturnSection";
 export { default as SidebarFilters } from "./SidebarFilters/SidebarFilters";
+export { default as StickyActionBar } from "./StickyActionBar/StickyActionBar";
 export { default as WishListSection } from "./WishListSection/WishListSection";
