@@ -83,8 +83,8 @@ export default function ReviewsSection() {
       Parameters<typeof ReviewWriteModal>[0]
     >(ReviewWriteModal, {
       product: {
-        name: review.productName,
-        image: review.thumbnailImageUrl,
+        name: review.productName || "상품명 없음",
+        image: review.thumbnailImageUrl || "",
         date: review.purchaseDate,
       },
       initialData: {

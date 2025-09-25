@@ -8,7 +8,7 @@ import {
 } from "../../components/organisms";
 import { ProductDetailTemplate } from "../../components/templates";
 import { useToast } from "../../contexts/ToastContext";
-import type { Review } from "../../types/types";
+import type { WrittenReview } from "../../types/review";
 import styles from "./ProductDetail.module.css";
 
 const ProductDetail = () => {
@@ -46,35 +46,43 @@ const ProductDetail = () => {
     "latest",
   );
 
-  const [reviews, setReviews] = useState<Review[]>([
+  const [reviews, setReviews] = useState<WrittenReview[]>([
     {
-      id: 1,
-      product: { name: "에어맥스 270 스니커즈", image: "", date: "2024.01.15" },
+      reviewId: 1,
+      productId: 101,
+      productName: "에어맥스 270 스니커즈",
+      thumbnailImageUrl:
+        "https://readdy.ai/api/search-image?query=nike%20air%20max%20270%20white%20sneakers%20side%20view%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=600&height=600&seq=main1&orientation=squarish",
+      purchaseDate: "2024-01-10",
       rating: 5,
       author: "김**",
-      date: "2024.01.15",
       content:
         "정말 편하고 디자인도 예뻐요! 사이즈도 딱 맞고 쿠션감이 좋아서 하루 종일 신어도 발이 안 아파요.",
-      images: [
+      reviewImages: [
         "https://readdy.ai/api/search-image?query=nike%20air%20max%20270%20white%20sneakers%20side%20view%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=600&height=600&seq=main1&orientation=squarish",
       ],
     },
     {
-      id: 2,
+      reviewId: 2,
+      productId: 101,
+      productName: "에어맥스 270 스니커즈",
+      thumbnailImageUrl:
+        "https://readdy.ai/api/search-image?query=nike%20air%20max%20270%20white%20sneakers%20side%20view%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=600&height=600&seq=main1&orientation=squarish",
+      purchaseDate: "2024-01-12",
       rating: 4,
       author: "이**",
-      date: "2024.01.12",
       content: "색상이 화면에서 본 것보다 더 예뻐요. 배송도 빠르고 만족합니다.",
-      images: [],
+      reviewImages: [],
     },
     {
-      id: 3,
+      reviewId: 3,
+      productId: 101,
+      productName: "에어맥스 270 스니커즈",
+      purchaseDate: "2024-01-10",
       rating: 5,
-      author: "박**",
-      date: "2024.01.10",
       content:
         "에어맥스 시리즈 중에서 가장 편한 것 같아요. 운동할 때도 좋고 일상에서도 잘 어울려요.",
-      images: [
+      reviewImages: [
         "https://readdy.ai/api/search-image?query=nike%20air%20max%20270%20white%20sneakers%20front%20view%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=600&height=600&seq=main2&orientation=squarish",
       ],
     },
@@ -85,7 +93,9 @@ const ProductDetail = () => {
     switch (option) {
       case "latest":
         sorted.sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          (a, b) =>
+            new Date(b.purchaseDate).getTime() -
+            new Date(a.purchaseDate).getTime(),
         );
         break;
       case "highest":

@@ -1,10 +1,10 @@
-import type { Review } from "../../../types/types";
+import type { WrittenReview } from "../../../types/review";
 import { Select } from "../../atoms";
 import { ReviewItem } from "../../molecules";
 import styles from "./ReviewsSection.module.css";
 
 type Props = {
-  reviews: Review[];
+  reviews: WrittenReview[];
   sortOption: string;
   onSortChange: (opt: string) => void;
 };
@@ -32,7 +32,7 @@ export default function ProductReview({
 
       <div className={styles.list}>
         {reviews.map((r) => (
-          <ReviewItem key={r.id} review={r} />
+          <ReviewItem key={r.reviewId} review={r} />
         ))}
       </div>
     </div>
