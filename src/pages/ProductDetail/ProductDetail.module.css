@@ -1,0 +1,10 @@
+.productSection {
+  display: flex;
+  gap: 2rem;
+}
+
+.tabsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
