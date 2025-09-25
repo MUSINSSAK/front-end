@@ -1,5 +1,5 @@
 import axios from "axios";
-import { refreshAccessToken } from "../api/authApi";
+import { refreshAccessToken } from "../api/auth";
 
 // 1. API 요청을 위한 기본 Axios 인스턴스 생성
 export const api = axios.create({

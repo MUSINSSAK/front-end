@@ -1,6 +1,6 @@
 ﻿import { ShoppingBag } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { getOrderHistory } from "../../../api/orderApi";
+import { getOrderHistory } from "../../../api/order";
 import type {
   OrderHistoryItem,
   OrderHistoryPeriod,

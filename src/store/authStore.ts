@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { logout as logoutApi } from "../api/authApi";
+import { logout as logoutApi } from "../api/auth";
 
 type AuthState = {
   userId: string | null;
