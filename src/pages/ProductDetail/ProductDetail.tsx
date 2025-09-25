@@ -14,7 +14,6 @@ import type {
   ProductDetail as ProductDetailType,
   ProductSize,
 } from "../../types/products";
-import type { WrittenReview } from "../../types/review";
 import styles from "./ProductDetail.module.css";
 
 const ProductDetail = () => {
@@ -73,34 +72,6 @@ const ProductDetail = () => {
   };
 
   const toggleWishlist = () => setIsWishlisted((v) => !v);
-
-  // 더미 리뷰(기존 코드 유지)
-  const [sortOption, setSortOption] = useState<"latest" | "highest" | "lowest">(
-    "latest",
-  );
-  const [reviews, setReviews] = useState<WrittenReview[]>([
-    // ... 기존 더미 리뷰들
-  ]);
-  const sortReviews = (option: "latest" | "highest" | "lowest") => {
-    const sorted = [...reviews];
-    switch (option) {
-      case "latest":
-        sorted.sort(
-          (a, b) =>
-            new Date(b.purchaseDate).getTime() -
-            new Date(a.purchaseDate).getTime(),
-        );
-        break;
-      case "highest":
-        sorted.sort((a, b) => b.rating - a.rating);
-        break;
-      case "lowest":
-        sorted.sort((a, b) => a.rating - b.rating);
-        break;
-    }
-    setReviews(sorted);
-    setSortOption(option);
-  };
 
   if (loading) return <div className={styles.center}>로딩중…</div>;
   if (error || !product)
@@ -195,13 +166,7 @@ const ProductDetail = () => {
           </div>
         )}
         {activeTab === "리뷰" && (
-          <ProductReview
-            reviews={reviews}
-            sortOption={sortOption}
-            onSortChange={(opt: string) =>
-              sortReviews(opt as "latest" | "highest" | "lowest")
-            }
-          />
+          <ProductReview productId={product.productId} />
         )}
         {activeTab === "문의" && <QASection productId={product.productId} />}
         {activeTab === "배송/환불" && <ShippingReturnSection />}{" "}

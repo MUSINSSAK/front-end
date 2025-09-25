@@ -5,6 +5,7 @@ import type {
   Product,
   ProductDetail,
 } from "../types/products";
+import type { WrittenReview } from "../types/review";
 
 // 메인 페이지 신상품 조회
 export async function getNewProducts(): Promise<Product[]> {
@@ -90,4 +91,31 @@ export async function getProductQuestions(
 ): Promise<ProductQuestionsData> {
   const res = await api.get(`/products/${productId}/questions`, { params });
   return res.data.data as ProductQuestionsData;
+}
+
+// 상품 리뷰 목록 조회
+type ProductReviewsParams = {
+  sort?: "latest" | "high" | "low";
+  page: number; // 1부터 시작
+  size: number;
+};
+
+type ProductReviewsData = {
+  productId: number;
+  totalReviews: number;
+  averageRating: number; // 0.0 ~ 5.0
+  ratingDistribution: Record<string, number>; // {"5":89,"4":25,...}
+  reviews: WrittenReview[];
+  page: number; // 1-base
+  size: number;
+  hasNext: boolean;
+};
+
+export async function getProductReviews(
+  productId: number,
+  params: ProductReviewsParams,
+): Promise<ProductReviewsData> {
+  const res = await api.get(`/products/${productId}/reviews`, { params });
+  // 서버 공통 포맷: { status, code, message, data }
+  return res.data.data as ProductReviewsData;
 }
