@@ -3,6 +3,7 @@ import type {
   ListProductsData,
   ListProductsParams,
   Product,
+  ProductDetail,
 } from "../types/products";
 
 // 메인 페이지 신상품 조회
@@ -42,4 +43,12 @@ export async function listProducts(
 
   // 서버 공통 포맷: { status, code, message, data }
   return res.data.data as ListProductsData;
+}
+
+// 상품 상세 조회
+export async function getProductDetail(
+  productId: number,
+): Promise<ProductDetail> {
+  const res = await api.get(`/products/${productId}`);
+  return res.data.data as ProductDetail;
 }
