@@ -17,11 +17,9 @@ export default function QASection({ list }: Props) {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <h3 className={styles.title}>상품 문의 ({list.length})</h3>
-        <a href="/" data-readdy="true">
-          <Button variant="active" className={styles.askButton}>
-            문의하기
-          </Button>
-        </a>
+        <Button variant="active" className={styles.askButton}>
+          문의하기
+        </Button>
       </div>
 
       <div className={styles.list}>
