@@ -45,3 +45,36 @@ export type OrderToPaymentState = {
 };
 
 export type PaymentState = OrderToPaymentState;
+
+// 주문 내역에 포함된 개별 상품 아이템의 타입
+export type OrderHistoryItemDetail = {
+  name: string;
+  option: string;
+  thumbnailUrl: string;
+};
+
+// 주문 내역 한 줄(카드)의 타입
+export type OrderHistoryItem = {
+  orderDate: string;
+  orderNumber: string;
+  items: OrderHistoryItemDetail[];
+  totalAmount: number;
+  orderStatus: string;
+};
+
+// 페이지네이션 정보 타입
+export type Pagination = {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+};
+
+// GET /api/orders/me API의 전체 응답 타입
+export type OrderHistoryResponse = {
+  orders: OrderHistoryItem[];
+  pagination: Pagination;
+};
+
+export type OrderHistoryPeriod = "1month" | "3months" | "6months" | "all";
+export type OrderHistoryStatus = "ALL" | "ORDERED" | "CANCELLED" | "RETURNED";

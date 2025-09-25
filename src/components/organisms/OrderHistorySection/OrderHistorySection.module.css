@@ -40,3 +40,33 @@
 .productDetails {
   color: var(--color-gray-800);
 }
+.orderInfo {
+  text-align: center;
+}
+.orderNumber {
+  font-size: 0.8rem;
+  color: var(--color-gray-700);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-gray-300);
+  background-color: var(--color-white);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  color: var(--color-gray-500);
+  cursor: not-allowed;
+}
+.filters {
+  display: flex;
+  gap: 0.5rem;
+}

@@ -1,164 +1,155 @@
 ﻿import { ShoppingBag } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getOrderHistory } from "../../../api/orderApi";
+import type {
+  OrderHistoryItem,
+  OrderHistoryPeriod,
+  OrderHistoryStatus,
+  Pagination,
+} from "../../../types/order";
 import { Select, Tag } from "../../atoms";
 import { EmptyState, Table } from "../../molecules";
 import styles from "./OrderHistorySection.module.css";
 
-type OrderHistory = {
-  date: string;
-  orderNumber: string;
-  products: Array<{
-    name: string;
-    image: string;
-    option: string;
-    count: number;
-  }>;
-  amount: string;
-  status: string;
-  statusType: "success" | "processing" | "canceled";
+const statusToTagVariant = (status: string) => {
+  if (status.includes("CANCELLED") || status.includes("EXPIRED")) {
+    return "canceled";
+  }
+  if (status.includes("COMPLETED")) {
+    return "success";
+  }
+  return "processing";
 };
 
-const dummyOrders: OrderHistory[] = [
-  {
-    date: "2023-10-01",
-    orderNumber: "ORD123456",
-    products: [
-      {
-        name: "에어맥스 270 스니커즈",
-        image:
-          "https://readdy.ai/api/search-image?query=modern%20white%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product1&orientation=squarish",
-        option: "255mm",
-        count: 1,
-      },
-    ],
-    amount: "50,000",
-    status: "배송 완료",
-    statusType: "success",
-  },
-  {
-    date: "2023-09-15",
-    orderNumber: "ORD123457",
-    products: [
-      {
-        name: "오버핏 블레이저",
-        image:
-          "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
-        option: "M",
-        count: 1,
-      },
-      {
-        name: "코튼 와이드 팬츠",
-        image:
-          "https://readdy.ai/api/search-image?query=beige%20wide%20leg%20pants%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product3&orientation=squarish",
-        option: "L",
-        count: 1,
-      },
-    ],
-    amount: "30,000",
-    status: "배송 중",
-    statusType: "processing",
-  },
-  {
-    date: "2023-08-20",
-    orderNumber: "ORD123458",
-    products: [
-      {
-        name: "그린티 세럼",
-        image:
-          "https://readdy.ai/api/search-image?query=green%20tea%20serum%20in%20transparent%20bottle%20on%20white%20background%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product9&orientation=squarish",
-        option: "50ml",
-        count: 1,
-      },
-      {
-        name: "매트 립스틱",
-        image:
-          "https://readdy.ai/api/search-image?query=elegant%20red%20lipstick%20on%20black%20glossy%20surface%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product11&orientation=squarish",
-        option: "312",
-        count: 1,
-      },
-      {
-        name: "보습 크림",
-        image:
-          "https://readdy.ai/api/search-image?query=luxury%20moisturizing%20cream%20in%20elegant%20glass%20jar%20on%20clean%20white%20background%20minimalist%20beauty%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product8&orientation=squarish",
-        option: "50ml",
-        count: 1,
-      },
-    ],
-    amount: "20,000",
-    status: "주문 취소",
-    statusType: "canceled",
-  },
-];
-
 export default function OrderHistorySection() {
-  const periods = ["전체 기간", "1개월", "3개월", "6개월"];
-  const [selected, setSelected] = useState("전체 기간");
+  const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [period, setPeriod] = useState<OrderHistoryPeriod>("3months");
+  const [status, setStatus] = useState<OrderHistoryStatus>("ALL");
+  const [page, setPage] = useState(0);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await getOrderHistory({ period, status, page, size: 5 });
+      setOrders(data.orders);
+      setPagination(data.pagination);
+    } catch (err) {
+      console.error("주문 내역을 불러오는 데 실패했습니다:", err);
+      setError("주문 내역을 불러오는 데 실패했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [period, status, page]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
   const columns = [
-    { key: "date", label: "주문일자" },
-    { key: "orderNumber", label: "주문번호" },
-    { key: "products", label: "상품정보" },
-    { key: "amount", label: "주문금액" },
-    { key: "status", label: "주문상태" },
+    { key: "orderInfo", label: "주문 정보" },
+    { key: "products", label: "상품 정보" },
+    { key: "amount", label: "주문 금액" },
+    { key: "status", label: "주문 상태" },
   ];
 
-  const onPeriodChange = (period: string) => {
-    setSelected(period);
-    // TODO: 기간 변경에 따른 필터링 로직을 추가하세요.
-  };
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h3 className={styles.cardTitle}>주문 내역</h3>
-          <Select
-            value={selected}
-            onChange={(event) => {
-              setSelected(event.target.value);
-              onPeriodChange(event.target.value);
-            }}
-          >
-            {periods.map((period) => (
-              <option key={period} value={period}>
-                {period}
-              </option>
-            ))}
-          </Select>
+          <div className={styles.filters}>
+            <Select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as OrderHistoryStatus)}
+            >
+              <option value="ALL">전체 상태</option>
+              <option value="ORDERED">주문/배송</option>
+              <option value="CANCELLED">취소</option>
+              <option value="RETURNED">반품</option>
+            </Select>
+            <Select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as OrderHistoryPeriod)}
+            >
+              <option value="all">전체 기간</option>
+              <option value="1month">1개월</option>
+              <option value="3months">3개월</option>
+              <option value="6months">6개월</option>
+            </Select>
+          </div>
         </div>
-        {dummyOrders.length === 0 ? (
+        {orders.length === 0 ? (
           <EmptyState
             icon={ShoppingBag}
             title="주문 내역이 없습니다"
             description="아직 주문하신 상품이 없습니다."
           />
         ) : (
-          <Table
-            className={styles.table}
-            columns={columns}
-            data={dummyOrders}
-            rowClassName={() => styles.row}
-            renderRow={(order: OrderHistory) => [
-              order.date,
-              order.orderNumber,
-              <div className={styles.products} key="products">
-                {order.products.map((product) => (
-                  <div key={product.name} className={styles.product}>
-                    <img src={product.image} alt={product.name} />
-                    <div>
-                      <p className={styles.productName}>{product.name}</p>
-                      <p className={styles.productDetails}>
-                        {product.option} / {product.count}개
-                      </p>
+          <>
+            <Table
+              className={styles.table}
+              columns={columns}
+              data={orders}
+              rowClassName={() => styles.row}
+              renderRow={(order: OrderHistoryItem) => [
+                <div key="orderInfo" className={styles.orderInfo}>
+                  <p>{order.orderDate}</p>
+                  <p className={styles.orderNumber}>{order.orderNumber}</p>
+                </div>,
+                <div className={styles.products} key="products">
+                  {order.items.map((product, index) => (
+                    <div
+                      key={`${product.name}-${index}`}
+                      className={styles.product}
+                    >
+                      <img src={product.thumbnailUrl} alt={product.name} />
+                      <div>
+                        <p className={styles.productName}>{product.name}</p>
+                        <p className={styles.productDetails}>
+                          {product.option}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>,
-              `${order.amount}원`,
-              <Tag variant={order.statusType} key="status">
-                {order.status}
-              </Tag>,
-            ]}
-          />
+                  ))}
+                </div>,
+                `${order.totalAmount.toLocaleString()}원`,
+                <Tag
+                  variant={statusToTagVariant(order.orderStatus)}
+                  key="status"
+                >
+                  {order.orderStatus}
+                </Tag>,
+              ]}
+            />
+            {pagination && pagination.totalPages > 1 && (
+              <div className={styles.pagination}>
+                <button
+                  type="button"
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 0}
+                >
+                  이전
+                </button>
+                <span>
+                  {page + 1} / {pagination.totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage(page + 1)}
+                  disabled={page + 1 >= pagination.totalPages}
+                >
+                  다음
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
