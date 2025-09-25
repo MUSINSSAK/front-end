@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect, useState } from "react";
-import { getBestProducts, getNewProducts } from "../../api/mainProducts";
+import { getBestProducts, getNewProducts } from "../../api/products";
 import { HeroSection, ProductSection } from "../../components/organisms";
 import { useCategory } from "../../contexts/CategoryContext";
 import type { Product } from "../../types/products";
