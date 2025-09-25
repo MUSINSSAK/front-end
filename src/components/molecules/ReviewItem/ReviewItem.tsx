@@ -1,10 +1,10 @@
 import { useLocation } from "react-router-dom";
-import type { Review } from "../../../types/types";
+import type { WrittenReview } from "../../../types/review";
 import { Button, RatingStars } from "../../atoms";
 import styles from "./ReviewItem.module.css";
 
 type ReviewItemProps = {
-  review: Review;
+  review: WrittenReview;
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
 };
@@ -14,37 +14,37 @@ export default function ReviewItem({
   onEdit,
   onDelete,
 }: ReviewItemProps) {
-  const { pathname } = useLocation();
-  const isMypage = pathname === "/mypage";
+  const location = useLocation();
+  const isMypage = location.pathname === "/mypage";
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        {review?.product?.image && (
+        {review?.thumbnailImageUrl && (
           <img
-            src={review.product.image}
-            alt={review.product.name}
+            src={review.thumbnailImageUrl}
+            alt={review.productName}
             className={styles.productImage}
           />
         )}
         <div>
           {isMypage && (
-            <p className={styles.productName}>{review?.product?.name}</p>
+            <p className={styles.productName}>{review?.productName}</p>
           )}
           <span className={styles.author}>{review?.author}</span>
-          <p className={styles.date}>{review?.product?.date}</p>
+          <p className={styles.date}>{review?.purchaseDate}</p>
         </div>
         {isMypage && (
           <div className={styles.actions}>
             <Button
               className={styles.action}
-              onClick={() => onEdit?.(review.id)}
+              onClick={() => onEdit?.(review.reviewId)}
             >
               수정
             </Button>
             <Button
               className={styles.action}
-              onClick={() => onDelete?.(review.id)}
+              onClick={() => onDelete?.(review.reviewId)}
             >
               삭제
             </Button>
@@ -53,13 +53,13 @@ export default function ReviewItem({
       </div>
       <RatingStars rating={review.rating} />
       <p className={styles.content}>{review.content}</p>
-      {review.images && (
+      {review.reviewImages && review.reviewImages.length > 0 && (
         <div className={styles.images}>
-          {review.images.map((src) => (
+          {review.reviewImages.map((src) => (
             <img
               key={src}
               src={src}
-              alt={`Review of ${review?.product?.name}`}
+              alt={`Review of ${review?.productName}`}
               className={styles.reviewImage}
             />
           ))}

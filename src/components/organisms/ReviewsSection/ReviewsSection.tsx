@@ -1,103 +1,135 @@
-import type { Review } from "../../../types/types";
+import { useCallback, useEffect, useState } from "react";
+import {
+  createReview,
+  deleteReview,
+  getMyReviews,
+  updateReview,
+} from "../../../api/reviewApi";
+import { useModal } from "../../../contexts/ModalContext";
+import type {
+  ReviewCreateRequest,
+  ReviewUpdateRequest,
+  WritableReview,
+  WrittenReview,
+} from "../../../types/review";
 import { ReviewableItem, ReviewItem } from "../../molecules";
+import type { ReviewForm } from "../ReviewWriteModal/ReviewWriteModal";
+import ReviewWriteModal from "../ReviewWriteModal/ReviewWriteModal";
 import styles from "./ReviewsSection.module.css";
 
-type ReviewableItemProps = Pick<Review, "id" | "product">;
-
-const reviews: Review[] = [
-  {
-    id: 1,
-    product: {
-      name: "상품 A",
-      image:
-        "https://readdy.ai/api/search-image?query=modern%20white%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product1&orientation=squarish",
-      date: "2023-10-01",
-    },
-    rating: 5,
-    content: "정말 만족스러운 상품이었습니다!",
-    date: "2023-10-01",
-    images: [
-      "https://readdy.ai/api/search-image?query=modern%20white%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product1&orientation=squarish",
-    ],
-  },
-  {
-    id: 2,
-    product: {
-      name: "상품 B",
-      image:
-        "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
-      date: "2023-10-02",
-    },
-    rating: 4,
-    content: "좋은 품질이지만 배송이 조금 늦었습니다.",
-    date: "2023-10-02",
-    images: [
-      "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
-      "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
-    ],
-  },
-  {
-    id: 3,
-    product: {
-      name: "상품 C",
-      image:
-        "https://readdy.ai/api/search-image?query=beige%20wide%20leg%20pants%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product3&orientation=squarish",
-
-      date: "2023-10-03",
-    },
-    rating: 3,
-    content: "보통 수준의 상품이었습니다.",
-    date: "2023-10-03",
-    images: [],
-  },
-  {
-    id: 4,
-    product: {
-      name: "상품 D",
-      image:
-        "https://readdy.ai/api/search-image?query=innisfree%20green%20tea%20serum%20on%20white%20background%20minimalist%20product%20photography%20studio%20lighting&width=400&height=400&seq=product4&orientation=squarish",
-
-      date: "2023-10-04",
-    },
-    rating: 2,
-    content: "기대 이하의 품질이었습니다.",
-    date: "2023-10-04",
-    images: [
-      "https://readdy.ai/api/search-image?query=innisfree%20green%20tea%20serum%20on%20white%20background%20minimalist%20product%20photography%20studio%20lighting&width=400&height=400&seq=product4&orientation=squarish",
-    ],
-  },
-];
-const items: ReviewableItemProps[] = [
-  {
-    id: 1,
-    product: {
-      name: "상품 A",
-      image:
-        "https://readdy.ai/api/search-image?query=modern%20white%20sneakers%20on%20clean%20white%20background%20minimalist%20product%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product1&orientation=squarish",
-      date: "2023-10-01",
-    },
-  },
-  {
-    id: 2,
-    product: {
-      name: "상품 B",
-      image:
-        "https://readdy.ai/api/search-image?query=elegant%20black%20blazer%20jacket%20on%20white%20background%20minimalist%20fashion%20photography%20studio%20lighting%20professional%20commercial%20style&width=400&height=400&seq=product2&orientation=squarish",
-      date: "2023-10-02",
-    },
-  },
-];
-
 export default function ReviewsSection() {
-  const onEdit = (id: number) => {
-    // Implement edit logic here
-    console.log("Edit review with id:", id);
+  const [writableReviews, setWritableReviews] = useState<WritableReview[]>([]);
+  const [writtenReviews, setWrittenReviews] = useState<WrittenReview[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { openComponent } = useModal();
+
+  const fetchReviews = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await getMyReviews();
+      setWritableReviews(data.writableReviews);
+      setWrittenReviews(data.writtenReviews);
+      setError(null);
+    } catch (err) {
+      console.error("리뷰 목록을 불러오는 데 실패했습니다:", err);
+      setError("리뷰 목록을 불러오는 데 실패했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  const handleCreateReview = async (item: WritableReview) => {
+    const result = await openComponent<
+      ReviewForm,
+      Parameters<typeof ReviewWriteModal>[0]
+    >(ReviewWriteModal, {
+      product: {
+        name: item.productName,
+        image: item.thumbnailImageUrl,
+        date: item.purchaseDate,
+      },
+      size: "xl",
+      align: "top",
+    });
+
+    if (result) {
+      const reviewData: ReviewCreateRequest = {
+        productId: item.productId,
+        rating: result.rating,
+        content: result.content,
+        reviewImages: result.images,
+      };
+      try {
+        await createReview(reviewData);
+        alert("리뷰가 성공적으로 등록되었습니다.");
+        fetchReviews();
+      } catch (err) {
+        console.error("리뷰 작성에 실패했습니다:", err);
+        alert("리뷰 작성에 실패했습니다.");
+      }
+    }
   };
 
-  const onDelete = (id: number) => {
-    // Implement delete logic here
-    console.log("Delete review with id:", id);
+  const handleEditReview = async (review: WrittenReview) => {
+    // openComponent의 타입을 수정하고, initialData를 실제로 전달합니다.
+    const result = await openComponent<
+      ReviewForm,
+      Parameters<typeof ReviewWriteModal>[0]
+    >(ReviewWriteModal, {
+      product: {
+        name: review.productName,
+        image: review.thumbnailImageUrl,
+        date: review.purchaseDate,
+      },
+      initialData: {
+        rating: review.rating,
+        content: review.content,
+      },
+      size: "xl",
+      align: "top",
+    });
+
+    if (result) {
+      const reviewData: ReviewUpdateRequest = {
+        content: result.content,
+        reviewImages: result.images,
+      };
+      try {
+        await updateReview(review.reviewId, reviewData);
+        alert("리뷰가 성공적으로 수정되었습니다.");
+        fetchReviews();
+      } catch (err) {
+        console.error("리뷰 수정에 실패했습니다:", err);
+        alert("리뷰 수정에 실패했습니다.");
+      }
+    }
   };
+
+  const handleDeleteReview = async (reviewId: number) => {
+    if (window.confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
+      try {
+        await deleteReview(reviewId);
+        alert("리뷰가 삭제되었습니다.");
+        fetchReviews();
+      } catch (err) {
+        console.error("리뷰 삭제에 실패했습니다:", err);
+        alert("리뷰 삭제에 실패했습니다.");
+      }
+    }
+  };
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -106,11 +138,18 @@ export default function ReviewsSection() {
           <h3 className={styles.title}>리뷰 작성 가능한 상품</h3>
         </div>
         <div className={styles.list}>
-          {items.map((item) => (
-            <div key={item.id} className={styles.listItem}>
-              <ReviewableItem item={item} />
-            </div>
-          ))}
+          {writableReviews.length > 0 ? (
+            writableReviews.map((item) => (
+              <div key={item.productId} className={styles.listItem}>
+                <ReviewableItem
+                  item={item}
+                  onWriteReview={() => handleCreateReview(item)}
+                />
+              </div>
+            ))
+          ) : (
+            <p>리뷰를 작성할 상품이 없습니다.</p>
+          )}
         </div>
       </div>
 
@@ -119,11 +158,19 @@ export default function ReviewsSection() {
           <h3 className={styles.title}>상품리뷰</h3>
         </div>
         <div className={styles.reviewList}>
-          {reviews.map((review) => (
-            <div key={review.id} className={styles.reviewCard}>
-              <ReviewItem review={review} onEdit={onEdit} onDelete={onDelete} />
-            </div>
-          ))}
+          {writtenReviews.length > 0 ? (
+            writtenReviews.map((review) => (
+              <div key={review.reviewId} className={styles.reviewCard}>
+                <ReviewItem
+                  review={review}
+                  onEdit={() => handleEditReview(review)}
+                  onDelete={() => handleDeleteReview(review.reviewId)}
+                />
+              </div>
+            ))
+          ) : (
+            <p>작성한 리뷰가 없습니다.</p>
+          )}
         </div>
       </div>
     </div>
