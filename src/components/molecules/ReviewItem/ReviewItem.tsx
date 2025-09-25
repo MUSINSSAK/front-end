@@ -1,13 +1,12 @@
 import { Star } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import type { Review } from "../../../types/types";
+import type { WrittenReview } from "../../../types/review";
 import { Button } from "../../atoms";
 import styles from "./ReviewItem.module.css";
 
 type ReviewItemProps = {
-  review: Review;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  review: WrittenReview;
+  onEdit: () => void; // id를 넘길 필요 없이, 호출만 합니다.
+  onDelete: () => void; // id를 넘길 필요 없이, 호출만 합니다.
 };
 
 export default function ReviewItem({
@@ -15,39 +14,31 @@ export default function ReviewItem({
   onEdit,
   onDelete,
 }: ReviewItemProps) {
-  const { pathname } = useLocation();
-  const isMypage = pathname === "/mypage";
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <img
-          src={review.product.image}
-          alt={review.product.name}
+          src={review.thumbnailImageUrl}
+          alt={review.productName}
           className={styles.productImage}
         />
         <div>
-          <p className={styles.productName}>{review.product.name}</p>
-          <p className={styles.date}>{review.product.date}</p>
+          <p className={styles.productName}>{review.productName}</p>
+          <p className={styles.date}>구매일: {review.purchaseDate}</p>
         </div>
-        {isMypage && (
-          <div className={styles.actions}>
-            <Button className={styles.action} onClick={() => onEdit(review.id)}>
-              수정
-            </Button>
-            <Button
-              className={styles.action}
-              onClick={() => onDelete(review.id)}
-            >
-              삭제
-            </Button>
-          </div>
-        )}
+        <div className={styles.actions}>
+          <Button className={styles.action} onClick={onEdit}>
+            수정
+          </Button>
+          <Button className={styles.action} onClick={onDelete}>
+            삭제
+          </Button>
+        </div>
       </div>
       <div className={styles.rating}>
         {Array.from({ length: 5 }, (_, i) => (
           <Star
-            key={`${review.id}-star-${i}`}
+            key={`${review.reviewId}-star-${i}`}
             size={16}
             color="var(--color-yellow-400)"
             fill={
@@ -59,13 +50,13 @@ export default function ReviewItem({
         ))}
       </div>
       <p className={styles.content}>{review.content}</p>
-      {review.images && (
+      {review.reviewImages && review.reviewImages.length > 0 && (
         <div className={styles.images}>
-          {review.images.map((src) => (
+          {review.reviewImages.map((src) => (
             <img
               key={src}
               src={src}
-              alt={`Review of ${review.product.name}`}
+              alt={`Review of ${review.productName}`}
               className={styles.reviewImage}
             />
           ))}
