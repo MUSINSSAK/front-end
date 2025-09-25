@@ -1,7 +1,12 @@
 ﻿import { ShoppingBag } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { getOrderHistory } from "../../../api/orderApi";
-import type { OrderHistoryItem, Pagination } from "../../../types/order";
+import type {
+  OrderHistoryItem,
+  OrderHistoryPeriod,
+  OrderHistoryStatus,
+  Pagination,
+} from "../../../types/order";
 import { Select, Tag } from "../../atoms";
 import { EmptyState, Table } from "../../molecules";
 import styles from "./OrderHistorySection.module.css";
@@ -22,8 +27,8 @@ export default function OrderHistorySection() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [period, setPeriod] = useState("3months");
-  const [status, setStatus] = useState("ALL");
+  const [period, setPeriod] = useState<OrderHistoryPeriod>("3months");
+  const [status, setStatus] = useState<OrderHistoryStatus>("ALL");
   const [page, setPage] = useState(0);
 
   const fetchOrders = useCallback(async () => {
@@ -60,13 +65,19 @@ export default function OrderHistorySection() {
         <div className={styles.cardHeader}>
           <h3 className={styles.cardTitle}>주문 내역</h3>
           <div className={styles.filters}>
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <Select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as OrderHistoryStatus)}
+            >
               <option value="ALL">전체 상태</option>
               <option value="ORDERED">주문/배송</option>
               <option value="CANCELLED">취소</option>
               <option value="RETURNED">반품</option>
             </Select>
-            <Select value={period} onChange={(e) => setPeriod(e.target.value)}>
+            <Select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as OrderHistoryPeriod)}
+            >
               <option value="all">전체 기간</option>
               <option value="1month">1개월</option>
               <option value="3months">3개월</option>

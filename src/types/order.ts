@@ -75,3 +75,6 @@ export type OrderHistoryResponse = {
   orders: OrderHistoryItem[];
   pagination: Pagination;
 };
+
+export type OrderHistoryPeriod = "1month" | "3months" | "6months" | "all";
+export type OrderHistoryStatus = "ALL" | "ORDERED" | "CANCELLED" | "RETURNED";
