@@ -38,9 +38,6 @@
   border: 1px solid var(--color-gray-500);
   cursor: pointer;
 }
-.rating {
-  margin-bottom: 0.75rem;
-}
 .content {
   font-size: 0.875rem;
   color: var(--color-text);

@@ -1,7 +1,6 @@
-import { Star } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import type { Review } from "../../../types/types";
-import { Button } from "../../atoms";
+import { Button, RatingStars } from "../../atoms";
 import styles from "./ReviewItem.module.css";
 
 type ReviewItemProps = {
@@ -52,20 +51,7 @@ export default function ReviewItem({
           </div>
         )}
       </div>
-      <div className={styles.rating}>
-        {Array.from({ length: 5 }, (_, i) => (
-          <Star
-            key={`${review.id}-star-${i}`}
-            size={16}
-            color="var(--color-yellow-400)"
-            fill={
-              i < review.rating
-                ? "var(--color-yellow-400)"
-                : "var(--color-white)"
-            }
-          />
-        ))}
-      </div>
+      <RatingStars rating={review.rating} />
       <p className={styles.content}>{review.content}</p>
       {review.images && (
         <div className={styles.images}>
