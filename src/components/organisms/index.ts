@@ -19,6 +19,7 @@ export { default as OrderSummarySection } from "./Order/OrderSummarySection/Orde
 export { default as OrderHistorySection } from "./OrderHistorySection/OrderHistorySection";
 export { default as PointsSection } from "./PointsSection/PointsSection";
 export { default as ProductInfoPanel } from "./ProductInfoPanel/ProductInfoPanel";
+export { default as ProductReview } from "./ProductReview/ProductReview";
 export { default as ProductSection } from "./ProductSection/ProductSection";
 export { default as ProfileEditSection } from "./ProfileEditSection/ProfileEditSection";
 export { default as RecentViewSection } from "./RecentViewSection/RecentViewSection";
