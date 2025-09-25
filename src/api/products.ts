@@ -52,3 +52,42 @@ export async function getProductDetail(
   const res = await api.get(`/products/${productId}`);
   return res.data.data as ProductDetail;
 }
+
+// 상품 문의 목록 조회
+type QuestionAnswer = {
+  responder: string;
+  content: string;
+  answerDate: string; // yyyy-MM-dd
+};
+
+type ProductQuestionItem = {
+  id: number;
+  author: string; // "박**"
+  status: "PENDING" | "ANSWERED";
+  question: string;
+  questionDate: string; // yyyy-MM-dd
+  answer?: QuestionAnswer;
+};
+
+type ProductQuestionsData = {
+  productId: number;
+  totalQuestions: number;
+  questions: ProductQuestionItem[];
+  page: number; // 1-base
+  size: number;
+  hasNext: boolean;
+};
+
+type ProductQuestionsParams = {
+  sort?: "latest" | "pendingFirst";
+  page: number; // 1부터 시작
+  size: number;
+};
+
+export async function getProductQuestions(
+  productId: number,
+  params: ProductQuestionsParams,
+): Promise<ProductQuestionsData> {
+  const res = await api.get(`/products/${productId}/questions`, { params });
+  return res.data.data as ProductQuestionsData;
+}

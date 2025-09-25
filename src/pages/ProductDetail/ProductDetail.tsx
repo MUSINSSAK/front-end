@@ -203,30 +203,7 @@ const ProductDetail = () => {
             }
           />
         )}
-        {activeTab === "문의" && (
-          <QASection
-            list={[
-              {
-                id: "q1",
-                status: "답변완료",
-                author: "고객",
-                date: "2024.01.20",
-                question: "사이즈가 어떻게 되나요?",
-                answer: {
-                  date: "2024.01.21",
-                  content: "정사이즈로 나왔습니다.",
-                },
-              },
-              {
-                id: "q2",
-                status: "답변대기",
-                author: "고객",
-                date: "2024.01.18",
-                question: "화이트 색상 재입고 예정 있나요?",
-              },
-            ]}
-          />
-        )}
+        {activeTab === "문의" && <QASection productId={product.productId} />}
         {activeTab === "배송/환불" && <ShippingReturnSection />}{" "}
       </section>
     </ProductDetailTemplate>
