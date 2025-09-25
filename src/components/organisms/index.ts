@@ -26,5 +26,6 @@ export { default as QASection } from "./QASection/QASection";
 export { default as RecentViewSection } from "./RecentViewSection/RecentViewSection";
 export { default as ReviewsSection } from "./ReviewsSection/ReviewsSection";
 export { default as ReviewWriteModal } from "./ReviewWriteModal/ReviewWriteModal";
+export { default as ShippingReturnSection } from "./ShippingReturnSection/ShippingReturnSection";
 export { default as SidebarFilters } from "./SidebarFilters/SidebarFilters";
 export { default as WishListSection } from "./WishListSection/WishListSection";
