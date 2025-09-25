@@ -1,13 +1,14 @@
-// 내가 작성한 리뷰
+// 작성한 리뷰
 export type WrittenReview = {
   reviewId: number;
-  productId: number;
-  productName: string;
-  thumbnailImageUrl: string;
+  author?: string;
+  productId?: number;
+  productName?: string;
+  thumbnailImageUrl?: string;
   purchaseDate: string; // "YYYY-MM-DD"
   rating: number;
   content: string;
-  reviewImages: string[];
+  reviewImages?: string[];
 };
 
 // 작성 가능한 리뷰

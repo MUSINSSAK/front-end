@@ -11,6 +11,7 @@ export { default as Modal } from "./Modal/Modal";
 export { default as NavButton } from "./NavButton/NavButton";
 export { default as NumberStepper } from "./NumberStepper/NumberStepper";
 export { default as PriceTag } from "./PriceTag/PriceTag";
+export { default as RatingStars } from "./RatingStars/RatingStars";
 export { default as SectionHeader } from "./SectionHeader/SectionHeader";
 export { default as Select } from "./Select/Select";
 export { default as Tag } from "./Tag/Tag";

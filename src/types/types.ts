@@ -11,14 +11,6 @@ export type User = {
   avatarUrl?: string;
 };
 
-export type Review = {
-  id: string;
-  product: { name: string; image: string; date: string };
-  rating: number;
-  content: string;
-  images?: string[];
-};
-
 export type Coupon = {
   discount: string;
   title: string;

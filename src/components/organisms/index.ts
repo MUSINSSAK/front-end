@@ -18,10 +18,15 @@ export { default as OrderItemsSection } from "./Order/OrderItemsSection/OrderIte
 export { default as OrderSummarySection } from "./Order/OrderSummarySection/OrderSummarySection";
 export { default as OrderHistorySection } from "./OrderHistorySection/OrderHistorySection";
 export { default as PointsSection } from "./PointsSection/PointsSection";
+export { default as ProductInfoPanel } from "./ProductInfoPanel/ProductInfoPanel";
+export { default as ProductReview } from "./ProductReview/ProductReview";
 export { default as ProductSection } from "./ProductSection/ProductSection";
 export { default as ProfileEditSection } from "./ProfileEditSection/ProfileEditSection";
+export { default as QASection } from "./QASection/QASection";
 export { default as RecentViewSection } from "./RecentViewSection/RecentViewSection";
 export { default as ReviewsSection } from "./ReviewsSection/ReviewsSection";
 export { default as ReviewWriteModal } from "./ReviewWriteModal/ReviewWriteModal";
+export { default as ShippingReturnSection } from "./ShippingReturnSection/ShippingReturnSection";
 export { default as SidebarFilters } from "./SidebarFilters/SidebarFilters";
+export { default as StickyActionBar } from "./StickyActionBar/StickyActionBar";
 export { default as WishListSection } from "./WishListSection/WishListSection";
