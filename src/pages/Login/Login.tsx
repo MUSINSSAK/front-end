@@ -2,7 +2,7 @@ import type { AxiosError } from "axios";
 import { Eye, EyeClosed } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../api/authApi";
+import { login } from "../../api/auth";
 import { useAuthStore } from "../../store/authStore";
 import styles from "./Login.module.css";
 

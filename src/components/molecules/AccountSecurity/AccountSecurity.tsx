@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {
   changePassword,
   getPasswordLastModified,
-} from "../../../api/accountSecurityApi"; // 비밀번호 마지막 변경일 가져오는 API와 비밀번호 변경 API
+} from "../../../api/accountSecurity"; // 비밀번호 마지막 변경일 가져오는 API와 비밀번호 변경 API
 import { Button } from "../../atoms";
 import styles from "./AccountSecurity.module.css";
 

@@ -1,6 +1,6 @@
 import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { getProfile, updateProfile } from "../../../api/profileApi"; // 프로필 조회, 수정 API 불러오기
+import { getProfile, updateProfile } from "../../../api/profile"; // 프로필 조회, 수정 API 불러오기
 import { formatPhoneInput } from "../../../utils/format"; // 휴대폰 하이픈 공통 함수
 import { Avatar, Input } from "../../atoms";
 import styles from "./ProfileSection.module.css";

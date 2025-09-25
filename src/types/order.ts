@@ -70,11 +70,5 @@ export type Pagination = {
   totalPages: number;
 };
 
-// GET /api/orders/me API의 전체 응답 타입
-export type OrderHistoryResponse = {
-  orders: OrderHistoryItem[];
-  pagination: Pagination;
-};
-
 export type OrderHistoryPeriod = "1month" | "3months" | "6months" | "all";
 export type OrderHistoryStatus = "ALL" | "ORDERED" | "CANCELLED" | "RETURNED";

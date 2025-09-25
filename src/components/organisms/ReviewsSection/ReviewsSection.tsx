@@ -4,7 +4,7 @@ import {
   deleteReview,
   getMyReviews,
   updateReview,
-} from "../../../api/reviewApi";
+} from "../../../api/review";
 import { useModal } from "../../../contexts/ModalContext";
 import type {
   ReviewCreateRequest,

@@ -5,7 +5,7 @@ import {
   requestPasswordResetCode,
   resetPassword,
   verifyPasswordResetCode,
-} from "../../api/authApi";
+} from "../../api/auth";
 import styles from "./FindPassword.module.css";
 
 const FindPassword = () => {

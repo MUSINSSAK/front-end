@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { refreshAccessToken } from "../api/authApi";
+import { refreshAccessToken } from "../api/auth";
 import { useModal } from "../contexts/ModalContext";
 
 const EXPIRATION_THRESHOLD = 10 * 60 * 1000;
